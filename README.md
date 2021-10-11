@@ -1,5 +1,5 @@
 # Nebula Spark Connector 2.0
-[中文版](https://github.com/vesoft-inc/nebula-spark-connector/blob/master/README_CN.md)
+[中文版](https://github.com/vesoft-inc/nebula-spark-connector/blob/v2.0/README_CN.md)
 
 ## Introduction
 
@@ -101,7 +101,7 @@ Nebula Spark Connector 2.0 only supports Nebula Graph 2.x. If you are using Nebu
   ```
   After getting Graphx's Graph, you can develop graph algorithms in Graphx like [Nebula-Algorithm](https://github.com/vesoft-inc/nebula-algorithm/tree/master/nebula-algorithm).
 
-For more information on usage, please refer to [Example](https://github.com/vesoft-inc/nebula-spark-connector/tree/master/example/src/main/scala/com/vesoft/nebula/examples/connector).
+For more information on usage, please refer to [Example](https://github.com/vesoft-inc/nebula-spark-connector/tree/v2.0/example/src/main/scala/com/vesoft/nebula/examples/connector).
 
 ## How to Contribute
 

@@ -26,7 +26,16 @@ Nebula Spark Connector 2.0 only supports Nebula Graph 2.x. If you are using Nebu
 * Nebula Spark Connector 2.1.0 support UPDATE write mode to NebulaGraph, see [Update Vertex](https://docs.nebula-graph.io/2.0.1/3.ngql-guide/12.vertex-statements/2.update-vertex/) .
 
 ## How to Use
-
+  
+  If you use Maven to manage your project, add the following dependency to your pom.xml:
+  ```
+  <dependency>
+     <groupId>com.vesoft</groupId>
+     <artifactId>nebula-spark-connector</artifactId>
+     <version>2.0.1</version>
+  </dependency>
+  ```
+  
   Write DataFrame `INSERT` into Nebula Graph as Vertices:
   ```
     val config = NebulaConnectionConfig

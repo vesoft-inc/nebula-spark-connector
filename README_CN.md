@@ -26,7 +26,15 @@ Nebula Spark Connector 2.0 仅支持 Nebula Graph 2.x。如果您正在使用 Ne
 * Nebula Spark Connector 2.1.0 增加了 UPDATE 写入模式，相关说明参考[Update Vertex](https://docs.nebula-graph.com.cn/2.0.1/3.ngql-guide/12.vertex-statements/2.update-vertex/) 。
 
 ## 使用说明
-
+  如果你使用Maven管理项目，请在pom.xml文件中增加依赖:
+  ```
+  <dependency>
+     <groupId>com.vesoft</groupId>
+     <artifactId>nebula-spark-connector</artifactId>
+     <version>2.0.1</version>
+  </dependency>
+  ```
+  
   将 DataFrame 作为点 `INSERT` 写入 Nebula Graph :
   ```
     val config = NebulaConnectionConfig

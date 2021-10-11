@@ -1,5 +1,5 @@
 # 欢迎使用 Nebula Spark Connector 2.0
-[English](https://github.com/vesoft-inc/nebula-spark-utils/blob/master/nebula-spark-connector/README.md)
+[English](https://github.com/vesoft-inc/nebula-spark-connector/blob/v2.5/README.md)
 ## 介绍
 
 Nebula Spark Connector 2.0 仅支持 Nebula Graph 2.x。如果您正在使用 Nebula Graph v1.x，请使用 [Nebula Spark Connector v1.0](https://github.com/vesoft-inc/nebula-java/tree/v1.0/tools)。
@@ -9,12 +9,12 @@ Nebula Spark Connector 2.0 仅支持 Nebula Graph 2.x。如果您正在使用 Ne
 1. 编译打包 Nebula Spark Connector 2.0。
 
     ```bash
-    $ git clone https://github.com/vesoft-inc/nebula-spark-utils.git
-    $ cd nebula-spark-utils/nebula-spark-connector
+    $ git clone https://github.com/vesoft-inc/nebula-spark-connector.git
+    $ cd nebula-spark-connector/nebula-spark-connector
     $ mvn clean package -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true
     ```
 
-    编译打包完成后，可以在 nebula-spark-utils/nebula-spark-connector/target/ 目录下看到 nebula-spark-connector-2.0.0.jar 文件。
+    编译打包完成后，可以在 nebula-spark-connector/nebula-spark-connector/target/ 目录下看到 nebula-spark-connector-2.0.0.jar 文件。
 
 ## 特性
 
@@ -23,9 +23,18 @@ Nebula Spark Connector 2.0 仅支持 Nebula Graph 2.x。如果您正在使用 Ne
 * Spark Reader 支持无属性读取，支持全属性读取
 * Spark Reader 支持将 Nebula Graph 数据读取成 Graphx 的 VertexRD 和 EdgeRDD，支持非 Long 型 vertexId
 * Nebula Spark Connector 2.0 统一了 SparkSQL 的扩展数据源，统一采用 DataSourceV2 进行 Nebula Graph 数据扩展
-* Nebula Spark Connector 2.1.0 增加了 UPDATE 写入模式，相关说明参考[Update Vertex](https://docs.nebula-graph.com.cn/2.0.1/3.ngql-guide/12.vertex-statements/2.update-vertex/) 。
+* Nebula Spark Connector 2.1.0 增加了 UPDATE 写入模式，相关说明参考[Update Vertex](https://docs.nebula-graph.com.cn/2.0.1/3.ngql-guide/12.vertex-statements/2.update-vertex/) 
+* Nebula Spark Connector 2.5.0 增加了 DELETE 写入模式，相关说明参考[Delete Vertex](https://docs.nebula-graph.com.cn/2.5.1/3.ngql-guide/12.vertex-statements/4.delete-vertex/)
 
 ## 使用说明
+  如果你使用Maven管理项目，请在pom.xml文件中增加依赖:
+  ```
+  <dependency>
+     <groupId>com.vesoft</groupId>
+     <artifactId>nebula-spark-connector</artifactId>
+     <version>2.5.1</version>
+  </dependency>
+  ```
 
   将 DataFrame 作为点 `INSERT` 写入 Nebula Graph :
   ```
@@ -59,6 +68,23 @@ Nebula Spark Connector 2.0 仅支持 Nebula Graph 2.x。如果您正在使用 Ne
       .withVidAsProp(true)
       .withBatch(1000)
       .withWriteMode(WriteMode.UPDATE)
+      .build()
+    df.write.nebula(config, nebulaWriteVertexConfig).writeVertices()
+  ```
+  将 DataFrame 作为点 `DELETE` 写入 Nebula Graph :
+  ```
+    val config = NebulaConnectionConfig
+      .builder()
+      .withMetaAddress("127.0.0.1:9559")
+      .withGraphAddress("127.0.0.1:9669")
+      .build()
+    val nebulaWriteVertexConfig = WriteNebulaVertexConfig
+      .builder()
+      .withSpace("test")
+      .withTag("person")
+      .withVidField("id")
+      .withBatch(1000)
+      .withWriteMode(WriteMode.DELETE)
       .build()
     df.write.nebula(config, nebulaWriteVertexConfig).writeVertices()
   ```
@@ -113,9 +139,20 @@ Nebula Spark Connector 2.0 仅支持 Nebula Graph 2.x。如果您正在使用 Ne
     val edgeRDD = spark.read.nebula(config, nebulaReadEdgeConfig).loadEdgesToGraphx()
     val graph = Graph(vertexRDD, edgeRDD)
   ```
-  得到 Graphx 的 Graph 之后，可以根据 [Nebula-Spark-Algorithm](https://github.com/vesoft-inc/nebula-java/tree/v1.0/tools/nebula-algorithm) 的示例在 Graphx 框架中进行算法开发。
+  得到 Graphx 的 Graph 之后，可以根据 [Nebula-Algorithm](https://github.com/vesoft-inc/nebula-algorithm/tree/master/nebula-algorithm) 的示例在 Graphx 框架中进行算法开发。
 
-更多使用示例请参考 [Example](https://github.com/vesoft-inc/nebula-spark-utils/tree/master/example/src/main/scala/com/vesoft/nebula/examples/connector) 。
+更多使用示例请参考 [Example](https://github.com/vesoft-inc/nebula-spark-connector/tree/master/example/src/main/scala/com/vesoft/nebula/examples/connector) 。
+
+## 版本匹配
+Nebula Spark Connector 和 Nebula 的版本对应关系如下:
+| Nebula Spark Connector Version | Nebula Version |
+|:------------------------------:|:--------------:|
+|          2.0.0                 |  2.0.0, 2.0.1  |
+|          2.0.1                 |  2.0.0, 2.0.1  |
+|          2.1.0                 |  2.0.0, 2.0.1  |
+|          2.5.0                 |  2.5.0, 2.5.1  |
+|          2.5.1                 |  2.5.0, 2.5.1  |
+|        2.5-SNAPSHOT            |     nightly    |
 
 ## 贡献
 

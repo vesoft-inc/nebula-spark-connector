@@ -124,6 +124,18 @@ Nebula Spark Connector 2.0 仅支持 Nebula Graph 2.x。如果您正在使用 Ne
 
 更多使用示例请参考 [Example](https://github.com/vesoft-inc/nebula-spark-connector/tree/master/example/src/main/scala/com/vesoft/nebula/examples/connector) 。
 
+## Version match
+
+There are the version correspondence between Nebula Spark Connector and Nebula:
+| Nebula Spark Connector Version | Nebula Version |
+|:------------------------------:|:--------------:|
+|           2.0.0                |  2.0.0, 2.0.1  |
+|           2.0.1                |  2.0.0, 2.0.1  |
+|           2.1.0                |  2.0.0, 2.0.1  |
+|           2.5.0                |  2.5.0, 2.5.1  |
+|           2.5.1                |  2.5.0, 2.5.1  |
+|         2.5-SNAPSHOT           |     nightly    |
+
 ## 贡献
 
 Nebula Spark Connector 2.0 是一个完全开源的项目，欢迎开源爱好者通过以下方式参与：

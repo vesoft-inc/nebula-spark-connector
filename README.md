@@ -24,6 +24,7 @@ Nebula Spark Connector 2.0 only supports Nebula Graph 2.x. If you are using Nebu
 * Spark Reader Supports reading data from Nebula Graph to Graphx as VertexRD and EdgeRDD, it also supports String type vertexId.
 * Nebula Spark Connector 2.0 uniformly uses SparkSQL's DataSourceV2 for data source expansion.
 * Nebula Spark Connector 2.1.0 support UPDATE write mode to NebulaGraph, see [Update Vertex](https://docs.nebula-graph.io/2.0.1/3.ngql-guide/12.vertex-statements/2.update-vertex/) .
+* Nebula Spark Connector 2.5.0 support DELETE write mode to NebulaGraph, see [Delete Vertex](https://docs.nebula-graph.io/master/3.ngql-guide/12.vertex-statements/4.delete-vertex/)
 
 ## How to Use
   
@@ -32,7 +33,7 @@ Nebula Spark Connector 2.0 only supports Nebula Graph 2.x. If you are using Nebu
   <dependency>
      <groupId>com.vesoft</groupId>
      <artifactId>nebula-spark-connector</artifactId>
-     <version>2.0.1</version>
+     <version>2.5-SNAPSHOT</version>
   </dependency>
   ```
   

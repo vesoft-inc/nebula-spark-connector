@@ -23,7 +23,8 @@ Nebula Spark Connector 2.0 仅支持 Nebula Graph 2.x。如果您正在使用 Ne
 * Spark Reader 支持无属性读取，支持全属性读取
 * Spark Reader 支持将 Nebula Graph 数据读取成 Graphx 的 VertexRD 和 EdgeRDD，支持非 Long 型 vertexId
 * Nebula Spark Connector 2.0 统一了 SparkSQL 的扩展数据源，统一采用 DataSourceV2 进行 Nebula Graph 数据扩展
-* Nebula Spark Connector 2.1.0 增加了 UPDATE 写入模式，相关说明参考[Update Vertex](https://docs.nebula-graph.com.cn/2.0.1/3.ngql-guide/12.vertex-statements/2.update-vertex/) 。
+* Nebula Spark Connector 2.1.0 增加了 UPDATE 写入模式，相关说明参考[Update Vertex](https://docs.nebula-graph.com.cn/2.0.1/3.ngql-guide/12.vertex-statements/2.update-vertex/)
+* Nebula Spark Connector 2.5.0 增加了 DELETE 写入模式，相关说明参考[Delete Vertex](https://docs.nebula-graph.com.cn/2.5.1/3.ngql-guide/12.vertex-statements/4.delete-vertex/)
 
 ## 使用说明
   如果你使用Maven管理项目，请在pom.xml文件中增加依赖:
@@ -31,7 +32,7 @@ Nebula Spark Connector 2.0 仅支持 Nebula Graph 2.x。如果您正在使用 Ne
   <dependency>
      <groupId>com.vesoft</groupId>
      <artifactId>nebula-spark-connector</artifactId>
-     <version>2.0.1</version>
+     <version>2.5-SNAPSHOT</version>
   </dependency>
   ```
   

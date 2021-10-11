@@ -62,6 +62,23 @@ Nebula Spark Connector 2.0 only supports Nebula Graph 2.x. If you are using Nebu
       .build()
     df.write.nebula(config, nebulaWriteVertexConfig).writeVertices()
   ```
+  Write DataFrame `DELETE` into Nebula Graph as Vertices:
+  ```
+    val config = NebulaConnectionConfig
+      .builder()
+      .withMetaAddress("127.0.0.1:9559")
+      .withGraphAddress("127.0.0.1:9669")
+      .build()
+    val nebulaWriteVertexConfig: WriteNebulaVertexConfig = WriteNebulaVertexConfig
+      .builder()
+      .withSpace("test")
+      .withTag("person")
+      .withVidField("id")
+      .withBatch(1000)
+      .withWriteMode(WriteMode.DELETE)
+      .build()
+    df.write.nebula(config, nebulaWriteVertexConfig).writeVertices()
+  ```
   Read vertices from Nebula Graph: 
   ```
     val config = NebulaConnectionConfig
@@ -113,6 +130,18 @@ Nebula Spark Connector 2.0 only supports Nebula Graph 2.x. If you are using Nebu
   After getting Graphx's Graph, you can develop graph algorithms in Graphx like [Nebula-Algorithm](https://github.com/vesoft-inc/nebula-algorithm/tree/master/nebula-algorithm).
 
 For more information on usage, please refer to [Example](https://github.com/vesoft-inc/nebula-spark-connector/tree/master/example/src/main/scala/com/vesoft/nebula/examples/connector).
+
+## Version match
+
+There are the version correspondence between Nebula Spark Connector and Nebula:
+| Nebula Spark Connector Version | Nebula Version |
+|:------------------------------:|:--------------:|
+|           2.0.0                |  2.0.0, 2.0.1  |
+|           2.0.1                |  2.0.0, 2.0.1  |
+|           2.1.0                |  2.0.0, 2.0.1  |
+|           2.5.0                |  2.5.0, 2.5.1  |
+|           2.5.1                |  2.5.0, 2.5.1  |
+|         2.5-SNAPSHOT           |     nightly    |
 
 ## How to Contribute
 

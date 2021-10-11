@@ -62,6 +62,23 @@ Nebula Spark Connector 2.0 仅支持 Nebula Graph 2.x。如果您正在使用 Ne
       .build()
     df.write.nebula(config, nebulaWriteVertexConfig).writeVertices()
   ```
+将 DataFrame 作为点 `DELETE` 写入 Nebula Graph :
+  ```
+    val config = NebulaConnectionConfig
+      .builder()
+      .withMetaAddress("127.0.0.1:9559")
+      .withGraphAddress("127.0.0.1:9669")
+      .build()
+    val nebulaWriteVertexConfig = WriteNebulaVertexConfig
+      .builder()
+      .withSpace("test")
+      .withTag("person")
+      .withVidField("id")
+      .withBatch(1000)
+      .withWriteMode(WriteMode.DELETE)
+      .build()
+    df.write.nebula(config, nebulaWriteVertexConfig).writeVertices()
+  ```
 
   读取 Nebula Graph 的点数据: 
   ```
@@ -116,6 +133,17 @@ Nebula Spark Connector 2.0 仅支持 Nebula Graph 2.x。如果您正在使用 Ne
   得到 Graphx 的 Graph 之后，可以根据 [Nebula-Algorithm](https://github.com/vesoft-inc/nebula-algorithm/tree/master/nebula-algorithm) 的示例在 Graphx 框架中进行算法开发。
 
 更多使用示例请参考 [Example](https://github.com/vesoft-inc/nebula-spark-connector/tree/master/example/src/main/scala/com/vesoft/nebula/examples/connector) 。
+
+## 版本匹配
+Nebula Spark Connector 和 Nebula 的版本对应关系如下:
+| Nebula Spark Connector Version | Nebula Version |
+|:------------------------------:|:--------------:|
+|          2.0.0                 |  2.0.0, 2.0.1  |
+|          2.0.1                 |  2.0.0, 2.0.1  |
+|          2.1.0                 |  2.0.0, 2.0.1  |
+|          2.5.0                 |  2.5.0, 2.5.1  |
+|          2.5.1                 |  2.5.0, 2.5.1  |
+|        2.5-SNAPSHOT            |     nightly    |
 
 ## 贡献
 

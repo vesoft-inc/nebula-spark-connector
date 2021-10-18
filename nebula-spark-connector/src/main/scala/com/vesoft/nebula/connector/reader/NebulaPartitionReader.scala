@@ -46,7 +46,7 @@ abstract class NebulaPartitionReader extends InputPartitionReader[InternalRow] {
     this()
     this.schema = schema
 
-    metaProvider = new MetaProvider(nebulaOptions.getMetaAddress)
+    metaProvider = new MetaProvider(nebulaOptions.getMetaAddress,nebulaOptions.timeout,nebulaOptions.connectionRetry,nebulaOptions.executionRetry)
     val address: ListBuffer[HostAddress] = new ListBuffer[HostAddress]
 
     for (addr <- nebulaOptions.getMetaAddress) {

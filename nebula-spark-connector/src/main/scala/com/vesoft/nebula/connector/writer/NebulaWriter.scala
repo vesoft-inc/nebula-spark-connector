@@ -21,7 +21,7 @@ class NebulaWriter(nebulaOptions: NebulaOptions) extends Serializable {
   val failedExecs: ListBuffer[String] = new ListBuffer[String]
 
   val graphProvider   = new GraphProvider(nebulaOptions.getGraphAddress)
-  val metaProvider    = new MetaProvider(nebulaOptions.getMetaAddress)
+  val metaProvider    = new MetaProvider(nebulaOptions.getMetaAddress,nebulaOptions.timeout,nebulaOptions.connectionRetry,nebulaOptions.executionRetry)
   val isVidStringType = metaProvider.getVidType(nebulaOptions.spaceName) == VidType.STRING
 
   def prepareSpace(): Unit = {

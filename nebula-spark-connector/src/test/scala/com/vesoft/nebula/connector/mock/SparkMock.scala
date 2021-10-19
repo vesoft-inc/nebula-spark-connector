@@ -35,7 +35,7 @@ object SparkMock {
 
     val df = spark.read
       .option("header", true)
-      .csv("nebula-spark-connector/src/test/resources/vertex.csv")
+      .csv("src/test/resources/vertex.csv")
 
     val config =
       NebulaConnectionConfig
@@ -73,7 +73,7 @@ object SparkMock {
 
     val df = spark.read
       .option("header", true)
-      .csv("nebula-spark-connector/src/test/resources/vertex.csv")
+      .csv("src/test/resources/vertex.csv")
 
     val config =
       NebulaConnectionConfig
@@ -112,7 +112,7 @@ object SparkMock {
 
     val df = spark.read
       .option("header", true)
-      .csv("nebula-spark-connector/src/test/resources/edge.csv")
+      .csv("src/test/resources/edge.csv")
 
     val config =
       NebulaConnectionConfig
@@ -152,7 +152,7 @@ object SparkMock {
 
     val df = spark.read
       .option("header", true)
-      .csv("nebula-spark-connector/src/test/resources/edge.csv")
+      .csv("src/test/resources/edge.csv")
 
     val config =
       NebulaConnectionConfig

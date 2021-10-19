@@ -34,7 +34,7 @@ class GraphProviderTest extends AnyFunSuite with BeforeAndAfterAll {
   }
 
   test("submit") {
-    val result = graphProvider.submit("insert vertex person(col1) values 100:(\"test\")")
+    val result = graphProvider.submit("fetch prop on person 1")
     assert(result.isSucceeded)
   }
 }

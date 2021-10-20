@@ -50,6 +50,14 @@ object NebulaUtils {
     }
   }
 
+  /**
+    * get nebula property's SparkSQL data type
+    *
+    * @param columnDefs column definition
+    * @param columnName column name
+    *
+    * @return {@link DataType}
+    */
   def getColDataType(columnDefs: List[ColumnDef], columnName: String): DataType = {
     for (columnDef <- columnDefs) {
       if (columnName.equals(new String(columnDef.getName))) {
@@ -61,6 +69,12 @@ object NebulaUtils {
 
   type NebulaValueGetter = (Any, InternalRow, Int) => Unit
 
+  /**
+    * make getter
+    *
+    * @param schema Spark DataFrame schema
+    * @return list of NebulaValueGetter
+    */
   def makeGetters(schema: StructType): Array[NebulaValueGetter] = {
     schema.fields.map(field => makeGetter(field.dataType))
   }
@@ -92,6 +106,12 @@ object NebulaUtils {
     }
   }
 
+  /**
+    * check if a str is numic
+    * @param str string
+    *
+    * @return true if str is numic
+    */
   def isNumic(str: String): Boolean = {
     val newStr: String = if (str.startsWith("-")) {
       str.substring(1)
@@ -103,6 +123,12 @@ object NebulaUtils {
     true
   }
 
+  /**
+    * escape the string which contains escape str
+    * @param str string
+    *
+    * @return escaped string
+    */
   def escapeUtil(str: String): String = {
     var s = str
     if (s.contains("\\")) {

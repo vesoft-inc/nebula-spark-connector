@@ -45,5 +45,4 @@ jobs:
     - name: Build with Maven
       run: |
         mvn -B package
-
-    - uses: codecov/codecov-action@v2
+        bash <(curl -s https://codecov.io/bash)

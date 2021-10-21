@@ -56,7 +56,7 @@ class MetaProviderTest extends AnyFunSuite with BeforeAndAfterAll {
     assert(schema1.columns.size() == 13)
   }
 
-  test("getTagSchema") {
+  test("getTagSchema for person") {
     val schemaMap: Map[String, Integer] = metaProvider.getTagSchema("test_int", "person")
     assert(schemaMap.size == 13)
     assert(schemaMap("col1") == PropertyType.STRING.getValue)
@@ -72,6 +72,12 @@ class MetaProviderTest extends AnyFunSuite with BeforeAndAfterAll {
     assert(schemaMap("col11") == PropertyType.DOUBLE.getValue)
     assert(schemaMap("col12") == PropertyType.FLOAT.getValue)
     assert(schemaMap("col13") == PropertyType.TIME.getValue)
+  }
+
+  test("getTagSchema for geo_shape") {
+    val schemaMap: Map[String, Integer] = metaProvider.getTagSchema("test_int", "geo_shape")
+    assert(schemaMap.size == 1)
+    assert(schemaMap("geo") == PropertyType.GEOGRAPHY.getValue)
   }
 
   test("getEdgeSchema") {

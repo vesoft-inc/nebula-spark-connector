@@ -155,6 +155,44 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
     })(Encoders.STRING)
   }
 
+  test("read vertex for geo_shape") {
+    val config =
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withConenctionRetry(2)
+        .build()
+    val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
+      .builder()
+      .withSpace("test_int")
+      .withLabel("geo_shape")
+      .withNoColumn(false)
+      .withReturnCols(List("geo"))
+      .withLimit(10)
+      .withPartitionNum(10)
+      .build()
+    val vertex = sparkSession.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
+    vertex.printSchema()
+    vertex.show()
+    assert(vertex.count() == 3)
+    assert(vertex.schema.fields.length == 2)
+
+    vertex.map(row => {
+      row.getAs[Long]("_vertexId") match {
+        case 100L => {
+          assert(row.getAs[String]("geo").equals("POINT(1 2)"))
+        }
+        case 101L => {
+          assert(row.getAs[String]("geo").equals("LINESTRING(1 2, 3 4)"))
+        }
+        case 102L => {
+          assert(row.getAs[String]("geo").equals("POLYGON((0 1, 1 2, 2 3, 0 1))"))
+        }
+      }
+      ""
+    })(Encoders.STRING)
+  }
+
   test("read edge with no properties") {
     val config =
       NebulaConnectionConfig

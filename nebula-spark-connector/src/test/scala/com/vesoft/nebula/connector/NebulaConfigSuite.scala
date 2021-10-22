@@ -36,6 +36,18 @@ class NebulaConfigSuite extends AnyFunSuite with BeforeAndAfterAll {
       .build()
   }
 
+  test("test correct ssl config with no sign type param") {
+    assertThrows[AssertionError](
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
+        .withEnableGraphSsl(true)
+        .withEnableMetaSsl(true)
+        .withCaSslSignParam("cacrtFile", "crtFile", "keyFile")
+        .build())
+  }
+
   test("test correct ssl config with wrong ca param") {
     assertThrows[AssertionError](
       NebulaConnectionConfig

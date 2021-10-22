@@ -154,6 +154,7 @@ object NebulaConnectionConfig {
             assert(
               selfSignParam != null && selfSignParam.getCrtFilePath != null
                 && selfSignParam.getKeyFilePath != null && selfSignParam.getPassword != null)
+          case _ => assert(false, "sslSignType config is null")
         }
       }
     }

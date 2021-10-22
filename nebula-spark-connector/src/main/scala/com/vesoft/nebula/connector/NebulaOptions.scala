@@ -68,10 +68,11 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
     parameters.getOrElse(ENABLE_GRAPH_SSL, DEFAULT_ENABLE_GRAPH_SSL).toString.toBoolean
   val enableMetaSsl: Boolean =
     parameters.getOrElse(ENABLE_META_SSL, DEFAULT_ENABLE_META_SSL).toString.toBoolean
-  val sslSignType: String               = parameters.get(SSL_SIGN_TYPE).get
+  var sslSignType: String               = null
   var caSignParam: CASignedSSLParam     = null
   var selfSignParam: SelfSignedSSLParam = null
   if (enableGraphSsl || enableMetaSsl) {
+    sslSignType = parameters.get(SSL_SIGN_TYPE).get
     SslSignType.withName(sslSignType) match {
       case SslSignType.CA => {
         val params = parameters.get(CA_SIGN_PARAM).get.split(",")

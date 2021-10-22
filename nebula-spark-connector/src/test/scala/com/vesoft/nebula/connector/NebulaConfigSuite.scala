@@ -12,63 +12,83 @@ import org.scalatest.funsuite.AnyFunSuite
 class NebulaConfigSuite extends AnyFunSuite with BeforeAndAfterAll {
 
   test("test NebulaConnectionConfig") {
-    try {
-      NebulaConnectionConfig.builder().withTimeout(1).build()
-    } catch {
-      case e: java.lang.AssertionError => assert(true)
-    }
 
-    try {
-      NebulaConnectionConfig.builder().withTimeout(-1).build()
-    } catch {
-      case e: java.lang.AssertionError => assert(true)
-    }
+    assertThrows[AssertionError](NebulaConnectionConfig.builder().withTimeout(1).build())
 
-    try {
+    assertThrows[AssertionError](NebulaConnectionConfig.builder().withTimeout(-1).build())
+
+    NebulaConnectionConfig
+      .builder()
+      .withMetaAddress("127.0.0.1:9559")
+      .withTimeout(1)
+      .build()
+  }
+
+  test("test correct ssl config") {
+    NebulaConnectionConfig
+      .builder()
+      .withMetaAddress("127.0.0.1:9559")
+      .withGraphAddress("127.0.0.1:9669")
+      .withEnableGraphSsl(true)
+      .withEnableMetaSsl(true)
+      .withSslSignType(SslSignType.CA)
+      .withCaSslSignParam("cacrtFile", "crtFile", "keyFile")
+      .build()
+  }
+
+  test("test correct ssl config with wrong ca param") {
+    assertThrows[AssertionError](
       NebulaConnectionConfig
         .builder()
         .withMetaAddress("127.0.0.1:9559")
-        .withTimeout(1)
-        .build()
-      assert(true)
-    } catch {
-      case _: Throwable => assert(false)
-    }
+        .withGraphAddress("127.0.0.1:9669")
+        .withEnableGraphSsl(true)
+        .withEnableMetaSsl(true)
+        .withSslSignType(SslSignType.CA)
+        .withSelfSslSignParam("crtFile", "keyFile", "password")
+        .build())
+  }
+
+  test("test correct ssl config with wrong self param") {
+    assertThrows[AssertionError](
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
+        .withEnableGraphSsl(true)
+        .withEnableMetaSsl(true)
+        .withSslSignType(SslSignType.SELF)
+        .withCaSslSignParam("cacrtFile", "crtFile", "keyFile")
+        .build())
   }
 
   test("test WriteNebulaConfig") {
     var writeNebulaConfig: WriteNebulaVertexConfig = null
-    try {
-      writeNebulaConfig = WriteNebulaVertexConfig
-        .builder()
-        .withSpace("test")
-        .withTag("tag")
-        .withVidField("vid")
-        .build()
-    } catch {
-      case e: Throwable => assert(false)
-    }
-    assert(true)
+
+    writeNebulaConfig = WriteNebulaVertexConfig
+      .builder()
+      .withSpace("test")
+      .withTag("tag")
+      .withVidField("vid")
+      .build()
+
     assert(!writeNebulaConfig.getVidAsProp)
     assert(writeNebulaConfig.getSpace.equals("test"))
   }
 
   test("test wrong policy") {
-    try {
+    assertThrows[AssertionError](
       WriteNebulaVertexConfig
         .builder()
         .withSpace("test")
         .withTag("tag")
         .withVidField("vId")
         .withVidPolicy("wrong_policy")
-        .build()
-    } catch {
-      case e: java.lang.AssertionError => assert(true)
-    }
+        .build())
   }
 
   test("test wrong batch") {
-    try {
+    assertThrows[AssertionError](
       WriteNebulaVertexConfig
         .builder()
         .withSpace("test")
@@ -76,24 +96,17 @@ class NebulaConfigSuite extends AnyFunSuite with BeforeAndAfterAll {
         .withVidField("vId")
         .withVidPolicy("hash")
         .withBatch(-1)
-        .build()
-    } catch {
-      case e: java.lang.AssertionError => assert(true)
-    }
+        .build())
   }
 
   test("test ReadNebulaConfig") {
-    try {
-      ReadNebulaConfig
-        .builder()
-        .withSpace("test")
-        .withLabel("tagName")
-        .withNoColumn(true)
-        .withReturnCols(List("col"))
-        .build()
-    } catch {
-      case e: java.lang.AssertionError => assert(false)
-    }
+    ReadNebulaConfig
+      .builder()
+      .withSpace("test")
+      .withLabel("tagName")
+      .withNoColumn(true)
+      .withReturnCols(List("col"))
+      .build()
   }
 
 }

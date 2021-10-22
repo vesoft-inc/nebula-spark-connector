@@ -42,7 +42,10 @@ abstract class NebulaSourceReader(nebulaOptions: NebulaOptions) extends DataSour
     val returnCols                      = nebulaOptions.getReturnCols
     val noColumn                        = nebulaOptions.noColumn
     val fields: ListBuffer[StructField] = new ListBuffer[StructField]
-    val metaProvider                    = new MetaProvider(nebulaOptions.getMetaAddress)
+    val metaProvider = new MetaProvider(nebulaOptions.getMetaAddress,
+                                        nebulaOptions.timeout,
+                                        nebulaOptions.connectionRetry,
+                                        nebulaOptions.executionRetry)
 
     import scala.collection.JavaConverters._
     var schemaCols: Seq[ColumnDef] = Seq()

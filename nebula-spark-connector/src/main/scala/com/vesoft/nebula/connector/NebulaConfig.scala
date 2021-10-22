@@ -144,6 +144,7 @@ object NebulaConnectionConfig {
       }
       // check ssl param
       if (enableMetaSsl || enableGraphSsl) {
+        enableGraphSsl = true
         sslSignType match {
           case SslSignType.CA =>
             assert(

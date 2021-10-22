@@ -129,10 +129,12 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
                          "col_int",
                          "col_int64",
                          "col_double",
-                         "col_date")
+                         "col_date",
+                         "col_geo")
 
-    val props1 = List("\"Tom\"", "\"Tom\"", true, 10, 100L, 1.0, "2021-11-12")
-    val props2 = List("\"Bob\"", "\"Bob\"", false, 20, 200L, 2.0, "2021-05-01")
+    val props1 = List("\"Tom\"", "\"Tom\"", true, 10, 100L, 1.0, "2021-11-12", "POINT(3 8)")
+    val props2 =
+      List("\"Bob\"", "\"Bob\"", false, 20, 200L, 2.0, "2021-05-01", "LINESTRING(1 2, 3 4)")
     vertices.append(NebulaVertex("\"vid1\"", props1))
     vertices.append(NebulaVertex("\"vid2\"", props2))
 
@@ -140,8 +142,8 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
     val vertexStatement = NebulaExecutor.toExecuteSentence(tagName, nebulaVertices)
 
     val expectStatement = "INSERT vertex `person`(`col_string`,`col_fixed_string`,`col_bool`," +
-      "`col_int`,`col_int64`,`col_double`,`col_date`) VALUES \"vid1\": (" + props1.mkString(", ") +
-      "), \"vid2\": (" + props2.mkString(", ") + ")"
+      "`col_int`,`col_int64`,`col_double`,`col_date`,`col_geo`) VALUES \"vid1\": (" + props1
+      .mkString(", ") + "), \"vid2\": (" + props2.mkString(", ") + ")"
     assert(expectStatement.equals(vertexStatement))
   }
 
@@ -154,10 +156,12 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
                          "col_int",
                          "col_int64",
                          "col_double",
-                         "col_date")
+                         "col_date",
+                         "col_geo")
 
-    val props1 = List("\"Tom\"", "\"Tom\"", true, 10, 100L, 1.0, "2021-11-12")
-    val props2 = List("\"Bob\"", "\"Bob\"", false, 20, 200L, 2.0, "2021-05-01")
+    val props1 = List("\"Tom\"", "\"Tom\"", true, 10, 100L, 1.0, "2021-11-12", "POINT(1 2)")
+    val props2 =
+      List("\"Bob\"", "\"Bob\"", false, 20, 200L, 2.0, "2021-05-01", "LINESTRING(1 2, 3 4)")
     vertices.append(NebulaVertex("vid1", props1))
     vertices.append(NebulaVertex("vid2", props2))
 
@@ -165,8 +169,8 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
     val vertexStatement = NebulaExecutor.toExecuteSentence(tagName, nebulaVertices)
 
     val expectStatement = "INSERT vertex `person`(`col_string`,`col_fixed_string`,`col_bool`," +
-      "`col_int`,`col_int64`,`col_double`,`col_date`) VALUES hash(\"vid1\"): (" + props1.mkString(
-      ", ") +
+      "`col_int`,`col_int64`,`col_double`,`col_date`,`col_geo`) VALUES hash(\"vid1\"): (" + props1
+      .mkString(", ") +
       "), hash(\"vid2\"): (" + props2.mkString(", ") + ")"
     assert(expectStatement.equals(vertexStatement))
   }
@@ -180,9 +184,18 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
                          "col_int",
                          "col_int64",
                          "col_double",
-                         "col_date")
-    val props1 = List("\"Tom\"", "\"Tom\"", true, 10, 100L, 1.0, "2021-11-12")
-    val props2 = List("\"Bob\"", "\"Bob\"", false, 20, 200L, 2.0, "2021-05-01")
+                         "col_date",
+                         "col_geo")
+    val props1 =
+      List("\"Tom\"", "\"Tom\"", true, 10, 100L, 1.0, "2021-11-12", "POLYGON((0 1, 1 2, 2 3, 0 1))")
+    val props2 = List("\"Bob\"",
+                      "\"Bob\"",
+                      false,
+                      20,
+                      200L,
+                      2.0,
+                      "2021-05-01",
+                      "POLYGON((0 1, 1 2, 2 3, 0 1))")
     edges.append(NebulaEdge("\"vid1\"", "\"vid2\"", Some(1L), props1))
     edges.append(NebulaEdge("\"vid2\"", "\"vid1\"", Some(2L), props2))
 
@@ -190,8 +203,8 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
     val edgeStatement = NebulaExecutor.toExecuteSentence(edgeName, nebulaEdges)
 
     val expectStatement = "INSERT edge `friend`(`col_string`,`col_fixed_string`,`col_bool`,`col_int`" +
-      ",`col_int64`,`col_double`,`col_date`) VALUES \"vid1\"->\"vid2\"@1: (" + props1.mkString(", ") +
-      "), \"vid2\"->\"vid1\"@2: (" + props2.mkString(", ") + ")"
+      ",`col_int64`,`col_double`,`col_date`,`col_geo`) VALUES \"vid1\"->\"vid2\"@1: (" +
+      props1.mkString(", ") + "), \"vid2\"->\"vid1\"@2: (" + props2.mkString(", ") + ")"
     assert(expectStatement.equals(edgeStatement))
   }
 
@@ -203,10 +216,19 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
                          "col_int",
                          "col_int64",
                          "col_double",
-                         "col_date")
+                         "col_date",
+                         "col_geo")
 
-    val props1 = List("\"name\"", "\"name\"", true, 10, 100L, 1.0, "2021-11-12")
-    val props2 = List("\"name2\"", "\"name2\"", false, 11, 101L, 2.0, "2021-11-13")
+    val props1 =
+      List("\"name\"", "\"name\"", true, 10, 100L, 1.0, "2021-11-12", "LINESTRING(1 2, 3 4)")
+    val props2 = List("\"name2\"",
+                      "\"name2\"",
+                      false,
+                      11,
+                      101L,
+                      2.0,
+                      "2021-11-13",
+                      "POLYGON((0 1, 1 2, 2 3, 0 1))")
 
     vertices.append(NebulaVertex("\"vid1\"", props1))
     vertices.append(NebulaVertex("\"vid2\"", props2))
@@ -217,9 +239,11 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
 
     val expectVertexUpdate =
       "UPDATE VERTEX ON `person` \"vid1\" SET `col_string`=\"name\",`col_fixed_string`=\"name\"," +
-        "`col_bool`=true,`col_int`=10,`col_int64`=100,`col_double`=1.0,`col_date`=2021-11-12;" +
-        "UPDATE VERTEX ON `person` \"vid2\" SET `col_string`=\"name2\",`col_fixed_string`=\"name2\"," +
-        "`col_bool`=false,`col_int`=11,`col_int64`=101,`col_double`=2.0,`col_date`=2021-11-13"
+        "`col_bool`=true,`col_int`=10,`col_int64`=100,`col_double`=1.0,`col_date`=2021-11-12," +
+        "`col_geo`=LINESTRING(1 2, 3 4);UPDATE VERTEX ON `person` \"vid2\" SET " +
+        "`col_string`=\"name2\",`col_fixed_string`=\"name2\",`col_bool`=false,`col_int`=11," +
+        "`col_int64`=101,`col_double`=2.0,`col_date`=2021-11-13," +
+        "`col_geo`=POLYGON((0 1, 1 2, 2 3, 0 1))"
     assert(expectVertexUpdate.equals(updateVertexStatement))
   }
 
@@ -258,9 +282,10 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
                          "col_int",
                          "col_int64",
                          "col_double",
-                         "col_date")
-    val props1 = List("\"Tom\"", "\"Tom\"", true, 10, 100L, 1.0, "2021-11-12")
-    val props2 = List("\"Bob\"", "\"Bob\"", false, 20, 200L, 2.0, "2021-05-01")
+                         "col_date",
+                         "col_geo")
+    val props1 = List("\"Tom\"", "\"Tom\"", true, 10, 100L, 1.0, "2021-11-12", "POINT(1 2)")
+    val props2 = List("\"Bob\"", "\"Bob\"", false, 20, 200L, 2.0, "2021-05-01", "POINT(2 3)")
     edges.append(NebulaEdge("\"vid1\"", "\"vid2\"", Some(1L), props1))
     edges.append(NebulaEdge("\"vid2\"", "\"vid1\"", Some(2L), props2))
 
@@ -269,10 +294,10 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
     val expectEdgeUpdate =
       "UPDATE EDGE ON `friend` \"vid1\"->\"vid2\"@1 SET `col_string`=\"Tom\"," +
         "`col_fixed_string`=\"Tom\",`col_bool`=true,`col_int`=10,`col_int64`=100," +
-        "`col_double`=1.0,`col_date`=2021-11-12;" +
+        "`col_double`=1.0,`col_date`=2021-11-12,`col_geo`=POINT(1 2);" +
         "UPDATE EDGE ON `friend` \"vid2\"->\"vid1\"@2 SET `col_string`=\"Bob\"," +
         "`col_fixed_string`=\"Bob\",`col_bool`=false,`col_int`=20,`col_int64`=200," +
-        "`col_double`=2.0,`col_date`=2021-05-01"
+        "`col_double`=2.0,`col_date`=2021-05-01,`col_geo`=POINT(2 3)"
     assert(expectEdgeUpdate.equals(updateEdgeStatement))
   }
 

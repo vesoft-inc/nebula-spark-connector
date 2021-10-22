@@ -44,7 +44,7 @@ object NebulaUtils {
       case PropertyType.FLOAT | PropertyType.DOUBLE => DoubleType
       case PropertyType.TIMESTAMP                   => LongType
       case PropertyType.FIXED_STRING | PropertyType.STRING | PropertyType.DATE | PropertyType.TIME |
-          PropertyType.DATETIME =>
+          PropertyType.DATETIME | PropertyType.GEOGRAPHY =>
         StringType
       case PropertyType.UNKNOWN => throw new IllegalArgumentException("unsupported data type")
     }

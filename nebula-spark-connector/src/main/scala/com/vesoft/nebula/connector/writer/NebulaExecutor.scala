@@ -162,6 +162,7 @@ object NebulaExecutor {
           "timestamp(\"" + propValue + "\")"
         }
       }
+      case PropertyType.GEOGRAPHY => "ST_GeogFromText(\"" + propValue + "\")"
       case _ => {
         if (simpleName.equalsIgnoreCase("UTF8String")) propValue.toString
         else propValue

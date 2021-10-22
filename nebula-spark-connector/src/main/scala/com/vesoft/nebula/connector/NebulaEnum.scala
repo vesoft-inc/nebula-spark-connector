@@ -38,3 +38,10 @@ object WriteMode extends Enumeration {
   val UPDATE = Value("update")
   val DELETE = Value("delete")
 }
+
+object SslSignType extends Enumeration {
+
+  type signType = Value
+  val CA   = Value("ca")
+  val SELF = Value("self")
+}

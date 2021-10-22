@@ -7,8 +7,14 @@
 package com.vesoft.nebula.connector.nebula
 
 import com.vesoft.nebula.client.graph.NebulaPoolConfig
-import com.vesoft.nebula.client.graph.data.{HostAddress, ResultSet}
+import com.vesoft.nebula.client.graph.data.{
+  CASignedSSLParam,
+  HostAddress,
+  ResultSet,
+  SelfSignedSSLParam
+}
 import com.vesoft.nebula.client.graph.net.{NebulaPool, Session}
+import com.vesoft.nebula.connector.SslSignType
 import com.vesoft.nebula.connector.connector.Address
 import com.vesoft.nebula.connector.exception.GraphConnectException
 import org.apache.log4j.Logger
@@ -19,7 +25,13 @@ import scala.collection.mutable.ListBuffer
 /**
   * GraphProvider for Nebula Graph Service
   */
-class GraphProvider(addresses: List[Address]) extends AutoCloseable with Serializable {
+class GraphProvider(addresses: List[Address],
+                    enableSsl: Boolean = false,
+                    sslSignType: String = null,
+                    caSignParam: CASignedSSLParam = null,
+                    selfSignParam: SelfSignedSSLParam = null)
+    extends AutoCloseable
+    with Serializable {
   private[this] lazy val LOG = Logger.getLogger(this.getClass)
 
   @transient val nebulaPoolConfig = new NebulaPoolConfig
@@ -30,6 +42,15 @@ class GraphProvider(addresses: List[Address]) extends AutoCloseable with Seriali
     address.append(new HostAddress(addr._1, addr._2))
   }
   nebulaPoolConfig.setMaxConnSize(1)
+
+  if (enableSsl) {
+    nebulaPoolConfig.setEnableSsl(enableSsl)
+    SslSignType.withName(sslSignType) match {
+      case SslSignType.CA   => nebulaPoolConfig.setSslParam(caSignParam)
+      case SslSignType.SELF => nebulaPoolConfig.setSslParam(selfSignParam)
+      case _                => throw new IllegalArgumentException("ssl sign type is not supported")
+    }
+  }
   pool.init(address.asJava, nebulaPoolConfig)
 
   var session: Session = null

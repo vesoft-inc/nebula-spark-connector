@@ -6,29 +6,50 @@
 
 package com.vesoft.nebula.connector
 
+import com.vesoft.nebula.client.graph.data.{CASignedSSLParam, SelfSignedSSLParam}
+import com.vesoft.nebula.connector.NebulaConnectionConfig.ConfigBuilder
 import org.slf4j.{Logger, LoggerFactory}
+
 import scala.collection.mutable.ListBuffer
 
 class NebulaConnectionConfig(metaAddress: String,
                              graphAddress: String,
                              timeout: Int,
                              connectionRetry: Int,
-                             executeRetry: Int)
+                             executeRetry: Int,
+                             enableMetaSsl: Boolean,
+                             enableGraphSsl: Boolean,
+                             signType: SslSignType.Value,
+                             caSignParam: CASignedSSLParam,
+                             selfSignParam: SelfSignedSSLParam)
     extends Serializable {
   def getMetaAddress     = metaAddress
   def getGraphAddress    = graphAddress
   def getTimeout         = timeout
   def getConnectionRetry = connectionRetry
   def getExecRetry       = executeRetry
+  def getEnableMetaSsl   = enableMetaSsl
+  def getEnableGraphSsl  = enableGraphSsl
+  def getSignType        = signType
+  def getCaSignParam     = caSignParam
+  def getSelfSignParam   = selfSignParam
 }
 
 object NebulaConnectionConfig {
   class ConfigBuilder {
+    private val LOG = LoggerFactory.getLogger(this.getClass)
+
     protected var metaAddress: String  = _
     protected var graphAddress: String = _
     protected var timeout: Int         = 6000
     protected var connectionRetry: Int = 1
     protected var executeRetry: Int    = 1
+
+    protected var enableMetaSsl: Boolean            = false
+    protected var enableGraphSsl: Boolean           = false
+    protected var sslSignType: SslSignType.Value    = _
+    protected var caSignParam: CASignedSSLParam     = null
+    protected var selfSignParam: SelfSignedSSLParam = null
 
     def withMetaAddress(metaAddress: String): ConfigBuilder = {
       this.metaAddress = metaAddress
@@ -64,17 +85,93 @@ object NebulaConnectionConfig {
       this
     }
 
+    /**
+      * set enableMetaSsl, enableMetaSsl is optional
+      */
+    def withEnableMetaSsl(enableMetaSsl: Boolean): ConfigBuilder = {
+      LOG.warn("metaSsl is not supported yet.")
+      this.enableMetaSsl = false
+      this
+    }
+
+    /**
+      * set enableMetaSsl, enableMetaSsl is optional
+      */
+    def withEnableGraphSsl(enableGraphSsl: Boolean): ConfigBuilder = {
+      this.enableGraphSsl = enableGraphSsl
+      this
+    }
+
+    /**
+      * set ssl sign type {@link SslSignType}
+      */
+    def withSslSignType(signType: SslSignType.Value): ConfigBuilder = {
+      this.sslSignType = signType
+      this
+    }
+
+    /**
+      * set ca sign param for ssl
+      */
+    def withCaSslSignParam(caCrtFilePath: String,
+                           crtFilePath: String,
+                           keyFilePath: String): ConfigBuilder = {
+      val caSignParam = new CASignedSSLParam(caCrtFilePath, crtFilePath, keyFilePath)
+      this.caSignParam = caSignParam
+      this
+    }
+
+    /**
+      * set self sign param for ssl
+      */
+    def withSelfSslSignParam(crtFilePath: String,
+                             keyFilePath: String,
+                             password: String): ConfigBuilder = {
+      val selfSignParam = new SelfSignedSSLParam(crtFilePath, keyFilePath, password)
+      this.selfSignParam = selfSignParam
+      this
+    }
+
+    /**
+      * check if the connection config is valid
+      */
     def check(): Unit = {
-      assert(!metaAddress.isEmpty, "config address is empty.")
+      assert(metaAddress != null && !metaAddress.isEmpty, "config address is empty.")
       assert(timeout > 0, "timeout must be larger than 0")
       assert(connectionRetry > 0 && executeRetry > 0, "retry must be larger than 0.")
+      if (enableMetaSsl) {
+        LOG.info("enableMetaSsl is true, then enableGraphSsl will be invalid for now.")
+      }
+      // check ssl param
+      if (enableMetaSsl || enableGraphSsl) {
+        sslSignType match {
+          case SslSignType.CA =>
+            assert(
+              caSignParam != null && caSignParam.getCaCrtFilePath != null
+                && caSignParam.getCrtFilePath != null && caSignParam.getKeyFilePath != null)
+          case SslSignType.SELF =>
+            assert(
+              selfSignParam != null && selfSignParam.getCrtFilePath != null
+                && selfSignParam.getKeyFilePath != null && selfSignParam.getPassword != null)
+        }
+      }
     }
 
     /**
       * build NebulaConnectionConfig
       */
     def build(): NebulaConnectionConfig = {
-      new NebulaConnectionConfig(metaAddress, graphAddress, timeout, connectionRetry, executeRetry)
+      check()
+      new NebulaConnectionConfig(metaAddress,
+                                 graphAddress,
+                                 timeout,
+                                 connectionRetry,
+                                 executeRetry,
+                                 enableMetaSsl,
+                                 enableGraphSsl,
+                                 sslSignType,
+                                 caSignParam,
+                                 selfSignParam)
     }
   }
 

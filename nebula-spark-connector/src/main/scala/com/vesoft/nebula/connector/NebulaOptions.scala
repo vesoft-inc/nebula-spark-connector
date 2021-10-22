@@ -9,6 +9,7 @@ package com.vesoft.nebula.connector
 import java.util.Properties
 
 import com.google.common.net.HostAndPort
+import com.vesoft.nebula.client.graph.data.{CASignedSSLParam, SelfSignedSSLParam}
 import com.vesoft.nebula.connector.connector.Address
 import org.apache.commons.lang.StringUtils
 import org.apache.spark.internal.Logging
@@ -61,6 +62,27 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
   val passwd: String    = parameters.getOrElse(PASSWD, DEFAULT_PASSWD)
   val rateLimit: Long   = parameters.getOrElse(RATE_LIMIT, DEFAULT_RATE_LIMIT).toString.toLong
   val rateTimeOut: Long = parameters.getOrElse(RATE_TIME_OUT, DEFAULT_RATE_TIME_OUT).toString.toLong
+
+  /** nebula ssl parameters */
+  val enableGraphSsl: Boolean =
+    parameters.getOrElse(ENABLE_GRAPH_SSL, DEFAULT_ENABLE_GRAPH_SSL).toString.toBoolean
+  val enableMetaSsl: Boolean =
+    parameters.getOrElse(ENABLE_META_SSL, DEFAULT_ENABLE_META_SSL).toString.toBoolean
+  val sslSignType: String               = parameters.get(SSL_SIGN_TYPE).get
+  var caSignParam: CASignedSSLParam     = null
+  var selfSignParam: SelfSignedSSLParam = null
+  if (enableGraphSsl || enableMetaSsl) {
+    SslSignType.withName(sslSignType) match {
+      case SslSignType.CA => {
+        val params = parameters.get(CA_SIGN_PARAM).get.split(",")
+        caSignParam = new CASignedSSLParam(params(0), params(1), params(2))
+      }
+      case SslSignType.SELF => {
+        val params = parameters.get(SELF_SIGN_PARAM).get.split(",")
+        selfSignParam = new SelfSignedSSLParam(params(0), params(1), params(2))
+      }
+    }
+  }
 
   require(parameters.isDefinedAt(TYPE), s"Option '$TYPE' is required")
   val dataType: String = parameters(TYPE)
@@ -197,6 +219,11 @@ object NebulaOptions {
   val RATE_TIME_OUT: String    = "reteTimeOut"
   val USER_NAME: String        = "user"
   val PASSWD: String           = "passwd"
+  val ENABLE_GRAPH_SSL: String = "enableGraphSsl"
+  val ENABLE_META_SSL: String  = "enableMetaSsl"
+  val SSL_SIGN_TYPE: String    = "sslSignType"
+  val CA_SIGN_PARAM: String    = "caSignParam"
+  val SELF_SIGN_PARAM: String  = "selfSignParam"
 
   /** read config */
   val RETURN_COLS: String      = "returnCols"
@@ -226,6 +253,9 @@ object NebulaOptions {
   val DEFAULT_EXECUTION_RETRY: Int    = 3
   val DEFAULT_USER_NAME: String       = "root"
   val DEFAULT_PASSWD: String          = "nebula"
+
+  val DEFAULT_ENABLE_GRAPH_SSL: Boolean = false
+  val DEFAULT_ENABLE_META_SSL: Boolean  = false
 
   val DEFAULT_LIMIT: Int = 1000
 

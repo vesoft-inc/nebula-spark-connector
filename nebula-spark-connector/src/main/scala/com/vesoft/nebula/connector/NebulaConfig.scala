@@ -192,6 +192,7 @@ object NebulaConnectionConfig {
                                  executeRetry,
                                  enableMetaSSL,
                                  enableGraphSSL,
+                                 enableStorageSSL,
                                  sslSignType,
                                  caSignParam,
                                  selfSignParam)

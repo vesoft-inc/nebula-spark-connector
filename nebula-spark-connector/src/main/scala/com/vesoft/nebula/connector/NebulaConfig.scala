@@ -19,20 +19,22 @@ class NebulaConnectionConfig(metaAddress: String,
                              executeRetry: Int,
                              enableMetaSSL: Boolean,
                              enableGraphSSL: Boolean,
+                             enableStorageSSL: Boolean,
                              signType: SSLSignType.Value,
                              caSignParam: CASignedSSLParam,
                              selfSignParam: SelfSignedSSLParam)
     extends Serializable {
-  def getMetaAddress     = metaAddress
-  def getGraphAddress    = graphAddress
-  def getTimeout         = timeout
-  def getConnectionRetry = connectionRetry
-  def getExecRetry       = executeRetry
-  def getEnableMetaSSL   = enableMetaSSL
-  def getEnableGraphSSL  = enableGraphSSL
-  def getSignType        = signType
-  def getCaSignParam     = caSignParam
-  def getSelfSignParam   = selfSignParam
+  def getMetaAddress      = metaAddress
+  def getGraphAddress     = graphAddress
+  def getTimeout          = timeout
+  def getConnectionRetry  = connectionRetry
+  def getExecRetry        = executeRetry
+  def getEnableMetaSSL    = enableMetaSSL
+  def getEnableGraphSSL   = enableGraphSSL
+  def getEnableStorageSSL = enableStorageSSL
+  def getSignType         = signType
+  def getCaSignParam      = caSignParam
+  def getSelfSignParam    = selfSignParam
 }
 
 object NebulaConnectionConfig {
@@ -47,6 +49,7 @@ object NebulaConnectionConfig {
 
     protected var enableMetaSSL: Boolean            = false
     protected var enableGraphSSL: Boolean           = false
+    protected var enableStorageSSL: Boolean         = false
     protected var sslSignType: SSLSignType.Value    = _
     protected var caSignParam: CASignedSSLParam     = null
     protected var selfSignParam: SelfSignedSSLParam = null
@@ -103,6 +106,15 @@ object NebulaConnectionConfig {
     }
 
     /**
+      * set enableStorageSSL, enableStorageSSL is optional
+      */
+    def withEnableStorageSSL(enableStorageSSL: Boolean): ConfigBuilder = {
+      LOG.warn("storageSSL is not supported yet.")
+      this.enableStorageSSL = false
+      this
+    }
+
+    /**
       * set ssl sign type {@link SSLSignType}
       */
     def withSSLSignType(signType: SSLSignType.Value): ConfigBuilder = {
@@ -143,8 +155,13 @@ object NebulaConnectionConfig {
         LOG.info("enableMetaSSL is true, then enableGraphSSL will be invalid for now.")
       }
       // check ssl param
-      if (enableMetaSSL || enableGraphSSL) {
-        enableGraphSSL = true
+      if (enableMetaSSL || enableGraphSSL || enableStorageSSL) {
+        assert(
+          (enableStorageSSL && enableMetaSSL && enableGraphSSL)
+            || (!enableStorageSSL && !enableMetaSSL && enableGraphSSL),
+          "ssl priority order: storage > meta > graph " +
+            "please make sure graph ssl is enable when storage and meta ssl is enable."
+        )
         sslSignType match {
           case SSLSignType.CA =>
             assert(

@@ -25,7 +25,7 @@ class NebulaWriter(nebulaOptions: NebulaOptions) extends Serializable {
                                       nebulaOptions.connectionRetry,
                                       nebulaOptions.executionRetry)
   val graphProvider = new GraphProvider(nebulaOptions.getGraphAddress,
-                                        nebulaOptions.enableGraphSsl,
+                                        nebulaOptions.enableGraphSSL,
                                         nebulaOptions.sslSignType,
                                         nebulaOptions.caSignParam,
                                         nebulaOptions.selfSignParam)

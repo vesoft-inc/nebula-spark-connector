@@ -29,10 +29,10 @@ class NebulaConfigSuite extends AnyFunSuite with BeforeAndAfterAll {
       .builder()
       .withMetaAddress("127.0.0.1:9559")
       .withGraphAddress("127.0.0.1:9669")
-      .withEnableGraphSsl(true)
-      .withEnableMetaSsl(true)
-      .withSslSignType(SslSignType.CA)
-      .withCaSslSignParam("cacrtFile", "crtFile", "keyFile")
+      .withEnableGraphSSL(true)
+      .withEnableMetaSSL(true)
+      .withSSLSignType(SSLSignType.CA)
+      .withCaSSLSignParam("cacrtFile", "crtFile", "keyFile")
       .build()
   }
 
@@ -42,9 +42,9 @@ class NebulaConfigSuite extends AnyFunSuite with BeforeAndAfterAll {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
-        .withEnableGraphSsl(true)
-        .withEnableMetaSsl(true)
-        .withCaSslSignParam("cacrtFile", "crtFile", "keyFile")
+        .withEnableGraphSSL(true)
+        .withEnableMetaSSL(true)
+        .withCaSSLSignParam("cacrtFile", "crtFile", "keyFile")
         .build())
   }
 
@@ -54,10 +54,10 @@ class NebulaConfigSuite extends AnyFunSuite with BeforeAndAfterAll {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
-        .withEnableGraphSsl(true)
-        .withEnableMetaSsl(true)
-        .withSslSignType(SslSignType.CA)
-        .withSelfSslSignParam("crtFile", "keyFile", "password")
+        .withEnableGraphSSL(true)
+        .withEnableMetaSSL(true)
+        .withSSLSignType(SSLSignType.CA)
+        .withSelfSSLSignParam("crtFile", "keyFile", "password")
         .build())
   }
 
@@ -67,10 +67,10 @@ class NebulaConfigSuite extends AnyFunSuite with BeforeAndAfterAll {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
-        .withEnableGraphSsl(true)
-        .withEnableMetaSsl(true)
-        .withSslSignType(SslSignType.SELF)
-        .withCaSslSignParam("cacrtFile", "crtFile", "keyFile")
+        .withEnableGraphSSL(true)
+        .withEnableMetaSSL(true)
+        .withSSLSignType(SSLSignType.SELF)
+        .withCaSSLSignParam("cacrtFile", "crtFile", "keyFile")
         .build())
   }
 

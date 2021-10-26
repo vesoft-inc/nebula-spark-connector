@@ -9,7 +9,7 @@ package com.vesoft.nebula.examples.connector
 import com.facebook.thrift.protocol.TCompactProtocol
 import com.vesoft.nebula.connector.{
   NebulaConnectionConfig,
-  SslSignType,
+  SSLSignType,
   WriteMode,
   WriteNebulaEdgeConfig,
   WriteNebulaVertexConfig
@@ -64,9 +64,9 @@ object NebulaSparkWriterExample {
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
         .withConenctionRetry(2)
-        .withEnableGraphSsl(true)
-        .withSslSignType(SslSignType.CA)
-        .withCaSslSignParam("example/src/main/resources/ssl/casigned.pem",
+        .withEnableGraphSSL(true)
+        .withSSLSignType(SSLSignType.CA)
+        .withCaSSLSignParam("example/src/main/resources/ssl/casigned.pem",
                             "example/src/main/resources/ssl/casigned.crt",
                             "example/src/main/resources/ssl/casigned.key")
         .build()
@@ -78,9 +78,9 @@ object NebulaSparkWriterExample {
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
         .withConenctionRetry(2)
-        .withEnableGraphSsl(true)
-        .withSslSignType(SslSignType.SELF)
-        .withSelfSslSignParam("example/src/main/resources/ssl/selfsigned.pem",
+        .withEnableGraphSSL(true)
+        .withSSLSignType(SSLSignType.SELF)
+        .withSelfSSLSignParam("example/src/main/resources/ssl/selfsigned.pem",
                               "example/src/main/resources/ssl/selfsigned.key",
                               "vesoft")
         .build()

@@ -9,6 +9,7 @@ package com.vesoft.nebula.examples.connector
 import com.facebook.thrift.protocol.TCompactProtocol
 import com.vesoft.nebula.connector.{
   NebulaConnectionConfig,
+  SSLSignType,
   WriteMode,
   WriteNebulaEdgeConfig,
   WriteNebulaVertexConfig
@@ -46,6 +47,47 @@ object NebulaSparkWriterExample {
     spark.close()
   }
 
+  def getNebulaConnectionConfig(): NebulaConnectionConfig = {
+    // connection config without ssl
+    val config =
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
+        .withConenctionRetry(2)
+        .build()
+
+    // connection config with ca ssl
+    val configWithCaSsl =
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
+        .withConenctionRetry(2)
+        .withEnableGraphSSL(true)
+        .withSSLSignType(SSLSignType.CA)
+        .withCaSSLSignParam("example/src/main/resources/ssl/casigned.pem",
+                            "example/src/main/resources/ssl/casigned.crt",
+                            "example/src/main/resources/ssl/casigned.key")
+        .build()
+
+    // connection config with self ssl
+    val configWithSelfSsl =
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
+        .withConenctionRetry(2)
+        .withEnableGraphSSL(true)
+        .withSSLSignType(SSLSignType.SELF)
+        .withSelfSSLSignParam("example/src/main/resources/ssl/selfsigned.pem",
+                              "example/src/main/resources/ssl/selfsigned.key",
+                              "vesoft")
+        .build()
+
+    config
+  }
+
   /**
     * for this example, your nebula tag schema should have property names: name, age, born
     * if your withVidAsProp is true, then tag schema also should have property name: id
@@ -55,13 +97,7 @@ object NebulaSparkWriterExample {
     val df = spark.read.json("example/src/main/resources/vertex")
     df.show()
 
-    val config =
-      NebulaConnectionConfig
-        .builder()
-        .withMetaAddress("127.0.0.1:9559")
-        .withGraphAddress("127.0.0.1:9669")
-        .withConenctionRetry(2)
-        .build()
+    val config = getNebulaConnectionConfig()
     val nebulaWriteVertexConfig: WriteNebulaVertexConfig = WriteNebulaVertexConfig
       .builder()
       .withSpace("test")
@@ -85,12 +121,7 @@ object NebulaSparkWriterExample {
     df.show()
     df.persist(StorageLevel.MEMORY_AND_DISK_SER)
 
-    val config =
-      NebulaConnectionConfig
-        .builder()
-        .withMetaAddress("127.0.0.1:9559")
-        .withGraphAddress("127.0.0.1:9669")
-        .build()
+    val config = getNebulaConnectionConfig()
     val nebulaWriteEdgeConfig: WriteNebulaEdgeConfig = WriteNebulaEdgeConfig
       .builder()
       .withSpace("test")
@@ -114,13 +145,7 @@ object NebulaSparkWriterExample {
     val df = spark.read.json("example/src/main/resources/vertex").select("id", "age")
     df.show()
 
-    val config =
-      NebulaConnectionConfig
-        .builder()
-        .withMetaAddress("127.0.0.1:9559")
-        .withGraphAddress("127.0.0.1:9669")
-        .withConenctionRetry(2)
-        .build()
+    val config = getNebulaConnectionConfig()
     val nebulaWriteVertexConfig: WriteNebulaVertexConfig = WriteNebulaVertexConfig
       .builder()
       .withSpace("test")
@@ -145,12 +170,7 @@ object NebulaSparkWriterExample {
     df.show()
     df.persist(StorageLevel.MEMORY_AND_DISK_SER)
 
-    val config =
-      NebulaConnectionConfig
-        .builder()
-        .withMetaAddress("127.0.0.1:9559")
-        .withGraphAddress("127.0.0.1:9669")
-        .build()
+    val config = getNebulaConnectionConfig()
     val nebulaWriteEdgeConfig: WriteNebulaEdgeConfig = WriteNebulaEdgeConfig
       .builder()
       .withSpace("test")
@@ -175,12 +195,7 @@ object NebulaSparkWriterExample {
     df.show()
     df.persist(StorageLevel.MEMORY_AND_DISK_SER)
 
-    val config =
-      NebulaConnectionConfig
-        .builder()
-        .withMetaAddress("127.0.0.1:9559")
-        .withGraphAddress("127.0.0.1:9669")
-        .build()
+    val config = getNebulaConnectionConfig()
     val nebulaWriteVertexConfig: WriteNebulaVertexConfig = WriteNebulaVertexConfig
       .builder()
       .withSpace("test")
@@ -201,12 +216,7 @@ object NebulaSparkWriterExample {
     df.show()
     df.persist(StorageLevel.MEMORY_AND_DISK_SER)
 
-    val config =
-      NebulaConnectionConfig
-        .builder()
-        .withMetaAddress("127.0.0.1:9559")
-        .withGraphAddress("127.0.0.1:9669")
-        .build()
+    val config = getNebulaConnectionConfig()
     val nebulaWriteEdgeConfig: WriteNebulaEdgeConfig = WriteNebulaEdgeConfig
       .builder()
       .withSpace("test")

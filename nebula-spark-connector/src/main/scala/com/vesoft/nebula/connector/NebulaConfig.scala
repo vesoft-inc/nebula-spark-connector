@@ -6,29 +6,53 @@
 
 package com.vesoft.nebula.connector
 
+import com.vesoft.nebula.client.graph.data.{CASignedSSLParam, SelfSignedSSLParam}
+import com.vesoft.nebula.connector.NebulaConnectionConfig.ConfigBuilder
 import org.slf4j.{Logger, LoggerFactory}
+
 import scala.collection.mutable.ListBuffer
 
 class NebulaConnectionConfig(metaAddress: String,
                              graphAddress: String,
                              timeout: Int,
                              connectionRetry: Int,
-                             executeRetry: Int)
+                             executeRetry: Int,
+                             enableMetaSSL: Boolean,
+                             enableGraphSSL: Boolean,
+                             enableStorageSSL: Boolean,
+                             signType: SSLSignType.Value,
+                             caSignParam: CASignedSSLParam,
+                             selfSignParam: SelfSignedSSLParam)
     extends Serializable {
-  def getMetaAddress     = metaAddress
-  def getGraphAddress    = graphAddress
-  def getTimeout         = timeout
-  def getConnectionRetry = connectionRetry
-  def getExecRetry       = executeRetry
+  def getMetaAddress      = metaAddress
+  def getGraphAddress     = graphAddress
+  def getTimeout          = timeout
+  def getConnectionRetry  = connectionRetry
+  def getExecRetry        = executeRetry
+  def getEnableMetaSSL    = enableMetaSSL
+  def getEnableGraphSSL   = enableGraphSSL
+  def getEnableStorageSSL = enableStorageSSL
+  def getSignType         = signType
+  def getCaSignParam      = caSignParam
+  def getSelfSignParam    = selfSignParam
 }
 
 object NebulaConnectionConfig {
   class ConfigBuilder {
+    private val LOG = LoggerFactory.getLogger(this.getClass)
+
     protected var metaAddress: String  = _
     protected var graphAddress: String = _
     protected var timeout: Int         = 6000
     protected var connectionRetry: Int = 1
     protected var executeRetry: Int    = 1
+
+    protected var enableMetaSSL: Boolean            = false
+    protected var enableGraphSSL: Boolean           = false
+    protected var enableStorageSSL: Boolean         = false
+    protected var sslSignType: SSLSignType.Value    = _
+    protected var caSignParam: CASignedSSLParam     = null
+    protected var selfSignParam: SelfSignedSSLParam = null
 
     def withMetaAddress(metaAddress: String): ConfigBuilder = {
       this.metaAddress = metaAddress
@@ -64,17 +88,114 @@ object NebulaConnectionConfig {
       this
     }
 
+    /**
+      * set enableMetaSSL, enableMetaSSL is optional
+      */
+    def withEnableMetaSSL(enableMetaSSL: Boolean): ConfigBuilder = {
+      LOG.warn("metaSSL is not supported yet.")
+      this.enableMetaSSL = false
+      this
+    }
+
+    /**
+      * set enableMetaSSL, enableMetaSSL is optional
+      */
+    def withEnableGraphSSL(enableGraphSSL: Boolean): ConfigBuilder = {
+      this.enableGraphSSL = enableGraphSSL
+      this
+    }
+
+    /**
+      * set enableStorageSSL, enableStorageSSL is optional
+      */
+    def withEnableStorageSSL(enableStorageSSL: Boolean): ConfigBuilder = {
+      LOG.warn("storageSSL is not supported yet.")
+      this.enableStorageSSL = false
+      this
+    }
+
+    /**
+      * set ssl sign type {@link SSLSignType}
+      */
+    def withSSLSignType(signType: SSLSignType.Value): ConfigBuilder = {
+      this.sslSignType = signType
+      this
+    }
+
+    /**
+      * set ca sign param for ssl
+      */
+    def withCaSSLSignParam(caCrtFilePath: String,
+                           crtFilePath: String,
+                           keyFilePath: String): ConfigBuilder = {
+      val caSignParam = new CASignedSSLParam(caCrtFilePath, crtFilePath, keyFilePath)
+      this.caSignParam = caSignParam
+      this
+    }
+
+    /**
+      * set self sign param for ssl
+      */
+    def withSelfSSLSignParam(crtFilePath: String,
+                             keyFilePath: String,
+                             password: String): ConfigBuilder = {
+      val selfSignParam = new SelfSignedSSLParam(crtFilePath, keyFilePath, password)
+      this.selfSignParam = selfSignParam
+      this
+    }
+
+    /**
+      * check if the connection config is valid
+      */
     def check(): Unit = {
-      assert(!metaAddress.isEmpty, "config address is empty.")
+      assert(metaAddress != null && !metaAddress.isEmpty, "config address is empty.")
       assert(timeout > 0, "timeout must be larger than 0")
       assert(connectionRetry > 0 && executeRetry > 0, "retry must be larger than 0.")
+      if (enableMetaSSL) {
+        LOG.info("enableMetaSSL is true, then enableGraphSSL will be invalid for now.")
+      }
+      // check ssl param
+      if (enableMetaSSL || enableGraphSSL || enableStorageSSL) {
+        assert(
+          (enableStorageSSL && enableMetaSSL && enableGraphSSL)
+            || (!enableStorageSSL && !enableMetaSSL && enableGraphSSL),
+          "ssl priority order: storage > meta > graph " +
+            "please make sure graph ssl is enable when storage and meta ssl is enable."
+        )
+        sslSignType match {
+          case SSLSignType.CA =>
+            assert(
+              caSignParam != null && caSignParam.getCaCrtFilePath != null
+                && caSignParam.getCrtFilePath != null && caSignParam.getKeyFilePath != null,
+              "ssl sign type is CA, param can not be null"
+            )
+          case SSLSignType.SELF =>
+            assert(
+              selfSignParam != null && selfSignParam.getCrtFilePath != null
+                && selfSignParam.getKeyFilePath != null && selfSignParam.getPassword != null,
+              "ssl sign type is SELF, param can not be null"
+            )
+          case _ => assert(false, "SSLSignType config is null")
+        }
+      }
     }
 
     /**
       * build NebulaConnectionConfig
       */
     def build(): NebulaConnectionConfig = {
-      new NebulaConnectionConfig(metaAddress, graphAddress, timeout, connectionRetry, executeRetry)
+      check()
+      new NebulaConnectionConfig(metaAddress,
+                                 graphAddress,
+                                 timeout,
+                                 connectionRetry,
+                                 executeRetry,
+                                 enableMetaSSL,
+                                 enableGraphSSL,
+                                 enableStorageSSL,
+                                 sslSignType,
+                                 caSignParam,
+                                 selfSignParam)
     }
   }
 

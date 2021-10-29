@@ -145,6 +145,7 @@ Nebula Spark Connector 2.0 仅支持 Nebula Graph 2.x。如果您正在使用 Ne
 
 ## 版本匹配
 Nebula Spark Connector 和 Nebula 的版本对应关系如下:
+
 | Nebula Spark Connector Version | Nebula Version |
 |:------------------------------:|:--------------:|
 |          2.0.0                 |  2.0.0, 2.0.1  |
@@ -153,6 +154,40 @@ Nebula Spark Connector 和 Nebula 的版本对应关系如下:
 |          2.5.0                 |  2.5.0, 2.5.1  |
 |          2.5.1                 |  2.5.0, 2.5.1  |
 |        2.5-SNAPSHOT            |     nightly    |
+
+## 性能
+我们使用LDBC数据集进行Nebula-Spark-Connector的性能测试，测试结果如下：
+
+* reader
+
+我们选择LDBC导入Nebula Space sf30 和 sf100 之后的 Comment 标签和 REPLY_OF 边类型进行数据读取。
+其中读取应用程序的资源配置为：提交模式为具有三个工作节点的Spark standalone模式，2G driver-memory, 
+3 num-executors， 30G executor-memory，20 executor-cores。
+读取Nebula数据的配置是 2000 limit 和 100 partitionNum，其中 space 的 分区数也是100。
+
+
+|data type|ldbc 6.712million with No Property| ldbc 22 million with No Property|ldbc  6.712million with All Property|ldbc 22million with All Property|
+|:-------:|:--------------------------------:|:-------------------------------:|:----------------------------------:|:------------------------------:|
+| vertex  |                 9.405s           |           64.611s               |               13.897s              |            57.417s             |
+|  edge   |                10.798s           |           71.499s               |               10.244s              |            67.43s              |
+
+
+* writer
+
+我们选择 LDBC sf30 和 sf100 数据集中的 comment.csv 写入 Comment 标签， 选择 LDBC sf30 和 sf100 数据集中的 
+comment_replyOf_post.csv and comment_replyOf_comment.csv 写入 REPLY_OF 边类型。
+其中写入应用程序的资源配置为：提交模式为具有三个工作节点的Spark standalone模式，2G driver-memory, 
+3 num-executors， 30G executor-memory，20 executor-cores。
+写入Nebula的配置是 2000 batch size， 待写入的数据 DataFrame 有 60 个 Spark 分区。
+
+
+|data type|ldbc 6.712million with All Property| ldbc 22 million with All Property|
+|:-------:|:--------------------------------:|:-------------------------------:|
+| vertex  |                 66.578s          |           112.829s              |
+|  edge   |                 39.138s          |           51.198s               |
+
+> 注意: LDBC 的 REPLY_OF 边数据无属性。
+
 
 ## 贡献
 

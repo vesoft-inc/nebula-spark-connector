@@ -144,6 +144,7 @@ For more information on usage, please refer to [Example](https://github.com/veso
 ## Version match
 
 There are the version correspondence between Nebula Spark Connector and Nebula:
+
 | Nebula Spark Connector Version | Nebula Version |
 |:------------------------------:|:--------------:|
 |           2.0.0                |  2.0.0, 2.0.1  |
@@ -152,6 +153,41 @@ There are the version correspondence between Nebula Spark Connector and Nebula:
 |           2.5.0                |  2.5.0, 2.5.1  |
 |           2.5.1                |  2.5.0, 2.5.1  |
 |         2.5-SNAPSHOT           |     nightly    |
+
+## Performance
+We use LDBC dataset to test nebula-spark-connector's performance, here's the result.
+
+* For reader
+
+We choose tag Comment and edge REPLY_OF for space sf30 and sf100 to test the connector reader. 
+And the application's resources are: standalone mode with three workers, 2G driver-memory, 
+3 num-executors, 30G executor-memory and 20 executor-cores.
+The ReadNebulaConfig has 2000 limit and 100 partitionNum, 
+the same partition number with nebula space parts.
+
+
+|data type|ldbc 6.712million with No Property| ldbc 22 million with No Property|ldbc  6.712million with All Property|ldbc 22million with All Property|
+|:-------:|:--------------------------------:|:-------------------------------:|:----------------------------------:|:------------------------------:|
+| vertex  |                 9.405s           |           64.611s               |               13.897s              |            57.417s             |
+|  edge   |                10.798s           |           71.499s               |               10.244s              |            67.43s              |
+
+
+* For writer
+
+We choose ldbc comment.csv to write into tag Comment, choose comment_replyOf_post.csv and 
+comment_replyOf_comment.csv to write into edge REPLY_OF. 
+And the application's resources are: standalone mode with three workers, 2G driver-memory, 
+3 num-executors, 30G executor-memory and 20 executor-cores.
+The writeConfig has 2000 batch sizes, and the DataFrame has 60 partitions.
+
+
+|data type|ldbc 6.712million with All Property| ldbc 22 million with All Property|
+|:-------:|:--------------------------------:|:-------------------------------:|
+| vertex  |                 66.578s          |           112.829s              |
+|  edge   |                 39.138s          |           51.198s               |
+
+> Note: ldbc edge for REPLY_OF has no property.
+
 
 ## How to Contribute
 

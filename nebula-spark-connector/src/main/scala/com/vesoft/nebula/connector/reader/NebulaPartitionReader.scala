@@ -106,6 +106,9 @@ abstract class NebulaPartitionReader extends InputPartitionReader[InternalRow] {
       if (value.isDouble) {
         getters(i).apply(value.asDouble(), mutableRow, i)
       }
+      if (value.isGeography) {
+        getters(i).apply(value.asGeography(), mutableRow, i)
+      }
     }
     mutableRow
   }

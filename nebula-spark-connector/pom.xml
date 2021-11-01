@@ -204,6 +204,31 @@
                             <goal>testCompile</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>Scaladoc</id>
+                        <goals>
+                            <goal>doc</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <args>
+                                <arg>-nobootcp</arg>
+                                <arg>-no-link-warnings</arg>
+                            </args>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>doc-jar</goal>
+                        </goals>
+                        <configuration>
+                            <args>
+                                <arg>-nobootcp</arg>
+                                <arg>-no-link-warnings</arg>
+                            </args>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>

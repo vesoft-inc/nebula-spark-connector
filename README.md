@@ -15,7 +15,7 @@ Nebula Spark Connector 2.0 only supports Nebula Graph 2.x. If you are using Nebu
     $ mvn clean package -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true
     ```
 
-    After the packaging, you can see the newly generated nebula-spark-connector-2.5-SNAPSHOT.jar under the nebula-spark-connector/nebula-spark-connector/target/ directory.
+    After the packaging, you can see the newly generated nebula-spark-connector-2.6.0.jar under the nebula-spark-connector/nebula-spark-connector/target/ directory.
 
 ## New Features (Compared to Nebula Spark Connector 1.0)
 * Supports more connection configurations, such as timeout, connectionRetry, and executionRetry.
@@ -24,7 +24,8 @@ Nebula Spark Connector 2.0 only supports Nebula Graph 2.x. If you are using Nebu
 * Spark Reader Supports reading data from Nebula Graph to Graphx as VertexRD and EdgeRDD, it also supports String type vertexId.
 * Nebula Spark Connector 2.0 uniformly uses SparkSQL's DataSourceV2 for data source expansion.
 * Nebula Spark Connector 2.1.0 support UPDATE write mode to NebulaGraph, see [Update Vertex](https://docs.nebula-graph.io/2.0.1/3.ngql-guide/12.vertex-statements/2.update-vertex/) .
-* Nebula Spark Connector 2.5.0 support DELETE write mode to NebulaGraph, see [Delete Vertex](https://docs.nebula-graph.io/master/3.ngql-guide/12.vertex-statements/4.delete-vertex/)
+* Nebula Spark Connector 2.5.0 support DELETE write mode to NebulaGraph, see [Delete Vertex](https://docs.nebula-graph.io/master/3.ngql-guide/12.vertex-statements/4.delete-vertex/) .
+* Nebula Spark Connector 2.6.0 support GEO Spatial datatype and ssl.
 
 ## How to Use
   
@@ -33,7 +34,7 @@ Nebula Spark Connector 2.0 only supports Nebula Graph 2.x. If you are using Nebu
   <dependency>
      <groupId>com.vesoft</groupId>
      <artifactId>nebula-spark-connector</artifactId>
-     <version>2.5-SNAPSHOT</version>
+     <version>2.6.0</version>
   </dependency>
   ```
   
@@ -152,6 +153,7 @@ There are the version correspondence between Nebula Spark Connector and Nebula:
 |           2.1.0                |  2.0.0, 2.0.1  |
 |           2.5.0                |  2.5.0, 2.5.1  |
 |           2.5.1                |  2.5.0, 2.5.1  |
+|           2.6.0                |     2.6.0      |
 |         2.5-SNAPSHOT           |     nightly    |
 
 ## Performance

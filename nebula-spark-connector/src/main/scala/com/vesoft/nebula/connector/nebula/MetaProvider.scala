@@ -1,7 +1,6 @@
 /* Copyright (c) 2020 vesoft inc. All rights reserved.
  *
- * This source code is licensed under Apache 2.0 License,
- * attached with Common Clause Condition 1.0, found in the LICENSES directory.
+ * This source code is licensed under Apache 2.0 License.
  */
 
 package com.vesoft.nebula.connector.nebula
@@ -15,7 +14,11 @@ import com.vesoft.nebula.meta.{PropertyType, Schema}
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
-class MetaProvider(addresses: List[Address], timeout: Int, connectionRetry: Int, executionRetry: Int) extends AutoCloseable {
+class MetaProvider(addresses: List[Address],
+                   timeout: Int,
+                   connectionRetry: Int,
+                   executionRetry: Int)
+    extends AutoCloseable {
 
   val metaAddress = addresses.map(address => new HostAddress(address._1, address._2)).asJava
   val client      = new MetaClient(metaAddress, timeout, connectionRetry, executionRetry)

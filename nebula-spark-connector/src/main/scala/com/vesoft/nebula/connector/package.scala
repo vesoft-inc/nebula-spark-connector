@@ -105,7 +105,7 @@ package object connector {
     def loadVerticesToDF(): DataFrame = {
       assert(connectionConfig != null && readConfig != null,
              "nebula config is not set, please call nebula() before loadVerticesToDF")
-      reader
+      val dfReader = reader
         .format(classOf[NebulaDataSource].getName)
         .option(NebulaOptions.TYPE, DataTypeEnum.VERTEX.toString)
         .option(NebulaOptions.SPACE_NAME, readConfig.getSpace)
@@ -118,7 +118,20 @@ package object connector {
         .option(NebulaOptions.TIMEOUT, connectionConfig.getTimeout)
         .option(NebulaOptions.CONNECTION_RETRY, connectionConfig.getConnectionRetry)
         .option(NebulaOptions.EXECUTION_RETRY, connectionConfig.getExecRetry)
-        .load()
+        .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
+        .option(NebulaOptions.ENABLE_STORAGE_SSL, connectionConfig.getEnableStorageSSL)
+
+      if (connectionConfig.getEnableStorageSSL || connectionConfig.getEnableMetaSSL) {
+        dfReader.option(NebulaOptions.SSL_SIGN_TYPE, connectionConfig.getSignType)
+        SSLSignType.withName(connectionConfig.getSignType) match {
+          case SSLSignType.CA =>
+            dfReader.option(NebulaOptions.CA_SIGN_PARAM, connectionConfig.getCaSignParam)
+          case SSLSignType.SELF =>
+            dfReader.option(NebulaOptions.SELF_SIGN_PARAM, connectionConfig.getSelfSignParam)
+        }
+      }
+
+      dfReader.load()
     }
 
     /**
@@ -129,7 +142,7 @@ package object connector {
       assert(connectionConfig != null && readConfig != null,
              "nebula config is not set, please call nebula() before loadEdgesToDF")
 
-      reader
+      val dfReader = reader
         .format(classOf[NebulaDataSource].getName)
         .option(NebulaOptions.TYPE, DataTypeEnum.EDGE.toString)
         .option(NebulaOptions.SPACE_NAME, readConfig.getSpace)
@@ -142,7 +155,20 @@ package object connector {
         .option(NebulaOptions.TIMEOUT, connectionConfig.getTimeout)
         .option(NebulaOptions.CONNECTION_RETRY, connectionConfig.getConnectionRetry)
         .option(NebulaOptions.EXECUTION_RETRY, connectionConfig.getExecRetry)
-        .load()
+        .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
+        .option(NebulaOptions.ENABLE_STORAGE_SSL, connectionConfig.getEnableStorageSSL)
+
+      if (connectionConfig.getEnableStorageSSL || connectionConfig.getEnableMetaSSL) {
+        dfReader.option(NebulaOptions.SSL_SIGN_TYPE, connectionConfig.getSignType)
+        SSLSignType.withName(connectionConfig.getSignType) match {
+          case SSLSignType.CA =>
+            dfReader.option(NebulaOptions.CA_SIGN_PARAM, connectionConfig.getCaSignParam)
+          case SSLSignType.SELF =>
+            dfReader.option(NebulaOptions.SELF_SIGN_PARAM, connectionConfig.getSelfSignParam)
+        }
+      }
+
+      dfReader.load()
     }
 
     /**
@@ -226,7 +252,7 @@ package object connector {
       assert(connectionConfig != null && writeNebulaConfig != null,
              "nebula config is not set, please call nebula() before writeVertices")
       val writeConfig = writeNebulaConfig.asInstanceOf[WriteNebulaVertexConfig]
-      writer
+      val dfWriter = writer
         .format(classOf[NebulaDataSource].getName)
         .mode(SaveMode.Overwrite)
         .option(NebulaOptions.TYPE, DataTypeEnum.VERTEX.toString)
@@ -244,7 +270,21 @@ package object connector {
         .option(NebulaOptions.TIMEOUT, connectionConfig.getTimeout)
         .option(NebulaOptions.CONNECTION_RETRY, connectionConfig.getConnectionRetry)
         .option(NebulaOptions.EXECUTION_RETRY, connectionConfig.getExecRetry)
-        .save()
+        .option(NebulaOptions.ENABLE_GRAPH_SSL, connectionConfig.getEnableGraphSSL)
+        .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
+
+      if (connectionConfig.getEnableGraphSSL || connectionConfig.getEnableMetaSSL) {
+        dfWriter.option(NebulaOptions.SSL_SIGN_TYPE, connectionConfig.getSignType)
+        SSLSignType.withName(connectionConfig.getSignType) match {
+          case SSLSignType.CA =>
+            dfWriter.option(NebulaOptions.CA_SIGN_PARAM, connectionConfig.getCaSignParam)
+          case SSLSignType.SELF =>
+            dfWriter.option(NebulaOptions.SELF_SIGN_PARAM, connectionConfig.getSelfSignParam)
+        }
+      }
+
+      dfWriter.save()
+
     }
 
     /**
@@ -255,7 +295,7 @@ package object connector {
       assert(connectionConfig != null && writeNebulaConfig != null,
              "nebula config is not set, please call nebula() before writeEdges")
       val writeConfig = writeNebulaConfig.asInstanceOf[WriteNebulaEdgeConfig]
-      writer
+      val dfWriter = writer
         .format(classOf[NebulaDataSource].getName)
         .mode(SaveMode.Overwrite)
         .option(NebulaOptions.TYPE, DataTypeEnum.EDGE.toString)
@@ -278,7 +318,20 @@ package object connector {
         .option(NebulaOptions.TIMEOUT, connectionConfig.getTimeout)
         .option(NebulaOptions.CONNECTION_RETRY, connectionConfig.getConnectionRetry)
         .option(NebulaOptions.EXECUTION_RETRY, connectionConfig.getExecRetry)
-        .save()
+        .option(NebulaOptions.ENABLE_GRAPH_SSL, connectionConfig.getEnableGraphSSL)
+        .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
+
+      if (connectionConfig.getEnableGraphSSL || connectionConfig.getEnableMetaSSL) {
+        dfWriter.option(NebulaOptions.SSL_SIGN_TYPE, connectionConfig.getSignType)
+        SSLSignType.withName(connectionConfig.getSignType) match {
+          case SSLSignType.CA =>
+            dfWriter.option(NebulaOptions.CA_SIGN_PARAM, connectionConfig.getCaSignParam)
+          case SSLSignType.SELF =>
+            dfWriter.option(NebulaOptions.SELF_SIGN_PARAM, connectionConfig.getSelfSignParam)
+        }
+      }
+
+      dfWriter.save()
     }
   }
 

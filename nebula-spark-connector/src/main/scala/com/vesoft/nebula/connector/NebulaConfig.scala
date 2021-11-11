@@ -31,9 +31,13 @@ class NebulaConnectionConfig(metaAddress: String,
   def getEnableMetaSSL    = enableMetaSSL
   def getEnableGraphSSL   = enableGraphSSL
   def getEnableStorageSSL = enableStorageSSL
-  def getSignType         = signType
-  def getCaSignParam      = caSignParam
-  def getSelfSignParam    = selfSignParam
+  def getSignType         = signType.toString
+  def getCaSignParam: String = {
+    caSignParam.getCaCrtFilePath + "," + caSignParam.getCrtFilePath + "," + caSignParam.getKeyFilePath
+  }
+  def getSelfSignParam: String = {
+    selfSignParam.getCrtFilePath + "," + selfSignParam.getKeyFilePath + "," + selfSignParam.getPassword
+  }
 }
 
 object NebulaConnectionConfig {
@@ -91,8 +95,7 @@ object NebulaConnectionConfig {
       * set enableMetaSSL, enableMetaSSL is optional
       */
     def withEnableMetaSSL(enableMetaSSL: Boolean): ConfigBuilder = {
-      LOG.warn("metaSSL is not supported yet.")
-      this.enableMetaSSL = false
+      this.enableMetaSSL = enableMetaSSL
       this
     }
 
@@ -108,8 +111,7 @@ object NebulaConnectionConfig {
       * set enableStorageSSL, enableStorageSSL is optional
       */
     def withEnableStorageSSL(enableStorageSSL: Boolean): ConfigBuilder = {
-      LOG.warn("storageSSL is not supported yet.")
-      this.enableStorageSSL = false
+      this.enableStorageSSL = enableStorageSSL
       this
     }
 
@@ -156,10 +158,9 @@ object NebulaConnectionConfig {
       // check ssl param
       if (enableMetaSSL || enableGraphSSL || enableStorageSSL) {
         assert(
-          (enableStorageSSL && enableMetaSSL && enableGraphSSL)
-            || (!enableStorageSSL && !enableMetaSSL && enableGraphSSL),
-          "ssl priority order: storage > meta > graph " +
-            "please make sure graph ssl is enable when storage and meta ssl is enable."
+          !enableStorageSSL || (enableMetaSSL && enableGraphSSL),
+          "ssl priority order: storage > meta = graph " +
+            "please make sure graph and meta ssl is enabled when storage ssl is enabled."
         )
         sslSignType match {
           case SSLSignType.CA =>

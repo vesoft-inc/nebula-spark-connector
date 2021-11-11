@@ -17,7 +17,7 @@ class MetaProviderTest extends AnyFunSuite with BeforeAndAfterAll {
 
   override def beforeAll(): Unit = {
     val addresses: List[Address] = List(new Address("127.0.0.1", 9559))
-    metaProvider = new MetaProvider(addresses, 6000, 3, 3)
+    metaProvider = new MetaProvider(addresses, 6000, 3, 3, false, null, null, null)
 
     val graphMock = new NebulaGraphMock
     graphMock.mockStringIdGraph()

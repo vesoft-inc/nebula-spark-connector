@@ -25,6 +25,7 @@ import scala.collection.mutable.ListBuffer
   * GraphProvider for Nebula Graph Service
   */
 class GraphProvider(addresses: List[Address],
+                    timeout: Int,
                     enableSSL: Boolean = false,
                     sslSignType: String = null,
                     caSignParam: CASignedSSLParam = null,
@@ -41,6 +42,7 @@ class GraphProvider(addresses: List[Address],
     address.append(new HostAddress(addr._1, addr._2))
   }
   nebulaPoolConfig.setMaxConnSize(1)
+  nebulaPoolConfig.setTimeout(timeout)
 
   if (enableSSL) {
     nebulaPoolConfig.setEnableSsl(enableSSL)

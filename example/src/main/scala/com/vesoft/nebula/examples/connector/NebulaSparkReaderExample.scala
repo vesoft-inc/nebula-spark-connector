@@ -7,6 +7,7 @@ package com.vesoft.nebula.examples.connector
 
 import com.facebook.thrift.protocol.TCompactProtocol
 import com.vesoft.nebula.connector.connector.NebulaDataFrameReader
+import com.vesoft.nebula.connector.ssl.SSLSignType
 import com.vesoft.nebula.connector.{NebulaConnectionConfig, ReadNebulaConfig}
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
@@ -132,4 +133,35 @@ object NebulaSparkReaderExample {
     LOG.info("edge rdd count: {}", edgeRDD.count())
   }
 
+  /**
+    * read Nebula vertex with SSL
+    */
+  def readVertexWithSSL(spark: SparkSession): Unit = {
+    LOG.info("start to read nebula vertices with ssl")
+    val config =
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withEnableMetaSSL(true)
+        .withEnableStorageSSL(true)
+        .withSSLSignType(SSLSignType.CA)
+        .withCaSSLSignParam("example/src/main/resources/ssl/casigned.pem",
+                            "example/src/main/resources/ssl/casigned.crt",
+                            "example/src/main/resources/ssl/casigned.key")
+        .withConenctionRetry(2)
+        .build()
+    val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
+      .builder()
+      .withSpace("test")
+      .withLabel("person")
+      .withNoColumn(false)
+      .withReturnCols(List("birthday"))
+      .withLimit(10)
+      .withPartitionNum(10)
+      .build()
+    val vertex = spark.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
+    vertex.printSchema()
+    vertex.show(20)
+    println("vertex count: " + vertex.count())
+  }
 }

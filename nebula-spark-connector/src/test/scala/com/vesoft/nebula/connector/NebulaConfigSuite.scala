@@ -5,6 +5,7 @@
 
 package com.vesoft.nebula.connector
 
+import com.vesoft.nebula.connector.ssl.SSLSignType
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -35,6 +36,19 @@ class NebulaConfigSuite extends AnyFunSuite with BeforeAndAfterAll {
       .build()
   }
 
+  test("test correct ssl config with wrong ssl priority") {
+    assertThrows[AssertionError](
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
+        .withEnableStorageSSL(true)
+        .withEnableMetaSSL(false)
+        .withSSLSignType(SSLSignType.CA)
+        .withCaSSLSignParam("caCrtFile", "crtFile", "keyFile")
+        .build())
+  }
+
   test("test correct ssl config with no sign type param") {
     assertThrows[AssertionError](
       NebulaConnectionConfig
@@ -43,7 +57,7 @@ class NebulaConfigSuite extends AnyFunSuite with BeforeAndAfterAll {
         .withGraphAddress("127.0.0.1:9669")
         .withEnableGraphSSL(true)
         .withEnableMetaSSL(true)
-        .withCaSSLSignParam("cacrtFile", "crtFile", "keyFile")
+        .withCaSSLSignParam("caCrtFile", "crtFile", "keyFile")
         .build())
   }
 

@@ -5,6 +5,7 @@
 
 package com.vesoft.nebula.connector
 
+import com.vesoft.nebula.connector.ssl.SSLSignType
 import com.vesoft.nebula.connector.writer.NebulaExecutor
 import org.apache.commons.codec.digest.MurmurHash2
 import org.apache.spark.rdd.RDD
@@ -284,7 +285,6 @@ package object connector {
       }
 
       dfWriter.save()
-
     }
 
     /**

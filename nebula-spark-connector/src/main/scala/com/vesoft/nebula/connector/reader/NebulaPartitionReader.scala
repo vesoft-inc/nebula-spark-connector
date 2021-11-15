@@ -5,13 +5,20 @@
 
 package com.vesoft.nebula.connector.reader
 
-import com.vesoft.nebula.client.graph.data.{CASignedSSLParam, HostAddress, SSLParam, ValueWrapper}
+import com.vesoft.nebula.client.graph.data.{
+  CASignedSSLParam,
+  HostAddress,
+  SSLParam,
+  SelfSignedSSLParam,
+  ValueWrapper
+}
 import com.vesoft.nebula.client.storage.StorageClient
 import com.vesoft.nebula.client.storage.data.{BaseTableRow, VertexTableRow}
 import com.vesoft.nebula.connector.NebulaUtils.NebulaValueGetter
 import com.vesoft.nebula.connector.exception.GraphConnectException
-import com.vesoft.nebula.connector.{NebulaOptions, NebulaUtils, PartitionUtils, SSLSignType}
+import com.vesoft.nebula.connector.{NebulaOptions, NebulaUtils, PartitionUtils}
 import com.vesoft.nebula.connector.nebula.MetaProvider
+import com.vesoft.nebula.connector.ssl.SSLSignType
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.SpecificInternalRow
 import org.apache.spark.sql.sources.v2.reader.InputPartitionReader
@@ -64,9 +71,19 @@ abstract class NebulaPartitionReader extends InputPartitionReader[InternalRow] {
     var sslParam: SSLParam = null
     if (nebulaOptions.enableStorageSSL) {
       SSLSignType.withName(nebulaOptions.sslSignType) match {
-        case SSLSignType.CA   => sslParam = nebulaOptions.caSignParam
-        case SSLSignType.SELF => sslParam = nebulaOptions.selfSignParam
-        case _                => throw new IllegalArgumentException("ssl sign type is not supported")
+        case SSLSignType.CA => {
+          val caSSLSignParams = nebulaOptions.caSignParam
+          sslParam = new CASignedSSLParam(caSSLSignParams.caCrtFilePath,
+                                          caSSLSignParams.crtFilePath,
+                                          caSSLSignParams.keyFilePath)
+        }
+        case SSLSignType.SELF => {
+          val selfSSLSignParams = nebulaOptions.selfSignParam
+          sslParam = new SelfSignedSSLParam(selfSSLSignParams.crtFilePath,
+                                            selfSSLSignParams.keyFilePath,
+                                            selfSSLSignParams.password)
+        }
+        case _ => throw new IllegalArgumentException("ssl sign type is not supported")
       }
       this.storageClient = new StorageClient(address.asJava,
                                              nebulaOptions.timeout,

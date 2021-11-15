@@ -8,8 +8,8 @@ package com.vesoft.nebula.connector
 import java.util.Properties
 
 import com.google.common.net.HostAndPort
-import com.vesoft.nebula.client.graph.data.{CASignedSSLParam, SelfSignedSSLParam}
 import com.vesoft.nebula.connector.connector.Address
+import com.vesoft.nebula.connector.ssl.{CASSLSignParams, SSLSignType, SelfSSLSignParams}
 import org.apache.commons.lang.StringUtils
 import org.apache.spark.internal.Logging
 import org.apache.spark.sql.catalyst.util.CaseInsensitiveMap
@@ -69,19 +69,19 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
     parameters.getOrElse(ENABLE_META_SSL, DEFAULT_ENABLE_META_SSL).toString.toBoolean
   val enableStorageSSL: Boolean =
     parameters.getOrElse(ENABLE_STORAGE_SSL, DEFAULT_ENABLE_STORAGE_SSL).toString.toBoolean
-  var sslSignType: String               = null
-  var caSignParam: CASignedSSLParam     = null
-  var selfSignParam: SelfSignedSSLParam = null
+  var sslSignType: String              = _
+  var caSignParam: CASSLSignParams     = _
+  var selfSignParam: SelfSSLSignParams = _
   if (enableGraphSSL || enableMetaSSL) {
     sslSignType = parameters.get(SSL_SIGN_TYPE).get
     SSLSignType.withName(sslSignType) match {
       case SSLSignType.CA => {
         val params = parameters.get(CA_SIGN_PARAM).get.split(",")
-        caSignParam = new CASignedSSLParam(params(0), params(1), params(2))
+        caSignParam = new CASSLSignParams(params(0), params(1), params(2))
       }
       case SSLSignType.SELF => {
         val params = parameters.get(SELF_SIGN_PARAM).get.split(",")
-        selfSignParam = new SelfSignedSSLParam(params(0), params(1), params(2))
+        selfSignParam = new SelfSSLSignParams(params(0), params(1), params(2))
       }
     }
   }

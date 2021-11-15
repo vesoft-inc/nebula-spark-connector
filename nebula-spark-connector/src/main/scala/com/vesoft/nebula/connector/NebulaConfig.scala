@@ -5,8 +5,7 @@
 
 package com.vesoft.nebula.connector
 
-import com.vesoft.nebula.client.graph.data.{CASignedSSLParam, SelfSignedSSLParam}
-import com.vesoft.nebula.connector.NebulaConnectionConfig.ConfigBuilder
+import com.vesoft.nebula.connector.ssl.{CASSLSignParams, SSLSignType, SelfSSLSignParams}
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable.ListBuffer
@@ -20,8 +19,8 @@ class NebulaConnectionConfig(metaAddress: String,
                              enableGraphSSL: Boolean,
                              enableStorageSSL: Boolean,
                              signType: SSLSignType.Value,
-                             caSignParam: CASignedSSLParam,
-                             selfSignParam: SelfSignedSSLParam)
+                             caSignParam: CASSLSignParams,
+                             selfSignParam: SelfSSLSignParams)
     extends Serializable {
   def getMetaAddress      = metaAddress
   def getGraphAddress     = graphAddress
@@ -33,10 +32,10 @@ class NebulaConnectionConfig(metaAddress: String,
   def getEnableStorageSSL = enableStorageSSL
   def getSignType         = signType.toString
   def getCaSignParam: String = {
-    caSignParam.getCaCrtFilePath + "," + caSignParam.getCrtFilePath + "," + caSignParam.getKeyFilePath
+    caSignParam.caCrtFilePath + "," + caSignParam.crtFilePath + "," + caSignParam.keyFilePath
   }
   def getSelfSignParam: String = {
-    selfSignParam.getCrtFilePath + "," + selfSignParam.getKeyFilePath + "," + selfSignParam.getPassword
+    selfSignParam.crtFilePath + "," + selfSignParam.keyFilePath + "," + selfSignParam.password
   }
 }
 
@@ -50,12 +49,12 @@ object NebulaConnectionConfig {
     protected var connectionRetry: Int = 1
     protected var executeRetry: Int    = 1
 
-    protected var enableMetaSSL: Boolean            = false
-    protected var enableGraphSSL: Boolean           = false
-    protected var enableStorageSSL: Boolean         = false
-    protected var sslSignType: SSLSignType.Value    = _
-    protected var caSignParam: CASignedSSLParam     = null
-    protected var selfSignParam: SelfSignedSSLParam = null
+    protected var enableMetaSSL: Boolean           = false
+    protected var enableGraphSSL: Boolean          = false
+    protected var enableStorageSSL: Boolean        = false
+    protected var sslSignType: SSLSignType.Value   = _
+    protected var caSignParam: CASSLSignParams     = null
+    protected var selfSignParam: SelfSSLSignParams = null
 
     def withMetaAddress(metaAddress: String): ConfigBuilder = {
       this.metaAddress = metaAddress
@@ -129,8 +128,7 @@ object NebulaConnectionConfig {
     def withCaSSLSignParam(caCrtFilePath: String,
                            crtFilePath: String,
                            keyFilePath: String): ConfigBuilder = {
-      val caSignParam = new CASignedSSLParam(caCrtFilePath, crtFilePath, keyFilePath)
-      this.caSignParam = caSignParam
+      this.caSignParam = CASSLSignParams(caCrtFilePath, crtFilePath, keyFilePath)
       this
     }
 
@@ -140,8 +138,7 @@ object NebulaConnectionConfig {
     def withSelfSSLSignParam(crtFilePath: String,
                              keyFilePath: String,
                              password: String): ConfigBuilder = {
-      val selfSignParam = new SelfSignedSSLParam(crtFilePath, keyFilePath, password)
-      this.selfSignParam = selfSignParam
+      this.selfSignParam = SelfSSLSignParams(crtFilePath, keyFilePath, password)
       this
     }
 
@@ -158,21 +155,21 @@ object NebulaConnectionConfig {
       // check ssl param
       if (enableMetaSSL || enableGraphSSL || enableStorageSSL) {
         assert(
-          !enableStorageSSL || (enableMetaSSL && enableGraphSSL),
+          !enableStorageSSL || enableStorageSSL && enableMetaSSL,
           "ssl priority order: storage > meta = graph " +
-            "please make sure graph and meta ssl is enabled when storage ssl is enabled."
+            "please make sure meta ssl is enabled when storage ssl is enabled."
         )
         sslSignType match {
           case SSLSignType.CA =>
             assert(
-              caSignParam != null && caSignParam.getCaCrtFilePath != null
-                && caSignParam.getCrtFilePath != null && caSignParam.getKeyFilePath != null,
+              caSignParam != null && caSignParam.caCrtFilePath != null
+                && caSignParam.crtFilePath != null && caSignParam.keyFilePath != null,
               "ssl sign type is CA, param can not be null"
             )
           case SSLSignType.SELF =>
             assert(
-              selfSignParam != null && selfSignParam.getCrtFilePath != null
-                && selfSignParam.getKeyFilePath != null && selfSignParam.getPassword != null,
+              selfSignParam != null && selfSignParam.crtFilePath != null
+                && selfSignParam.keyFilePath != null && selfSignParam.password != null,
               "ssl sign type is SELF, param can not be null"
             )
           case _ => assert(false, "SSLSignType config is null")

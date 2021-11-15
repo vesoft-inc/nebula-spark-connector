@@ -13,7 +13,8 @@ import com.vesoft.nebula.client.graph.data.{
 }
 import com.vesoft.nebula.client.meta.MetaClient
 import com.vesoft.nebula.connector.connector.Address
-import com.vesoft.nebula.connector.{DataTypeEnum, SSLSignType}
+import com.vesoft.nebula.connector.DataTypeEnum
+import com.vesoft.nebula.connector.ssl.{CASSLSignParams, SSLSignType, SelfSSLSignParams}
 import com.vesoft.nebula.meta.{PropertyType, Schema}
 
 import scala.collection.JavaConverters._
@@ -25,8 +26,8 @@ class MetaProvider(addresses: List[Address],
                    executionRetry: Int,
                    enableSSL: Boolean,
                    sslSignType: String = null,
-                   caSignParam: CASignedSSLParam,
-                   selfSignParam: SelfSignedSSLParam)
+                   caSignParam: CASSLSignParams,
+                   selfSignParam: SelfSSLSignParams)
     extends AutoCloseable {
 
   val metaAddress        = addresses.map(address => new HostAddress(address._1, address._2)).asJava
@@ -34,9 +35,15 @@ class MetaProvider(addresses: List[Address],
   var sslParam: SSLParam = null
   if (enableSSL) {
     SSLSignType.withName(sslSignType) match {
-      case SSLSignType.CA   => sslParam = caSignParam
-      case SSLSignType.SELF => sslParam = selfSignParam
-      case _                => throw new IllegalArgumentException("ssl sign type is not supported")
+      case SSLSignType.CA =>
+        sslParam = new CASignedSSLParam(caSignParam.caCrtFilePath,
+                                        caSignParam.crtFilePath,
+                                        caSignParam.keyFilePath)
+      case SSLSignType.SELF =>
+        sslParam = new SelfSignedSSLParam(selfSignParam.crtFilePath,
+                                          selfSignParam.keyFilePath,
+                                          selfSignParam.password)
+      case _ => throw new IllegalArgumentException("ssl sign type is not supported")
     }
     client = new MetaClient(metaAddress, timeout, connectionRetry, executionRetry, true, sslParam)
   } else {

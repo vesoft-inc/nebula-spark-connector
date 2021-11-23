@@ -16,7 +16,7 @@ class GraphProviderTest extends AnyFunSuite with BeforeAndAfterAll {
 
   override def beforeAll(): Unit = {
     val addresses: List[Address] = List(new Address("127.0.0.1", 9669))
-    graphProvider = new GraphProvider(addresses)
+    graphProvider = new GraphProvider(addresses, 3000)
     val graphMock = new NebulaGraphMock
     graphMock.mockIntIdGraph()
     graphMock.mockStringIdGraph()

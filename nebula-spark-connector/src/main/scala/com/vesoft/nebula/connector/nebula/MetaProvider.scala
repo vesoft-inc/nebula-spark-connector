@@ -5,10 +5,16 @@
 
 package com.vesoft.nebula.connector.nebula
 
-import com.vesoft.nebula.client.graph.data.HostAddress
+import com.vesoft.nebula.client.graph.data.{
+  CASignedSSLParam,
+  HostAddress,
+  SSLParam,
+  SelfSignedSSLParam
+}
 import com.vesoft.nebula.client.meta.MetaClient
 import com.vesoft.nebula.connector.connector.Address
 import com.vesoft.nebula.connector.DataTypeEnum
+import com.vesoft.nebula.connector.ssl.{CASSLSignParams, SSLSignType, SelfSSLSignParams}
 import com.vesoft.nebula.meta.{PropertyType, Schema}
 
 import scala.collection.JavaConverters._
@@ -17,11 +23,32 @@ import scala.collection.mutable
 class MetaProvider(addresses: List[Address],
                    timeout: Int,
                    connectionRetry: Int,
-                   executionRetry: Int)
+                   executionRetry: Int,
+                   enableSSL: Boolean,
+                   sslSignType: String = null,
+                   caSignParam: CASSLSignParams,
+                   selfSignParam: SelfSSLSignParams)
     extends AutoCloseable {
 
-  val metaAddress = addresses.map(address => new HostAddress(address._1, address._2)).asJava
-  val client      = new MetaClient(metaAddress, timeout, connectionRetry, executionRetry)
+  val metaAddress        = addresses.map(address => new HostAddress(address._1, address._2)).asJava
+  var client: MetaClient = null
+  var sslParam: SSLParam = null
+  if (enableSSL) {
+    SSLSignType.withName(sslSignType) match {
+      case SSLSignType.CA =>
+        sslParam = new CASignedSSLParam(caSignParam.caCrtFilePath,
+                                        caSignParam.crtFilePath,
+                                        caSignParam.keyFilePath)
+      case SSLSignType.SELF =>
+        sslParam = new SelfSignedSSLParam(selfSignParam.crtFilePath,
+                                          selfSignParam.keyFilePath,
+                                          selfSignParam.password)
+      case _ => throw new IllegalArgumentException("ssl sign type is not supported")
+    }
+    client = new MetaClient(metaAddress, timeout, connectionRetry, executionRetry, true, sslParam)
+  } else {
+    client = new MetaClient(metaAddress, timeout, connectionRetry, executionRetry)
+  }
   client.connect()
 
   def getPartitionNumber(space: String): Int = {

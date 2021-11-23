@@ -8,12 +8,12 @@ package com.vesoft.nebula.examples.connector
 import com.facebook.thrift.protocol.TCompactProtocol
 import com.vesoft.nebula.connector.{
   NebulaConnectionConfig,
-  SSLSignType,
   WriteMode,
   WriteNebulaEdgeConfig,
   WriteNebulaVertexConfig
 }
 import com.vesoft.nebula.connector.connector.NebulaDataFrameWriter
+import com.vesoft.nebula.connector.ssl.SSLSignType
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.storage.StorageLevel
@@ -63,6 +63,7 @@ object NebulaSparkWriterExample {
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
         .withConenctionRetry(2)
+        .withEnableMetaSSL(true)
         .withEnableGraphSSL(true)
         .withSSLSignType(SSLSignType.CA)
         .withCaSSLSignParam("example/src/main/resources/ssl/casigned.pem",
@@ -77,6 +78,7 @@ object NebulaSparkWriterExample {
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
         .withConenctionRetry(2)
+        .withEnableMetaSSL(true)
         .withEnableGraphSSL(true)
         .withSSLSignType(SSLSignType.SELF)
         .withSelfSSLSignParam("example/src/main/resources/ssl/selfsigned.pem",

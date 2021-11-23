@@ -5,13 +5,20 @@
 
 package com.vesoft.nebula.connector.reader
 
-import com.vesoft.nebula.client.graph.data.{HostAddress, ValueWrapper}
+import com.vesoft.nebula.client.graph.data.{
+  CASignedSSLParam,
+  HostAddress,
+  SSLParam,
+  SelfSignedSSLParam,
+  ValueWrapper
+}
 import com.vesoft.nebula.client.storage.StorageClient
 import com.vesoft.nebula.client.storage.data.{BaseTableRow, VertexTableRow}
 import com.vesoft.nebula.connector.NebulaUtils.NebulaValueGetter
 import com.vesoft.nebula.connector.exception.GraphConnectException
 import com.vesoft.nebula.connector.{NebulaOptions, NebulaUtils, PartitionUtils}
 import com.vesoft.nebula.connector.nebula.MetaProvider
+import com.vesoft.nebula.connector.ssl.SSLSignType
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.SpecificInternalRow
 import org.apache.spark.sql.sources.v2.reader.InputPartitionReader
@@ -45,17 +52,49 @@ abstract class NebulaPartitionReader extends InputPartitionReader[InternalRow] {
     this()
     this.schema = schema
 
-    metaProvider = new MetaProvider(nebulaOptions.getMetaAddress,
-                                    nebulaOptions.timeout,
-                                    nebulaOptions.connectionRetry,
-                                    nebulaOptions.executionRetry)
+    metaProvider = new MetaProvider(
+      nebulaOptions.getMetaAddress,
+      nebulaOptions.timeout,
+      nebulaOptions.connectionRetry,
+      nebulaOptions.executionRetry,
+      nebulaOptions.enableMetaSSL,
+      nebulaOptions.sslSignType,
+      nebulaOptions.caSignParam,
+      nebulaOptions.selfSignParam
+    )
     val address: ListBuffer[HostAddress] = new ListBuffer[HostAddress]
 
     for (addr <- nebulaOptions.getMetaAddress) {
       address.append(new HostAddress(addr._1, addr._2))
     }
 
-    this.storageClient = new StorageClient(address.asJava)
+    var sslParam: SSLParam = null
+    if (nebulaOptions.enableStorageSSL) {
+      SSLSignType.withName(nebulaOptions.sslSignType) match {
+        case SSLSignType.CA => {
+          val caSSLSignParams = nebulaOptions.caSignParam
+          sslParam = new CASignedSSLParam(caSSLSignParams.caCrtFilePath,
+                                          caSSLSignParams.crtFilePath,
+                                          caSSLSignParams.keyFilePath)
+        }
+        case SSLSignType.SELF => {
+          val selfSSLSignParams = nebulaOptions.selfSignParam
+          sslParam = new SelfSignedSSLParam(selfSSLSignParams.crtFilePath,
+                                            selfSSLSignParams.keyFilePath,
+                                            selfSSLSignParams.password)
+        }
+        case _ => throw new IllegalArgumentException("ssl sign type is not supported")
+      }
+      this.storageClient = new StorageClient(address.asJava,
+                                             nebulaOptions.timeout,
+                                             nebulaOptions.connectionRetry,
+                                             nebulaOptions.executionRetry,
+                                             true,
+                                             sslParam)
+    } else {
+      this.storageClient = new StorageClient(address.asJava, nebulaOptions.timeout)
+    }
+
     if (!storageClient.connect()) {
       throw new GraphConnectException("storage connect failed.")
     }

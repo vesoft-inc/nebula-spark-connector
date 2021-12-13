@@ -5,7 +5,8 @@
 
 package com.vesoft.nebula.connector
 
-import com.vesoft.nebula.meta.{ColumnDef, ColumnTypeDef, PropertyType}
+import com.vesoft.nebula.PropertyType
+import com.vesoft.nebula.meta.{ColumnDef, ColumnTypeDef}
 import org.apache.spark.sql.types.{
   BooleanType,
   DoubleType,

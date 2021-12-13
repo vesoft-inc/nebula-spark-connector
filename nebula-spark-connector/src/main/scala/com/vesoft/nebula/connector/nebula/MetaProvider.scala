@@ -5,6 +5,7 @@
 
 package com.vesoft.nebula.connector.nebula
 
+import com.vesoft.nebula.PropertyType
 import com.vesoft.nebula.client.graph.data.{
   CASignedSSLParam,
   HostAddress,
@@ -15,7 +16,7 @@ import com.vesoft.nebula.client.meta.MetaClient
 import com.vesoft.nebula.connector.connector.Address
 import com.vesoft.nebula.connector.DataTypeEnum
 import com.vesoft.nebula.connector.ssl.{CASSLSignParams, SSLSignType, SelfSSLSignParams}
-import com.vesoft.nebula.meta.{PropertyType, Schema}
+import com.vesoft.nebula.meta.Schema
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable

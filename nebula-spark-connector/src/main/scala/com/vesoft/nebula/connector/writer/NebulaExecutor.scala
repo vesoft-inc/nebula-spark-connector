@@ -5,6 +5,7 @@
 
 package com.vesoft.nebula.connector.writer
 
+import com.vesoft.nebula.PropertyType
 import com.vesoft.nebula.connector.NebulaTemplate.{
   BATCH_INSERT_TEMPLATE,
   DELETE_EDGE_TEMPLATE,
@@ -29,7 +30,6 @@ import com.vesoft.nebula.connector.connector.{
   PropertyValues
 }
 import com.vesoft.nebula.connector.{DataTypeEnum, KeyPolicy, NebulaUtils}
-import com.vesoft.nebula.meta.PropertyType
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.types.StructType
 

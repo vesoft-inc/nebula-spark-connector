@@ -101,6 +101,28 @@ class NebulaConfigSuite extends AnyFunSuite with BeforeAndAfterAll {
     assert(writeNebulaConfig.getSpace.equals("test"))
   }
 
+  test("wrong batch size for update") {
+    assertThrows[AssertionError](
+      WriteNebulaVertexConfig
+        .builder()
+        .withSpace("test")
+        .withTag("tag")
+        .withVidField("vId")
+        .withWriteMode(WriteMode.UPDATE)
+        .withBatch(513)
+        .build())
+    assertThrows[AssertionError](
+      WriteNebulaEdgeConfig
+        .builder()
+        .withSpace("test")
+        .withEdge("edge")
+        .withSrcIdField("src")
+        .withDstIdField("dst")
+        .withWriteMode(WriteMode.UPDATE)
+        .withBatch(513)
+        .build())
+  }
+
   test("test wrong policy") {
     assertThrows[AssertionError](
       WriteNebulaVertexConfig

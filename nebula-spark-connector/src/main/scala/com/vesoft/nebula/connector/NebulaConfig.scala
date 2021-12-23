@@ -256,7 +256,7 @@ object WriteNebulaVertexConfig {
     var tagName: String   = _
     var vidPolicy: String = _
     var vidField: String  = _
-    var batch: Int        = 1000
+    var batch: Int        = 512
     var user: String      = "root"
     var passwd: String    = "nebula"
     var writeMode: String = "insert"
@@ -289,7 +289,7 @@ object WriteNebulaVertexConfig {
     }
 
     /**
-      * set data amount for one batch, default is 1000
+      * set data amount for one batch, default is 512
       */
     def withBatch(batch: Int): WriteVertexConfigBuilder = {
       this.batch = batch
@@ -350,6 +350,9 @@ object WriteNebulaVertexConfig {
       } catch {
         case e: Throwable =>
           assert(false, s"optional write mode: insert or update, your write mode is $writeMode")
+      }
+      if (writeMode.equalsIgnoreCase(WriteMode.UPDATE.toString)) {
+        assert(batch <= 512, "the maximum number of statements for Nebula is 512")
       }
       if (!writeMode.equalsIgnoreCase(WriteMode.DELETE.toString)) {
         assert(tagName != null && !tagName.isEmpty, s"config tagName is empty.")
@@ -424,7 +427,7 @@ object WriteNebulaEdgeConfig {
     var dstIdField: String = _
     var dstPolicy: String  = _
     var rankField: String  = _
-    var batch: Int         = 1000
+    var batch: Int         = 512
     var user: String       = "root"
     var passwd: String     = "nebula"
 
@@ -485,7 +488,7 @@ object WriteNebulaEdgeConfig {
     }
 
     /**
-      * set data amount for one batch, default is 1000
+      * set data amount for one batch, default is 512
       */
     def withBatch(batch: Int): WriteEdgeConfigBuilder = {
       this.batch = batch
@@ -574,6 +577,9 @@ object WriteNebulaEdgeConfig {
       } catch {
         case e: Throwable =>
           assert(false, s"optional write mode: insert or update, your write mode is $writeMode")
+      }
+      if (writeMode.equalsIgnoreCase(WriteMode.UPDATE.toString)) {
+        assert(batch <= 512, "the maximum number of statements for Nebula is 512")
       }
       assert(edgeName != null && !edgeName.isEmpty, s"config edgeName is empty.")
       LOG.info(

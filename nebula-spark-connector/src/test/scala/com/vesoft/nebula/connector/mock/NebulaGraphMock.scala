@@ -95,7 +95,8 @@ class NebulaGraphMock {
     val createSpace = "CREATE SPACE IF NOT EXISTS test_int(partition_num=10, vid_type=int64);" +
       "USE test_int;" + "CREATE TAG IF NOT EXISTS person(col1 string, col2 fixed_string(8), col3 int8, col4 int16, col5 int32, col6 int64, col7 date, col8 datetime, col9 timestamp, col10 bool, col11 double, col12 float, col13 time);" +
       "CREATE EDGE IF NOT EXISTS friend(col1 string, col2 fixed_string(8), col3 int8, col4 int16, col5 int32, col6 int64, col7 date, col8 datetime, col9 timestamp, col10 bool, col11 double, col12 float, col13 time);" +
-      "CREATE TAG IF NOT EXISTS geo_shape(geo geography);"
+      "CREATE TAG IF NOT EXISTS geo_shape(geo geography);" +
+      "CREATE TAG IF NOT EXISTS tag_duration(col duration);"
     val createResp = session.execute(createSpace)
     if (!createResp.isSucceeded) {
       close()
@@ -124,7 +125,8 @@ class NebulaGraphMock {
         " 19:(\"person19\", \"person22\", 25, 1500, 14000, 1488888, date(\"2021-01-14\"), datetime(\"2021-01-12T12:00:00\"),timestamp(\"2021-01-12T12:00:00\"), true, 1.0, 2.0, time(\"12:01:01\"))," +
         " 22:(\"person22\", \"person22\", 26, 1500, 14000, 1488888, date(\"2021-01-14\"), datetime(\"2021-01-12T12:00:00\"),timestamp(\"2021-01-12T12:00:00\"), true, 1.0, 2.0, time(\"12:01:01\")), " +
         " 0:(null, null, null, null, null, null, null, null, null, null, null, null, null);" +
-        "INSERT VERTEX geo_shape(geo) VALUES 100:(ST_GeogFromText(\"POINT(1 2)\")), 101:(ST_GeogFromText(\"LINESTRING(1 2, 3 4)\")), 102:(ST_GeogFromText(\"POLYGON((0 1, 1 2, 2 3, 0 1))\"))"
+        "INSERT VERTEX geo_shape(geo) VALUES 100:(ST_GeogFromText(\"POINT(1 2)\")), 101:(ST_GeogFromText(\"LINESTRING(1 2, 3 4)\")), 102:(ST_GeogFromText(\"POLYGON((0 1, 1 2, 2 3, 0 1))\"))" +
+        "INSERT VERTEX tag_duration(col) VALUES 200:(duration({months:1, seconds:100, microseconds:20}))"
 
     val insertTagResp = session.execute(insertTag)
     if (!insertTagResp.isSucceeded) {
@@ -158,7 +160,8 @@ class NebulaGraphMock {
     val session = pool.getSession("root", "nebula", true)
 
     val createSpace = "CREATE SPACE IF NOT EXISTS test_write_string(partition_num=10,vid_type=fixed_string(8));" +
-      "USE test_write_string;" + "CREATE TAG IF NOT EXISTS person_connector(col1 string, col2 fixed_string(8), col3 int8, col4 int16, col5 int32, col6 int64, col7 date, col8 datetime, col9 timestamp, col10 bool, col11 double, col12 float, col13 time, col14 geography);" +
+      "USE test_write_string;" +
+      "CREATE TAG IF NOT EXISTS person_connector(col1 string, col2 fixed_string(8), col3 int8, col4 int16, col5 int32, col6 int64, col7 date, col8 datetime, col9 timestamp, col10 bool, col11 double, col12 float, col13 time, col14 geography, col15 duration);" +
       "CREATE EDGE IF NOT EXISTS friend_connector(col1 string, col2 fixed_string(8), col3 int8, col4 int16, col5 int32, col6 int64, col7 date, col8 datetime, col9 timestamp, col10 bool, col11 double, col12 float, col13 time, col14 geography);";
     val createResp = session.execute(createSpace)
     if (!createResp.isSucceeded) {
@@ -172,7 +175,8 @@ class NebulaGraphMock {
     val session = pool.getSession("root", "nebula", true)
 
     val createSpace = "CREATE SPACE IF NOT EXISTS test_write_int(partition_num=10, vid_type=int64);" +
-      "USE test_write_int;" + "CREATE TAG IF NOT EXISTS person_connector(col1 string, col2 fixed_string(8), col3 int8, col4 int16, col5 int32, col6 int64, col7 date, col8 datetime, col9 timestamp, col10 bool, col11 double, col12 float, col13 time, col14 geography);" +
+      "USE test_write_int;" +
+      "CREATE TAG IF NOT EXISTS person_connector(col1 string, col2 fixed_string(8), col3 int8, col4 int16, col5 int32, col6 int64, col7 date, col8 datetime, col9 timestamp, col10 bool, col11 double, col12 float, col13 time, col14 geography, col15 duration);" +
       "CREATE EDGE IF NOT EXISTS friend_connector(col1 string, col2 fixed_string(8), col3 int8, col4 int16, col5 int32, col6 int64, col7 date, col8 datetime, col9 timestamp, col10 bool, col11 double, col12 float, col13 time, col14 geography);";
     val createResp = session.execute(createSpace)
     if (!createResp.isSucceeded) {

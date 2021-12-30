@@ -192,6 +192,39 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
     })(Encoders.STRING)
   }
 
+  test("read vertex for tag_duration") {
+    val config =
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withConenctionRetry(2)
+        .build()
+    val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
+      .builder()
+      .withSpace("test_int")
+      .withLabel("tag_duration")
+      .withNoColumn(false)
+      .withReturnCols(List("col"))
+      .withLimit(10)
+      .withPartitionNum(10)
+      .build()
+    val vertex = sparkSession.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
+    vertex.printSchema()
+    vertex.show()
+    assert(vertex.count() == 3)
+    assert(vertex.schema.fields.length == 2)
+
+    vertex.map(row => {
+      row.getAs[Long]("_vertexId") match {
+        case 200L => {
+          assert(
+            row.getAs[String]("col").equals("duration({months:1, seconds:100, microseconds:20})"))
+        }
+      }
+      ""
+    })(Encoders.STRING)
+  }
+
   test("read edge with no properties") {
     val config =
       NebulaConnectionConfig

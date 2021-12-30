@@ -6,7 +6,7 @@
 package com.vesoft.nebula.connector
 
 import com.vesoft.nebula.PropertyType
-import com.vesoft.nebula.client.graph.data.{DateTimeWrapper, DateWrapper, TimeWrapper}
+import com.vesoft.nebula.client.graph.data.{DateTimeWrapper, DurationWrapper, TimeWrapper}
 import com.vesoft.nebula.meta.{ColumnDef, ColumnTypeDef}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.types.{
@@ -16,7 +16,6 @@ import org.apache.spark.sql.types.{
   FloatType,
   IntegerType,
   LongType,
-  NullType,
   StringType,
   StructType,
   TimestampType
@@ -43,7 +42,7 @@ object NebulaUtils {
       case PropertyType.FLOAT | PropertyType.DOUBLE => DoubleType
       case PropertyType.TIMESTAMP                   => LongType
       case PropertyType.FIXED_STRING | PropertyType.STRING | PropertyType.DATE | PropertyType.TIME |
-          PropertyType.DATETIME | PropertyType.GEOGRAPHY =>
+          PropertyType.DATETIME | PropertyType.GEOGRAPHY | PropertyType.DURATION =>
         StringType
       case PropertyType.UNKNOWN => throw new IllegalArgumentException("unsupported data type")
     }
@@ -99,6 +98,9 @@ object NebulaUtils {
                        UTF8String.fromString(prop.asInstanceOf[DateTimeWrapper].getUTCDateTimeStr))
           } else if (prop.isInstanceOf[TimeWrapper]) {
             row.update(pos, UTF8String.fromString(prop.asInstanceOf[TimeWrapper].getUTCTimeStr))
+          } else if (prop.isInstanceOf[DurationWrapper]) {
+            row.update(pos,
+                       UTF8String.fromString(prop.asInstanceOf[DurationWrapper].getDurationString))
           } else {
             row.update(pos, UTF8String.fromString(String.valueOf(prop)))
           }

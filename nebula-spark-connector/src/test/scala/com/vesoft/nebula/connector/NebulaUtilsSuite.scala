@@ -34,6 +34,8 @@ class NebulaUtilsSuite extends AnyFunSuite {
     assert(NebulaUtils.convertDataType(new ColumnTypeDef(PropertyType.DATE)) == StringType)
     assert(NebulaUtils.convertDataType(new ColumnTypeDef(PropertyType.DATETIME)) == StringType)
     assert(NebulaUtils.convertDataType(new ColumnTypeDef(PropertyType.TIME)) == StringType)
+    assert(NebulaUtils.convertDataType(new ColumnTypeDef(PropertyType.GEOGRAPHY)) == StringType)
+    assert(NebulaUtils.convertDataType(new ColumnTypeDef(PropertyType.DURATION)) == StringType)
     assertThrows[IllegalArgumentException](
       NebulaUtils.convertDataType(new ColumnTypeDef(PropertyType.UNKNOWN)))
   }

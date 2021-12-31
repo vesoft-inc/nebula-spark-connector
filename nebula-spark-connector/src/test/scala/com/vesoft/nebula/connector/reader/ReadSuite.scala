@@ -9,13 +9,14 @@ import com.facebook.thrift.protocol.TCompactProtocol
 import com.vesoft.nebula.connector.connector.NebulaDataFrameReader
 import com.vesoft.nebula.connector.{NebulaConnectionConfig, ReadNebulaConfig}
 import com.vesoft.nebula.connector.mock.NebulaGraphMock
+import org.apache.log4j.BasicConfigurator
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.{Encoders, SparkSession}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuite
 
 class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
-
+  BasicConfigurator.configure()
   var sparkSession: SparkSession = null
 
   override def beforeAll(): Unit = {
@@ -186,6 +187,39 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
         }
         case 102L => {
           assert(row.getAs[String]("geo").equals("POLYGON((0 1, 1 2, 2 3, 0 1))"))
+        }
+      }
+      ""
+    })(Encoders.STRING)
+  }
+
+  test("read vertex for tag_duration") {
+    val config =
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withConenctionRetry(2)
+        .build()
+    val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
+      .builder()
+      .withSpace("test_int")
+      .withLabel("tag_duration")
+      .withNoColumn(false)
+      .withReturnCols(List("col"))
+      .withLimit(10)
+      .withPartitionNum(10)
+      .build()
+    val vertex = sparkSession.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
+    vertex.printSchema()
+    vertex.show()
+    assert(vertex.count() == 1)
+    assert(vertex.schema.fields.length == 2)
+
+    vertex.map(row => {
+      row.getAs[Long]("_vertexId") match {
+        case 200L => {
+          assert(
+            row.getAs[String]("col").equals("duration({months:1, seconds:100, microseconds:20})"))
         }
       }
       ""

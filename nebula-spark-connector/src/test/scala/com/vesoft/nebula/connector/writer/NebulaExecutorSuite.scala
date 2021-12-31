@@ -7,6 +7,7 @@ package com.vesoft.nebula.connector.writer
 
 import com.vesoft.nebula.connector.KeyPolicy
 import com.vesoft.nebula.connector.connector.{NebulaEdge, NebulaEdges, NebulaVertex, NebulaVertices}
+import org.apache.log4j.BasicConfigurator
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.GenericInternalRow
 import org.apache.spark.sql.types.{
@@ -23,6 +24,7 @@ import org.scalatest.funsuite.AnyFunSuite
 import scala.collection.mutable.ListBuffer
 
 class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
+  BasicConfigurator.configure()
   var schema: StructType = _
   var row: InternalRow   = _
 

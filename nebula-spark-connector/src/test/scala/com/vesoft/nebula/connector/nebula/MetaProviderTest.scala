@@ -10,10 +10,12 @@ import com.vesoft.nebula.connector.DataTypeEnum
 import com.vesoft.nebula.connector.connector.Address
 import com.vesoft.nebula.connector.mock.NebulaGraphMock
 import com.vesoft.nebula.meta.Schema
+import org.apache.log4j.BasicConfigurator
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuite
 
 class MetaProviderTest extends AnyFunSuite with BeforeAndAfterAll {
+  BasicConfigurator.configure()
   var metaProvider: MetaProvider = null
 
   override def beforeAll(): Unit = {

@@ -9,13 +9,14 @@ import com.facebook.thrift.protocol.TCompactProtocol
 import com.vesoft.nebula.connector.connector.NebulaDataFrameReader
 import com.vesoft.nebula.connector.{NebulaConnectionConfig, ReadNebulaConfig}
 import com.vesoft.nebula.connector.mock.NebulaGraphMock
+import org.apache.log4j.BasicConfigurator
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.{Encoders, SparkSession}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuite
 
 class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
-
+  BasicConfigurator.configure()
   var sparkSession: SparkSession = null
 
   override def beforeAll(): Unit = {

@@ -9,10 +9,12 @@ import com.vesoft.nebula.client.graph.data.ResultSet
 import com.vesoft.nebula.connector.connector.Address
 import com.vesoft.nebula.connector.mock.{NebulaGraphMock, SparkMock}
 import com.vesoft.nebula.connector.nebula.GraphProvider
+import org.apache.log4j.BasicConfigurator
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuite
 
 class WriteDeleteSuite extends AnyFunSuite with BeforeAndAfterAll {
+  BasicConfigurator.configure()
 
   override def beforeAll(): Unit = {
     val graphMock = new NebulaGraphMock

@@ -212,7 +212,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
     val vertex = sparkSession.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
     vertex.printSchema()
     vertex.show()
-    assert(vertex.count() == 3)
+    assert(vertex.count() == 1)
     assert(vertex.schema.fields.length == 2)
 
     vertex.map(row => {

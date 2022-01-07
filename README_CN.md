@@ -2,11 +2,11 @@
 [English](https://github.com/vesoft-inc/nebula-spark-connector/blob/master/README.md)
 ## 介绍
 
-Nebula Spark Connector 2.0 仅支持 Nebula Graph 2.x。如果您正在使用 Nebula Graph v1.x，请使用 [Nebula Spark Connector v1.0](https://github.com/vesoft-inc/nebula-java/tree/v1.0/tools)。
+Nebula Spark Connector 2.0/3.0 仅支持 Nebula Graph 2.x/3.x。如果您正在使用 Nebula Graph v1.x，请使用 [Nebula Spark Connector v1.0](https://github.com/vesoft-inc/nebula-java/tree/v1.0/tools)。
 
 ## 如何编译
 
-1. 编译打包 Nebula Spark Connector 2.0。
+1. 编译打包 Nebula Spark Connector。
 
     ```bash
     $ git clone https://github.com/vesoft-inc/nebula-spark-connector.git
@@ -14,7 +14,7 @@ Nebula Spark Connector 2.0 仅支持 Nebula Graph 2.x。如果您正在使用 Ne
     $ mvn clean package -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true
     ```
 
-    编译打包完成后，可以在 nebula-spark-connector/nebula-spark-connector/target/ 目录下看到 nebula-spark-connector-2.5-SNAPSHOT.jar 文件。
+    编译打包完成后，可以在 nebula-spark-connector/nebula-spark-connector/target/ 目录下看到 nebula-spark-connector-3.0-SNAPSHOT.jar 文件。
 
 ## 特性
 
@@ -32,7 +32,7 @@ Nebula Spark Connector 2.0 仅支持 Nebula Graph 2.x。如果您正在使用 Ne
   <dependency>
      <groupId>com.vesoft</groupId>
      <artifactId>nebula-spark-connector</artifactId>
-     <version>2.5-SNAPSHOT</version>
+     <version>3.0-SNAPSHOT</version>
   </dependency>
   ```
   
@@ -154,7 +154,7 @@ Nebula Spark Connector 和 Nebula 的版本对应关系如下:
 |          2.5.0                 |  2.5.0, 2.5.1  |
 |          2.5.1                 |  2.5.0, 2.5.1  |
 |          2.6.0                 |      2.6.0     |
-|        2.5-SNAPSHOT            |     nightly    |
+|        3.0-SNAPSHOT            |     nightly    |
 
 ## 性能
 我们使用LDBC数据集进行Nebula-Spark-Connector的性能测试，测试结果如下：
@@ -192,7 +192,7 @@ comment_replyOf_post.csv and comment_replyOf_comment.csv 写入 REPLY_OF 边类�
 
 ## 贡献
 
-Nebula Spark Connector 2.0 是一个完全开源的项目，欢迎开源爱好者通过以下方式参与：
+Nebula Spark Connector 是一个完全开源的项目，欢迎开源爱好者通过以下方式参与：
 
 - 前往 [Nebula Graph 论坛](https://discuss.nebula-graph.com.cn/ "点击前往“Nebula Graph 论坛") 上参与 Issue 讨论，如答疑、提供想法或者报告无法解决的问题
 - 撰写或改进文档

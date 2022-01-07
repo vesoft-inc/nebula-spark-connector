@@ -3,11 +3,11 @@
 
 ## Introduction
 
-Nebula Spark Connector 2.0 only supports Nebula Graph 2.x. If you are using Nebula Graph v1.x, please use [Nebula Spark Connector v1.0](https://github.com/vesoft-inc/nebula-java/tree/v1.0/tools/nebula-spark) .
+Nebula Spark Connector 2.0/3.0 only supports Nebula Graph 2.x/3.x. If you are using Nebula Graph v1.x, please use [Nebula Spark Connector v1.0](https://github.com/vesoft-inc/nebula-java/tree/v1.0/tools/nebula-spark) .
 
 ## How to Compile
 
-1. Package Nebula Spark Connector 2.0.
+1. Package Nebula Spark Connector.
 
     ```bash
     $ git clone https://github.com/vesoft-inc/nebula-spark-connector.git
@@ -15,7 +15,7 @@ Nebula Spark Connector 2.0 only supports Nebula Graph 2.x. If you are using Nebu
     $ mvn clean package -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true
     ```
 
-    After the packaging, you can see the newly generated nebula-spark-connector-2.5-SNAPSHOT.jar under the nebula-spark-connector/nebula-spark-connector/target/ directory.
+    After the packaging, you can see the newly generated nebula-spark-connector-3.0-SNAPSHOT.jar under the nebula-spark-connector/nebula-spark-connector/target/ directory.
 
 ## New Features (Compared to Nebula Spark Connector 1.0)
 * Supports more connection configurations, such as timeout, connectionRetry, and executionRetry.
@@ -33,7 +33,7 @@ Nebula Spark Connector 2.0 only supports Nebula Graph 2.x. If you are using Nebu
   <dependency>
      <groupId>com.vesoft</groupId>
      <artifactId>nebula-spark-connector</artifactId>
-     <version>2.5-SNAPSHOT</version>
+     <version>3.0-SNAPSHOT</version>
   </dependency>
   ```
   
@@ -153,7 +153,7 @@ There are the version correspondence between Nebula Spark Connector and Nebula:
 |           2.5.0                |  2.5.0, 2.5.1  |
 |           2.5.1                |  2.5.0, 2.5.1  |
 |           2.6.0                |      2.6.0     |
-|         2.5-SNAPSHOT           |     nightly    |
+|         3.0-SNAPSHOT           |     nightly    |
 
 ## Performance
 We use LDBC dataset to test nebula-spark-connector's performance, here's the result.
@@ -192,7 +192,7 @@ The writeConfig has 2000 batch sizes, and the DataFrame has 60 partitions.
 
 ## How to Contribute
 
-Nebula Spark Connector 2.0 is a completely opensource project, opensource enthusiasts are welcome to participate in the following ways:
+Nebula Spark Connector is a completely opensource project, opensource enthusiasts are welcome to participate in the following ways:
 
 - Go to [Nebula Graph Forum](https://discuss.nebula-graph.com.cn/ "go to“Nebula Graph Forum") to discuss with other users. You can raise your own questions, help others' problems, share your thoughts.
 - Write or improve documents.

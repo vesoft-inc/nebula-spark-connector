@@ -6,6 +6,7 @@
 package com.vesoft.nebula.connector.writer
 
 import com.vesoft.nebula.connector.NebulaOptions
+import org.apache.spark.TaskContext
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.sources.v2.writer.{
   DataSourceWriter,
@@ -61,7 +62,11 @@ class NebulaDataSourceVertexWriter(nebulaOptions: NebulaOptions,
     LOG.debug(s"${messages.length}")
     for (msg <- messages) {
       val nebulaMsg = msg.asInstanceOf[NebulaCommitMessage]
-      LOG.info(s"failed execs:\n ${nebulaMsg.executeStatements.toString()}")
+      if (nebulaMsg.executeStatements.nonEmpty) {
+        LOG.error(s"failed execs:\n ${nebulaMsg.executeStatements.toString()}")
+      } else {
+        LOG.info(s"execs for spark partition ${TaskContext.getPartitionId()} all succeed")
+      }
     }
   }
 
@@ -89,7 +94,11 @@ class NebulaDataSourceEdgeWriter(nebulaOptions: NebulaOptions,
     LOG.debug(s"${messages.length}")
     for (msg <- messages) {
       val nebulaMsg = msg.asInstanceOf[NebulaCommitMessage]
-      LOG.info(s"failed execs:\n ${nebulaMsg.executeStatements.toString()}")
+      if (nebulaMsg.executeStatements.nonEmpty) {
+        LOG.error(s"failed execs:\n ${nebulaMsg.executeStatements.toString()}")
+      } else {
+        LOG.info(s"execs for spark partition ${TaskContext.getPartitionId()} all succeed")
+      }
     }
 
   }

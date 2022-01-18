@@ -56,6 +56,9 @@ class NebulaVertexWriter(nebulaOptions: NebulaOptions, vertexIndex: Int, schema:
     }
   }
 
+  /**
+    * submit buffer vertices to nebula
+    */
   def execute(): Unit = {
     val nebulaVertices = NebulaVertices(propNames, vertices.toList, policy)
     val exec = nebulaOptions.writeMode match {

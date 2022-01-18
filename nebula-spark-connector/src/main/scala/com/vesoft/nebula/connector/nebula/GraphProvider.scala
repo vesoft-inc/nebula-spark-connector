@@ -64,6 +64,9 @@ class GraphProvider(addresses: List[Address],
 
   var session: Session = null
 
+  /**
+    * release session
+    */
   def releaseGraphClient(session: Session): Unit = {
     session.release()
   }
@@ -72,6 +75,14 @@ class GraphProvider(addresses: List[Address],
     pool.close()
   }
 
+  /**
+    * switch space
+    *
+    * @param user
+    * @param password
+    * @param space
+    * @return if execute succeed
+    */
   def switchSpace(user: String, password: String, space: String): Boolean = {
     if (session == null) {
       session = pool.getSession(user, password, true)
@@ -82,6 +93,12 @@ class GraphProvider(addresses: List[Address],
     result.isSucceeded
   }
 
+  /**
+    * execute the statement
+    *
+    * @param statement insert tag/edge statement
+    * @return execute result
+    */
   def submit(statement: String): ResultSet = {
     if (session == null) {
       LOG.error("graph session is null")

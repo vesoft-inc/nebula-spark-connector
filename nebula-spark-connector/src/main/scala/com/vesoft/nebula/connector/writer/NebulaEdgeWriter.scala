@@ -77,6 +77,9 @@ class NebulaEdgeWriter(nebulaOptions: NebulaOptions,
     }
   }
 
+  /**
+    * submit buffer edges to nebula
+    */
   def execute(): Unit = {
     val nebulaEdges = NebulaEdges(propNames, edges.toList, srcPolicy, dstPolicy)
     val exec = nebulaOptions.writeMode match {

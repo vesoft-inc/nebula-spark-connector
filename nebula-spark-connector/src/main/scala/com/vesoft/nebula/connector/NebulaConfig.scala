@@ -56,11 +56,17 @@ object NebulaConnectionConfig {
     protected var caSignParam: CASSLSignParams     = null
     protected var selfSignParam: SelfSSLSignParams = null
 
+    /**
+      * set nebula meta server address, multi addresses is split by English comma
+      */
     def withMetaAddress(metaAddress: String): ConfigBuilder = {
       this.metaAddress = metaAddress
       this
     }
 
+    /**
+      * set nebula graph server address, multi addresses is split by English comma
+      */
     def withGraphAddress(graphAddress: String): ConfigBuilder = {
       this.graphAddress = graphAddress
       this
@@ -264,16 +270,25 @@ object WriteNebulaVertexConfig {
     /** whether set vid as property */
     var vidAsProp: Boolean = false
 
+    /**
+      * set space name
+      */
     def withSpace(space: String): WriteVertexConfigBuilder = {
       this.space = space
       this
     }
 
+    /**
+      * set tag name
+      */
     def withTag(tagName: String): WriteVertexConfigBuilder = {
       this.tagName = tagName
       this
     }
 
+    /**
+      * set which field in dataframe as nebula tag's id
+      */
     def withVidField(vidField: String): WriteVertexConfigBuilder = {
       this.vidField = vidField
       this
@@ -304,21 +319,33 @@ object WriteNebulaVertexConfig {
       this
     }
 
+    /**
+      * set user name for nebula graph
+      */
     def withUser(user: String): WriteVertexConfigBuilder = {
       this.user = user
       this
     }
 
+    /**
+      * set password for nebula graph's user
+      */
     def withPasswd(passwd: String): WriteVertexConfigBuilder = {
       this.passwd = passwd
       this
     }
 
+    /**
+      * set nebula write mode for nebula tag, INSERT or UPDATE
+      */
     def withWriteMode(writeMode: WriteMode.Value): WriteVertexConfigBuilder = {
       this.writeMode = writeMode.toString
       this
     }
 
+    /**
+      * check and get WriteNebulaVertexConfig
+      */
     def build(): WriteNebulaVertexConfig = {
       check()
       new WriteNebulaVertexConfig(space,
@@ -417,6 +444,9 @@ object WriteNebulaEdgeConfig {
 
   private val LOG: Logger = LoggerFactory.getLogger(WriteNebulaEdgeConfig.getClass)
 
+  /**
+    * a builder to create {@link WriteNebulaEdgeConfig}
+    */
   class WriteEdgeConfigBuilder {
 
     var space: String    = _
@@ -440,13 +470,20 @@ object WriteNebulaEdgeConfig {
     /** whether set rank as property */
     var rankAsProp: Boolean = false
 
+    /** write mode for nebula, insert or update */
     var writeMode: String = WriteMode.INSERT.toString
 
+    /**
+      * set space name
+      */
     def withSpace(space: String): WriteEdgeConfigBuilder = {
       this.space = space
       this
     }
 
+    /**
+      * set edge type name
+      */
     def withEdge(edgeName: String): WriteEdgeConfigBuilder = {
       this.edgeName = edgeName
       this
@@ -454,13 +491,16 @@ object WriteNebulaEdgeConfig {
 
     /**
       * set rank field in dataframe
-      * it rankField is not set, then edge has no rank value
+      * it rankField is not set, then edge has default 0 rank value
       * */
     def withRankField(rankField: String): WriteEdgeConfigBuilder = {
       this.rankField = rankField
       this
     }
 
+    /**
+      * set which field in dataframe as nebula edge's src id
+      */
     def withSrcIdField(srcIdField: String): WriteEdgeConfigBuilder = {
       this.srcIdField = srcIdField
       this
@@ -474,6 +514,9 @@ object WriteNebulaEdgeConfig {
       this
     }
 
+    /**
+      * set which field in dataframe as nebula edge's dst id
+      */
     def withDstIdField(dstIdField: String): WriteEdgeConfigBuilder = {
       this.dstIdField = dstIdField
       this
@@ -519,21 +562,33 @@ object WriteNebulaEdgeConfig {
       this
     }
 
+    /**
+      * set user name for nebula graph
+      */
     def withUser(user: String): WriteEdgeConfigBuilder = {
       this.user = user
       this
     }
 
+    /**
+      * set password for nebula graph's user
+      */
     def withPasswd(passwd: String): WriteEdgeConfigBuilder = {
       this.passwd = passwd
       this
     }
 
+    /**
+      * set write mode for nebula edge, INSERT or UPDATE
+      */
     def withWriteMode(writeMode: WriteMode.Value): WriteEdgeConfigBuilder = {
       this.writeMode = writeMode.toString
       this
     }
 
+    /**
+      * check configs and get WriteNebulaEdgeConfig
+      */
     def build(): WriteNebulaEdgeConfig = {
       check()
       new WriteNebulaEdgeConfig(space,

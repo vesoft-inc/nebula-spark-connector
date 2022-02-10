@@ -1,4 +1,4 @@
-# 欢迎使用 Nebula Spark Connector 2.0
+# 欢迎使用 Nebula Spark Connector
 [English](https://github.com/vesoft-inc/nebula-spark-connector/blob/master/README.md)
 ## 介绍
 
@@ -153,7 +153,9 @@ Nebula Spark Connector 和 Nebula 的版本对应关系如下:
 |          2.1.0                 |  2.0.0, 2.0.1  |
 |          2.5.0                 |  2.5.0, 2.5.1  |
 |          2.5.1                 |  2.5.0, 2.5.1  |
-|          2.6.0                 |      2.6.0     |
+|          2.6.0                 |  2.6.0, 2.6.1  |
+|          2.6.1                 |  2.6.0, 2.6.1  |
+|          3.0.0                 |     3.0.0      |
 |        3.0-SNAPSHOT            |     nightly    |
 
 ## 性能

@@ -40,10 +40,6 @@ jobs:
         popd
         popd
 
-    # deploy nebula-spark-connector after nebula-exchange, the parent artifactId nebula-spark cannot be overwrite.
-    - name: enter the nebula-spark-connector directory
-      run: pushd nebula-spark-connector
-
     - name: Deploy SNAPSHOT to Sonatype
       uses: samuelmeuli/action-maven-publish@v1
       with:

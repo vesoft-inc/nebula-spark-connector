@@ -11,6 +11,7 @@ import org.slf4j.{Logger, LoggerFactory}
 import scala.collection.mutable.ListBuffer
 
 class NebulaConnectionConfig(metaAddress: String,
+                             storageAddress: String = "",
                              graphAddress: String,
                              timeout: Int,
                              connectionRetry: Int,
@@ -23,6 +24,7 @@ class NebulaConnectionConfig(metaAddress: String,
                              selfSignParam: SelfSSLSignParams)
     extends Serializable {
   def getMetaAddress      = metaAddress
+  def getStorageAddress   = storageAddress
   def getGraphAddress     = graphAddress
   def getTimeout          = timeout
   def getConnectionRetry  = connectionRetry
@@ -44,6 +46,7 @@ object NebulaConnectionConfig {
     private val LOG = LoggerFactory.getLogger(this.getClass)
 
     protected var metaAddress: String  = _
+    protected var storageAddress: String = ""
     protected var graphAddress: String = _
     protected var timeout: Int         = 6000
     protected var connectionRetry: Int = 1
@@ -61,6 +64,14 @@ object NebulaConnectionConfig {
       */
     def withMetaAddress(metaAddress: String): ConfigBuilder = {
       this.metaAddress = metaAddress
+      this
+    }
+
+    /**
+      * set nebula storage server address, multi addresses is split by English comma
+      */
+    def withStorageAddress(storageAddress: String): ConfigBuilder = {
+      this.storageAddress = storageAddress
       this
     }
 
@@ -189,6 +200,7 @@ object NebulaConnectionConfig {
     def build(): NebulaConnectionConfig = {
       check()
       new NebulaConnectionConfig(metaAddress,
+                                 storageAddress,
                                  graphAddress,
                                  timeout,
                                  connectionRetry,

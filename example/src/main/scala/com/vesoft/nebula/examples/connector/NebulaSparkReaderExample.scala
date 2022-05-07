@@ -165,3 +165,31 @@ object NebulaSparkReaderExample {
     println("vertex count: " + vertex.count())
   }
 }
+  /**
+    * read Nebula vertex with storaged addresses manually specified.
+    */
+
+  def readVertexGraph(spark: SparkSession): Unit = {
+    LOG.info("start to read graphx vertex")
+    val config =
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withStorageAddress("127.0.0.1:9779")
+        .withTimeout(6000)
+        .withConenctionRetry(2)
+        .build()
+    val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
+      .builder()
+      .withSpace("test")
+      .withLabel("person")
+      .withNoColumn(false)
+      .withReturnCols(List("birthday"))
+      .withLimit(10)
+      .withPartitionNum(10)
+      .build()
+
+    val vertexRDD = spark.read.nebula(config, nebulaReadVertexConfig).loadVerticesToGraphx()
+    LOG.info("vertex rdd first record: " + vertexRDD.first())
+    LOG.info("vertex rdd count: {}", vertexRDD.count())
+  }

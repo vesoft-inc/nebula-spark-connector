@@ -95,6 +95,14 @@ abstract class NebulaPartitionReader extends InputPartitionReader[InternalRow] {
       this.storageClient = new StorageClient(address.asJava, nebulaOptions.timeout)
     }
 
+    if (nebulaOptions.getStorageAddress != null && nebulaOptions.getStorageAddress.size > 0) {
+      val storageAddress: ListBuffer[HostAddress] = new ListBuffer[HostAddress]
+      for (addr <- nebulaOptions.getStorageAddress) {
+        storageAddress.append(new HostAddress(addr._1, addr._2))
+      }
+      this.storageClient.setStorageAddresses(storageAddress.asJava)
+    }
+
     if (!storageClient.connect()) {
       throw new GraphConnectException("storage connect failed.")
     }

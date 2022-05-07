@@ -96,6 +96,9 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
   require(parameters.isDefinedAt(META_ADDRESS), s"Option '$META_ADDRESS' is required")
   val metaAddress: String = parameters(META_ADDRESS)
 
+  /** storageAddress is optional */
+  val storageAddress: String = parameters.getOrElse(STORAGE_ADDRESS, "")
+
   require(parameters.isDefinedAt(SPACE_NAME) && StringUtils.isNotBlank(parameters(SPACE_NAME)),
           s"Option '$SPACE_NAME' is required and can not be blank")
   val spaceName: String = parameters(SPACE_NAME)
@@ -188,6 +191,20 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
     hostPorts.toList
   }
 
+  def getStorageAddress: List[Address] = {
+    val hostPorts: ListBuffer[Address] = new ListBuffer[Address]
+    if (storageAddress != "" && storageAddress != null) {
+      storageAddress
+        .split(",")
+        .foreach(hostPort => {
+          // check host & port by getting HostAndPort
+          val addr = HostAndPort.fromString(hostPort)
+          hostPorts.append((addr.getHostText, addr.getPort))
+        })
+    }
+    hostPorts.toList
+  }
+
   def getGraphAddress: List[Address] = {
     val hostPorts: ListBuffer[Address] = new ListBuffer[Address]
     graphAddress
@@ -199,7 +216,6 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
       })
     hostPorts.toList
   }
-
 }
 
 class NebulaOptionsInWrite(@transient override val parameters: CaseInsensitiveMap[String])
@@ -208,11 +224,12 @@ class NebulaOptionsInWrite(@transient override val parameters: CaseInsensitiveMa
 object NebulaOptions {
 
   /** nebula common config */
-  val SPACE_NAME: String    = "spaceName"
-  val META_ADDRESS: String  = "metaAddress"
-  val GRAPH_ADDRESS: String = "graphAddress"
-  val TYPE: String          = "type"
-  val LABEL: String         = "label"
+  val SPACE_NAME: String      = "spaceName"
+  val META_ADDRESS: String    = "metaAddress"
+  val STORAGE_ADDRESS: String = "storageAddress"
+  val GRAPH_ADDRESS: String   = "graphAddress"
+  val TYPE: String            = "type"
+  val LABEL: String           = "label"
 
   /** connection config */
   val TIMEOUT: String            = "timeout"

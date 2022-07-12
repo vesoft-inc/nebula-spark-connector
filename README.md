@@ -141,6 +141,40 @@ Nebula Spark Connector 2.0/3.0 only supports Nebula Graph 2.x/3.x. If you are us
 
 For more information on usage, please refer to [Example](https://github.com/vesoft-inc/nebula-spark-connector/tree/master/example/src/main/scala/com/vesoft/nebula/examples/connector).
 
+## PySpark with Nebula Spark Connector
+
+Below is an example of calling nebula-spark-connector jar package in pyspark. For instance, we could include it in pyspark shell like:
+
+```bash
+/spark/bin/pyspark --driver-class-path nebula-spark-connector-3.0.0.jar --jars nebula-spark-connector-3.0.0.jar
+```
+
+Then, read from Nebula Graph with `metaAddress` of `"metad0:9559"` as a dataframe:
+
+```python
+df = spark.read.format(
+  "com.vesoft.nebula.connector.NebulaDataSource").option(
+    "type", "vertex").option(
+    "spaceName", "basketballplayer").option(
+    "label", "player").option(
+    "returnCols", "name,age").option(
+    "metaAddress", "metad0:9559").option(
+    "partitionNumber", 1).load()
+```
+
+You may then `show` the dataframe as follow:
+
+```python
+>>> df.show(n=2)
++---------+--------------+---+
+|_vertexId|          name|age|
++---------+--------------+---+
+|player105|   Danny Green| 31|
+|player109|Tiago Splitter| 34|
++---------+--------------+---+
+only showing top 2 rows
+```
+
 ## Version match
 
 There are the version correspondence between Nebula Spark Connector and Nebula:

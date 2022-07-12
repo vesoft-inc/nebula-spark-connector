@@ -143,6 +143,40 @@ Nebula Spark Connector 2.0/3.0 仅支持 Nebula Graph 2.x/3.x。如果您正在�
 
 更多使用示例请参考 [Example](https://github.com/vesoft-inc/nebula-spark-connector/tree/master/example/src/main/scala/com/vesoft/nebula/examples/connector) 。
 
+## PySpark 中使用 Nebula Spark Connector
+
+下边是一个在 PySpark 中调用 nebula-spark-connector jar 包的例子。比如我们可以进入 PySpark REPL，指定 nebula-spark-connector 的 jar 包：
+
+```bash
+/spark/bin/pyspark --driver-class-path nebula-spark-connector-3.0.0.jar --jars nebula-spark-connector-3.0.0.jar
+```
+
+然后，从 `metaAddress` 为 `"metad0:9559"` 的 Nebula Graph 中读取整个 tag 下的数据为一个 dataframe：
+
+```python
+df = spark.read.format(
+  "com.vesoft.nebula.connector.NebulaDataSource").option(
+    "type", "vertex").option(
+    "spaceName", "basketballplayer").option(
+    "label", "player").option(
+    "returnCols", "name,age").option(
+    "metaAddress", "metad0:9559").option(
+    "partitionNumber", 1).load()
+```
+
+然后可以像这样 `show` 这个 dataframe：
+
+```python
+>>> df.show(n=2)
++---------+--------------+---+
+|_vertexId|          name|age|
++---------+--------------+---+
+|player105|   Danny Green| 31|
+|player109|Tiago Splitter| 34|
++---------+--------------+---+
+only showing top 2 rows
+```
+
 ## 版本匹配
 Nebula Spark Connector 和 Nebula 的版本对应关系如下:
 

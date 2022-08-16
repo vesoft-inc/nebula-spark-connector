@@ -46,6 +46,7 @@
 
     <modules>
         <module>nebula-spark-connector</module>
+        <module>nebula-spark-connector_2.2</module>
         <module>example</module>
     </modules>
 

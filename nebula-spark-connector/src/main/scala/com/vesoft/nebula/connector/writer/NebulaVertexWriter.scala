@@ -65,7 +65,8 @@ class NebulaVertexWriter(nebulaOptions: NebulaOptions, vertexIndex: Int, schema:
       case WriteMode.INSERT => NebulaExecutor.toExecuteSentence(nebulaOptions.label, nebulaVertices)
       case WriteMode.UPDATE =>
         NebulaExecutor.toUpdateExecuteStatement(nebulaOptions.label, nebulaVertices)
-      case WriteMode.DELETE => NebulaExecutor.toDeleteExecuteStatement(nebulaVertices)
+      case WriteMode.DELETE =>
+        NebulaExecutor.toDeleteExecuteStatement(nebulaVertices, nebulaOptions.deleteEdge)
       case _ =>
         throw new IllegalArgumentException(s"write mode ${nebulaOptions.writeMode} not supported.")
     }

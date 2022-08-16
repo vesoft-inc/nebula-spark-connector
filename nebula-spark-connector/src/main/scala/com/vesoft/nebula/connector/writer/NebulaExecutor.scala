@@ -10,6 +10,7 @@ import com.vesoft.nebula.connector.NebulaTemplate.{
   BATCH_INSERT_TEMPLATE,
   DELETE_EDGE_TEMPLATE,
   DELETE_VERTEX_TEMPLATE,
+  DELETE_VERTEX_WITH_EDGE_TEMPLATE,
   EDGE_ENDPOINT_TEMPLATE,
   EDGE_VALUE_TEMPLATE,
   EDGE_VALUE_WITHOUT_RANKING_TEMPLATE,
@@ -365,26 +366,31 @@ object NebulaExecutor {
   /**
     * construct delete statement for vertex
     */
-  def toDeleteExecuteStatement(vertices: NebulaVertices): String = {
-    DELETE_VERTEX_TEMPLATE.format(
-      vertices.values
-        .map { value =>
-          vertices.policy match {
-            case Some(KeyPolicy.HASH) =>
-              ENDPOINT_TEMPLATE.format(KeyPolicy.HASH.toString, value.vertexIDSlice)
+  def toDeleteExecuteStatement(vertices: NebulaVertices, deleteEdge: Boolean): String = {
+    if (deleteEdge)
+      DELETE_VERTEX_WITH_EDGE_TEMPLATE.format(genDeleteVertexInfo(vertices))
+    else
+      DELETE_VERTEX_TEMPLATE.format(genDeleteVertexInfo(vertices))
+  }
 
-            case Some(KeyPolicy.UUID) =>
-              ENDPOINT_TEMPLATE.format(KeyPolicy.UUID.toString, value.vertexIDSlice)
+  private def genDeleteVertexInfo(vertices: NebulaVertices): String = {
+    vertices.values
+      .map { value =>
+        vertices.policy match {
+          case Some(KeyPolicy.HASH) =>
+            ENDPOINT_TEMPLATE.format(KeyPolicy.HASH.toString, value.vertexIDSlice)
 
-            case None =>
-              value.vertexIDSlice
-            case _ =>
-              throw new IllegalArgumentException(
-                s"vertex policy ${vertices.policy.get} is not supported")
-          }
+          case Some(KeyPolicy.UUID) =>
+            ENDPOINT_TEMPLATE.format(KeyPolicy.UUID.toString, value.vertexIDSlice)
+
+          case None =>
+            value.vertexIDSlice
+          case _ =>
+            throw new IllegalArgumentException(
+              s"vertex policy ${vertices.policy.get} is not supported")
         }
-        .mkString(",")
-    )
+      }
+      .mkString(",")
   }
 
   /**

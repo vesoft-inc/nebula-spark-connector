@@ -1,23 +1,27 @@
-/* Copyright (c) 2020 vesoft inc. All rights reserved.
+/* Copyright (c) 2022 vesoft inc. All rights reserved.
  *
  * This source code is licensed under Apache 2.0 License.
  */
 
 package com.vesoft.nebula.connector.reader
 
-import com.vesoft.nebula.connector.NebulaOptions
-import org.apache.spark.sql.catalyst.InternalRow
-import org.apache.spark.sql.sources.v2.reader.{InputPartition, InputPartitionReader}
-import org.apache.spark.sql.types.StructType
+import org.apache.spark.Partition
 
-class NebulaVertexPartition(index: Int, nebulaOptions: NebulaOptions, schema: StructType)
-    extends InputPartition[InternalRow] {
-  override def createPartitionReader(): InputPartitionReader[InternalRow] =
-    new NebulaVertexPartitionReader(index, nebulaOptions, schema)
-}
+/**
+  * @todo
+  * An identifier for a partition in an NebulaRDD.
+  */
+case class NebulaPartition(indexNum: Int) extends Partition {
+  override def index: Int = indexNum
 
-class NebulaEdgePartition(index: Int, nebulaOptions: NebulaOptions, schema: StructType)
-    extends InputPartition[InternalRow] {
-  override def createPartitionReader(): InputPartitionReader[InternalRow] =
-    new NebulaEdgePartitionReader(index, nebulaOptions, schema)
+  /**
+    * @todo
+    * allocate scanPart to each spark partition
+    *
+    * @param totalPart nebula data part num
+    * @return scan data part list
+    */
+  def getScanParts(totalPart: Int, totalPartition: Int): List[Integer] = {
+    null
+  }
 }

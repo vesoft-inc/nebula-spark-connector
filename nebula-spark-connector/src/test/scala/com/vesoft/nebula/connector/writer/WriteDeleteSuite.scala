@@ -22,6 +22,7 @@ class WriteDeleteSuite extends AnyFunSuite with BeforeAndAfterAll {
     graphMock.mockIntIdGraphSchema()
     graphMock.close()
     SparkMock.writeVertex()
+    SparkMock.writeEdge()
   }
 
   test("write vertex into test_write_string space with delete mode") {
@@ -34,6 +35,28 @@ class WriteDeleteSuite extends AnyFunSuite with BeforeAndAfterAll {
       graphProvider.submit("use test_write_string;match (v:person_connector) return v;")
     assert(resultSet.getColumnNames.size() == 0)
     assert(resultSet.isEmpty)
+  }
+
+  test("write vertex into test_write_with_edge_string space with delete with edge mode") {
+    SparkMock.writeVertex()
+    SparkMock.writeEdge()
+    SparkMock.deleteVertexWithEdge()
+    val addresses: List[Address] = List(new Address("127.0.0.1", 9669))
+    val graphProvider            = new GraphProvider(addresses, 3000)
+
+    graphProvider.switchSpace("root", "nebula", "test_write_string")
+    // assert vertex is deleted
+    val vertexResultSet: ResultSet =
+      graphProvider.submit("use test_write_string;match (v:person_connector) return v;")
+    assert(vertexResultSet.getColumnNames.size() == 0)
+    assert(vertexResultSet.isEmpty)
+
+    // assert edge is deleted
+    val edgeResultSet: ResultSet =
+      graphProvider.submit("use test_write_string;fetch prop on friend_connector 1->2@10")
+    assert(edgeResultSet.getColumnNames.size() == 0)
+    assert(edgeResultSet.isEmpty)
+
   }
 
   test("write edge into test_write_string space with delete mode") {

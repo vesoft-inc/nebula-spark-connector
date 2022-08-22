@@ -13,8 +13,7 @@ import com.vesoft.nebula.client.graph.data.{
   SelfSignedSSLParam
 }
 import com.vesoft.nebula.client.meta.MetaClient
-import com.vesoft.nebula.connector.connector.Address
-import com.vesoft.nebula.connector.DataTypeEnum
+import com.vesoft.nebula.connector.{Address, DataTypeEnum}
 import com.vesoft.nebula.connector.ssl.{CASSLSignParams, SSLSignType, SelfSSLSignParams}
 import com.vesoft.nebula.meta.Schema
 

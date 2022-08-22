@@ -6,13 +6,13 @@
 package com.vesoft.nebula.connector.mock
 
 import com.facebook.thrift.protocol.TCompactProtocol
-import com.vesoft.nebula.connector.connector.NebulaDataFrameWriter
 import com.vesoft.nebula.connector.{
   NebulaConnectionConfig,
   WriteMode,
   WriteNebulaEdgeConfig,
   WriteNebulaVertexConfig
 }
+import com.vesoft.nebula.connector.connector.NebulaDataFrameWriter
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 

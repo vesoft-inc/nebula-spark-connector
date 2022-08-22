@@ -7,8 +7,8 @@ package com.vesoft.nebula.connector.reader
 
 import java.util
 
-import com.vesoft.nebula.connector.{DataTypeEnum, NebulaOptions, NebulaUtils}
 import com.vesoft.nebula.connector.nebula.MetaProvider
+import com.vesoft.nebula.connector.{DataTypeEnum, NebulaOptions, NebulaUtils}
 import com.vesoft.nebula.meta.ColumnDef
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.sources.v2.reader.{DataSourceReader, InputPartition}

@@ -21,16 +21,16 @@ import com.vesoft.nebula.connector.NebulaTemplate.{
   VERTEX_VALUE_TEMPLATE,
   VERTEX_VALUE_TEMPLATE_WITH_POLICY
 }
-import com.vesoft.nebula.connector.connector.{
+import com.vesoft.nebula.connector.{
+  DataTypeEnum,
   EdgeRank,
-  NebulaEdge,
+  KeyPolicy,
   NebulaEdges,
-  NebulaVertex,
+  NebulaUtils,
   NebulaVertices,
   PropertyNames,
   PropertyValues
 }
-import com.vesoft.nebula.connector.{DataTypeEnum, KeyPolicy, NebulaUtils}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.types.StructType
 

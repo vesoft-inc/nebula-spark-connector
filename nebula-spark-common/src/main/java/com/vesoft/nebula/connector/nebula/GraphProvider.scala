@@ -13,7 +13,7 @@ import com.vesoft.nebula.client.graph.data.{
   SelfSignedSSLParam
 }
 import com.vesoft.nebula.client.graph.net.{NebulaPool, Session}
-import com.vesoft.nebula.connector.connector.Address
+import com.vesoft.nebula.connector.Address
 import com.vesoft.nebula.connector.exception.GraphConnectException
 import com.vesoft.nebula.connector.ssl.{CASSLSignParams, SSLSignType, SelfSSLSignParams}
 import org.apache.log4j.Logger

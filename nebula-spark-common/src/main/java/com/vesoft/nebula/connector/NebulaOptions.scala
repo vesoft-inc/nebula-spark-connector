@@ -8,7 +8,6 @@ package com.vesoft.nebula.connector
 import java.util.Properties
 
 import com.google.common.net.HostAndPort
-import com.vesoft.nebula.connector.connector.Address
 import com.vesoft.nebula.connector.ssl.{CASSLSignParams, SSLSignType, SelfSSLSignParams}
 import org.apache.commons.lang.StringUtils
 import org.apache.spark.internal.Logging

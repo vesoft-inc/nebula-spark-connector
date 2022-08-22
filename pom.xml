@@ -48,6 +48,7 @@
         <module>nebula-spark-connector</module>
         <module>nebula-spark-connector_2.2</module>
         <module>example</module>
+        <module>nebula-spark-common</module>
     </modules>
 
     <distributionManagement>
@@ -122,6 +123,48 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+
+        <!-- scala and spark version -->
+        <profile>
+            <id>scala-2.11</id>
+            <properties>
+                <scala.version>2.11.12</scala.version>
+                <scala.binary.version>2.11</scala.binary.version>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+
+        <profile>
+            <id>scala-2.12</id>
+            <properties>
+                <scala.version>2.12.10</scala.version>
+                <scala.binary.version>2.12</scala.binary.version>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>spark-2.2</id>
+            <properties>
+                <spark.version>2.2.0</spark.version>
+            </properties>
+            <modules>
+                <module>nebula-spark-connector_2.2</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>spark-2.4</id>
+            <properties>
+                <spark.version>2.4.4</spark.version>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>nebula-spark-connector</module>
+            </modules>
         </profile>
     </profiles>
 

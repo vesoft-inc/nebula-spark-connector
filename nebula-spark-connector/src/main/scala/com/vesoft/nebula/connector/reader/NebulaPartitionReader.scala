@@ -15,8 +15,8 @@ import com.vesoft.nebula.client.graph.data.{
 import com.vesoft.nebula.client.storage.StorageClient
 import com.vesoft.nebula.client.storage.data.{BaseTableRow, VertexTableRow}
 import com.vesoft.nebula.connector.NebulaUtils.NebulaValueGetter
-import com.vesoft.nebula.connector.exception.GraphConnectException
 import com.vesoft.nebula.connector.{NebulaOptions, NebulaUtils, PartitionUtils}
+import com.vesoft.nebula.connector.exception.GraphConnectException
 import com.vesoft.nebula.connector.nebula.MetaProvider
 import com.vesoft.nebula.connector.ssl.SSLSignType
 import org.apache.spark.sql.catalyst.InternalRow

@@ -25,4 +25,5 @@ class NebulaRelationProvider extends RelationProvider with DataSourceRegister {
     val nebulaOptions = new NebulaOptions(parameters, OperaType.READ)
     NebulaRelation(sqlContext, nebulaOptions)
   }
+
 }

@@ -5,7 +5,6 @@
 
 package com.vesoft.nebula.connector.writer
 
-import com.vesoft.nebula.connector.writer.NebulaExecutor
 import com.vesoft.nebula.connector.{NebulaEdge, NebulaEdges}
 import com.vesoft.nebula.connector.{KeyPolicy, NebulaOptions, WriteMode}
 import org.apache.spark.sql.catalyst.InternalRow

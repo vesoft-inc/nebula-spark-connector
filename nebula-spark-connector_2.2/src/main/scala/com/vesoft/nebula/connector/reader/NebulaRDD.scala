@@ -5,29 +5,62 @@
 
 package com.vesoft.nebula.connector.reader
 
+import com.sun.prism.PixelFormat.DataType
+import com.vesoft.nebula.connector.{DataTypeEnum, NebulaOptions}
 import org.apache.spark.{Partition, TaskContext}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.catalyst.InternalRow
+import org.apache.spark.sql.types.StructType
 
-/**
-  * @todo
-  */
-class NebulaRDD(val sqlContext: SQLContext) extends RDD[InternalRow](sqlContext.sparkContext, Nil) {
+import scala.collection.mutable.ListBuffer
+
+class NebulaRDD(val sqlContext: SQLContext, var nebulaOptions: NebulaOptions, schema: StructType)
+    extends RDD[InternalRow](sqlContext.sparkContext, Nil) {
 
   /**
-    * @todo
-    * scan nebula data
+    * start to scan vertex or edge data
+    *
+    * @param split
+    * @param context
+    * @return Iterator<InternalRow>
     */
   override def compute(split: Partition, context: TaskContext): Iterator[InternalRow] = {
-    null
+    val dataType = nebulaOptions.dataType
+    if (DataTypeEnum.VERTEX.toString.equalsIgnoreCase(dataType))
+      new NebulaVertexReader(split, nebulaOptions, schema)
+    else new NebulaEdgeReader(split, nebulaOptions, schema)
   }
 
+  override def getPartitions = {
+    val partitionNumber = nebulaOptions.partitionNums.toInt
+    val partitions      = new Array[Partition](partitionNumber)
+    for (i <- 0 until partitionNumber) {
+      partitions(i) = NebulaPartition(i)
+    }
+    partitions
+  }
+}
+
+/**
+  * An identifier for a partition in an NebulaRDD.
+  */
+case class NebulaPartition(indexNum: Int) extends Partition {
+  override def index: Int = indexNum
+
   /**
-    * @todo
-    * compute the nebula parts for each spark partition
-    * */
-  override def getPartitions: Array[Partition] = {
-    null
+    * allocate scanPart to partition
+    *
+    * @param totalPart nebula data part num
+    * @return scan data part list
+    */
+  def getScanParts(totalPart: Int, totalPartition: Int): List[Integer] = {
+    val scanParts   = new ListBuffer[Integer]
+    var currentPart = indexNum + 1
+    while (currentPart <= totalPart) {
+      scanParts.append(currentPart)
+      currentPart += totalPartition
+    }
+    scanParts.toList
   }
 }

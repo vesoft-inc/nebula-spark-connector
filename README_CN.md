@@ -205,6 +205,28 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
     "user", "root").save()
 ```
 
+对于其他的 option，比如删除点的时候的 `withDeleteEdge` 可以参考 [nebula/connector/NebulaOptions.scala
+](https://github.com/vesoft-inc/nebula-spark-connector/blob/master/nebula-spark-connector/src/main/scala/com/vesoft/nebula/connector/NebulaOptions.scala) 的字符串配置定义，我们可以看到它的字符串定义字段是 `deleteEdge` ：
+
+```scala
+  /** write config */
+  val RATE_LIMIT: String   = "rateLimit"
+  val VID_POLICY: String   = "vidPolicy"
+  val SRC_POLICY: String   = "srcPolicy"
+  val DST_POLICY: String   = "dstPolicy"
+  val VERTEX_FIELD         = "vertexField"
+  val SRC_VERTEX_FIELD     = "srcVertexField"
+  val DST_VERTEX_FIELD     = "dstVertexField"
+  val RANK_FIELD           = "rankFiled"
+  val BATCH: String        = "batch"
+  val VID_AS_PROP: String  = "vidAsProp"
+  val SRC_AS_PROP: String  = "srcAsProp"
+  val DST_AS_PROP: String  = "dstAsProp"
+  val RANK_AS_PROP: String = "rankAsProp"
+  val WRITE_MODE: String   = "writeMode"
+  val DELETE_EDGE: String  = "deleteEdge"
+```
+
 最后，这里给出用 PySpark Shell 和在 Python 代码里调用 Spark Connector 的例子：
 
 - Call with PySpark shell:

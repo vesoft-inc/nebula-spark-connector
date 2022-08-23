@@ -143,11 +143,7 @@ For more information on usage, please refer to [Example](https://github.com/veso
 
 ## PySpark with Nebula Spark Connector
 
-Below is an example of calling nebula-spark-connector jar package in pyspark. For instance, we could include it in pyspark shell like:
-
-```bash
-/spark/bin/pyspark --driver-class-path nebula-spark-connector-3.0.0.jar --jars nebula-spark-connector-3.0.0.jar
-```
+Below is an example of calling nebula-spark-connector jar package in pyspark.
 
 Then, read from Nebula Graph with `metaAddress` of `"metad0:9559"` as a dataframe:
 

@@ -175,6 +175,38 @@ You may then `show` the dataframe as follow:
 only showing top 2 rows
 ```
 
+Let's try a write example, by default, the `writeMode` is `insert`
+
+```python
+df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
+    "type", "vertex").option(
+    "spaceName", "basketballplayer").option(
+    "label", "player").option(
+    "vidPolicy", "").option(
+    "vertexField", "_vertexId").option(
+    "batch", 1).option(
+    "metaAddress", "metad0:9559").option(
+    "graphAddress", "graphd1:9669").option(
+    "passwd", "nebula").option(
+    "user", "root").save()
+```
+
+For delete or update write mode, we could(for instance)specify with `writeMode` as `delete` like:
+```python
+df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
+    "type", "vertex").option(
+    "spaceName", "basketballplayer").option(
+    "label", "player").option(
+    "vidPolicy", "").option(
+    "vertexField", "_vertexId").option(
+    "batch", 1).option(
+    "metaAddress", "metad0:9559").option(
+    "graphAddress", "graphd1:9669").option(
+    "passwd", "nebula").option(
+    "writeMode", "delete").option(
+    "user", "root").save()
+```
+
 ## Version match
 
 There are the version correspondence between Nebula Spark Connector and Nebula:

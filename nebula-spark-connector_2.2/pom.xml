@@ -54,6 +54,16 @@
             <artifactId>scalatest-funsuite_2.11</artifactId>
             <version>${scalatest.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.vesoft</groupId>
+            <artifactId>client</artifactId>
+            <version>${nebula.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vesoft</groupId>
+            <artifactId>nebula-spark-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

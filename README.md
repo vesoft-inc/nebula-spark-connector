@@ -207,6 +207,34 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
     "user", "root").save()
 ```
 
+Also, below are examples on how we run above code with pyspark shell or in python code files:
+
+- Call with PySpark shell:
+
+```bash
+/spark/bin/pyspark --driver-class-path nebula-spark-connector-3.0.0.jar --jars nebula-spark-connector-3.0.0.jar
+```
+
+- In Python code:
+
+```
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.config(
+    "nebula-spark-connector-3.0.0.jar",
+    "/path_to/nebula-spark-connector-3.0.0.jar").appName(
+        "nebula-connector").getOrCreate()
+
+df = spark.read.format(
+  "com.vesoft.nebula.connector.NebulaDataSource").option(
+    "type", "vertex").option(
+    "spaceName", "basketballplayer").option(
+    "label", "player").option(
+    "returnCols", "name,age").option(
+    "metaAddress", "metad0:9559").option(
+    "partitionNumber", 1).load()
+```
+
 ## Version match
 
 There are the version correspondence between Nebula Spark Connector and Nebula:

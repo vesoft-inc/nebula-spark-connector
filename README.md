@@ -203,6 +203,28 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
     "user", "root").save()
 ```
 
+For more options, i.e. delete edge with vertex being deleted, refer to [nebula/connector/NebulaOptions.scala
+](https://github.com/vesoft-inc/nebula-spark-connector/blob/master/nebula-spark-connector/src/main/scala/com/vesoft/nebula/connector/NebulaOptions.scala), we could know it's named as `deleteEdge` in option.
+
+```scala
+  /** write config */
+  val RATE_LIMIT: String   = "rateLimit"
+  val VID_POLICY: String   = "vidPolicy"
+  val SRC_POLICY: String   = "srcPolicy"
+  val DST_POLICY: String   = "dstPolicy"
+  val VERTEX_FIELD         = "vertexField"
+  val SRC_VERTEX_FIELD     = "srcVertexField"
+  val DST_VERTEX_FIELD     = "dstVertexField"
+  val RANK_FIELD           = "rankFiled"
+  val BATCH: String        = "batch"
+  val VID_AS_PROP: String  = "vidAsProp"
+  val SRC_AS_PROP: String  = "srcAsProp"
+  val DST_AS_PROP: String  = "dstAsProp"
+  val RANK_AS_PROP: String = "rankAsProp"
+  val WRITE_MODE: String   = "writeMode"
+  val DELETE_EDGE: String  = "deleteEdge"
+```
+
 Also, below are examples on how we run above code with pyspark shell or in python code files:
 
 - Call with PySpark shell:

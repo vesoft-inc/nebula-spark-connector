@@ -145,13 +145,9 @@ Nebula Spark Connector 2.0/3.0 仅支持 Nebula Graph 2.x/3.x。如果您正在�
 
 ## PySpark 中使用 Nebula Spark Connector
 
-下边是一个在 PySpark 中调用 nebula-spark-connector jar 包的例子。比如我们可以进入 PySpark REPL，指定 nebula-spark-connector 的 jar 包：
+下边是一个在 PySpark 中调用 nebula-spark-connector jar 包的例子。
 
-```bash
-/spark/bin/pyspark --driver-class-path nebula-spark-connector-3.0.0.jar --jars nebula-spark-connector-3.0.0.jar
-```
-
-然后，从 `metaAddress` 为 `"metad0:9559"` 的 Nebula Graph 中读取整个 tag 下的数据为一个 dataframe：
+从 `metaAddress` 为 `"metad0:9559"` 的 Nebula Graph 中读取整个 tag 下的数据为一个 dataframe：
 
 ```python
 df = spark.read.format(
@@ -175,6 +171,66 @@ df = spark.read.format(
 |player109|Tiago Splitter| 34|
 +---------+--------------+---+
 only showing top 2 rows
+```
+
+再试一试写入数据的例子，默认不指定的情况下 `writeMode` 是 `insert`：
+
+```python
+df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
+    "type", "vertex").option(
+    "spaceName", "basketballplayer").option(
+    "label", "player").option(
+    "vidPolicy", "").option(
+    "vertexField", "_vertexId").option(
+    "batch", 1).option(
+    "metaAddress", "metad0:9559").option(
+    "graphAddress", "graphd1:9669").option(
+    "passwd", "nebula").option(
+    "user", "root").save()
+```
+如果想指定 `delete` 或者 `update` 的非默认写入模式，增加 `writeMode` 的配置，比如 `delete` 的例子：
+
+```python
+df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
+    "type", "vertex").option(
+    "spaceName", "basketballplayer").option(
+    "label", "player").option(
+    "vidPolicy", "").option(
+    "vertexField", "_vertexId").option(
+    "batch", 1).option(
+    "metaAddress", "metad0:9559").option(
+    "graphAddress", "graphd1:9669").option(
+    "passwd", "nebula").option(
+    "writeMode", "delete").option(
+    "user", "root").save()
+```
+
+最后，这里给出用 PySpark Shell 和在 Python 代码里调用 Spark Connector 的例子：
+
+- Call with PySpark shell:
+
+```bash
+/spark/bin/pyspark --driver-class-path nebula-spark-connector-3.0.0.jar --jars nebula-spark-connector-3.0.0.jar
+```
+
+- In Python code:
+
+```
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.config(
+    "nebula-spark-connector-3.0.0.jar",
+    "/path_to/nebula-spark-connector-3.0.0.jar").appName(
+        "nebula-connector").getOrCreate()
+
+df = spark.read.format(
+  "com.vesoft.nebula.connector.NebulaDataSource").option(
+    "type", "vertex").option(
+    "spaceName", "basketballplayer").option(
+    "label", "player").option(
+    "returnCols", "name,age").option(
+    "metaAddress", "metad0:9559").option(
+    "partitionNumber", 1).load()
 ```
 
 ## 版本匹配

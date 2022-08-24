@@ -145,7 +145,7 @@ Nebula Spark Connector 2.0/3.0 仅支持 Nebula Graph 2.x/3.x。如果您正在�
 
 ## PySpark 中使用 Nebula Spark Connector
 
-下边是一个在 PySpark 中调用 nebula-spark-connector jar 包的例子。
+### PySpark 中读取 NebulaGraph 中数据
 
 从 `metaAddress` 为 `"metad0:9559"` 的 Nebula Graph 中读取整个 tag 下的数据为一个 dataframe：
 
@@ -172,6 +172,8 @@ df = spark.read.format(
 +---------+--------------+---+
 only showing top 2 rows
 ```
+
+### PySpark 中写 NebulaGraph 中数据
 
 再试一试写入数据的例子，默认不指定的情况下 `writeMode` 是 `insert`：
 
@@ -205,6 +207,9 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
     "user", "root").save()
 ```
 
+### 关于 PySpark 读写的 option
+
+
 对于其他的 option，比如删除点的时候的 `withDeleteEdge` 可以参考 [nebula/connector/NebulaOptions.scala
 ](https://github.com/vesoft-inc/nebula-spark-connector/blob/master/nebula-spark-connector/src/main/scala/com/vesoft/nebula/connector/NebulaOptions.scala) 的字符串配置定义，我们可以看到它的字符串定义字段是 `deleteEdge` ：
 
@@ -226,6 +231,8 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
   val WRITE_MODE: String   = "writeMode"
   val DELETE_EDGE: String  = "deleteEdge"
 ```
+
+### 如何在 PySpark 中调用 Nebula Spark Connector
 
 最后，这里给出用 PySpark Shell 和在 Python 代码里调用 Spark Connector 的例子：
 

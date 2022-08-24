@@ -145,7 +145,9 @@ For more information on usage, please refer to [Example](https://github.com/veso
 
 Below is an example of calling nebula-spark-connector jar package in pyspark.
 
-Then, read from Nebula Graph with `metaAddress` of `"metad0:9559"` as a dataframe:
+### Read in PySpark
+
+Read from NebulaGraph with `metaAddress` of `"metad0:9559"` as a dataframe:
 
 ```python
 df = spark.read.format(
@@ -170,6 +172,8 @@ You may then `show` the dataframe as follow:
 +---------+--------------+---+
 only showing top 2 rows
 ```
+
+### Write in PySpark
 
 Let's try a write example, by default, the `writeMode` is `insert`
 
@@ -203,6 +207,8 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
     "user", "root").save()
 ```
 
+### Options in PySpark
+
 For more options, i.e. delete edge with vertex being deleted, refer to [nebula/connector/NebulaOptions.scala
 ](https://github.com/vesoft-inc/nebula-spark-connector/blob/master/nebula-spark-connector/src/main/scala/com/vesoft/nebula/connector/NebulaOptions.scala), we could know it's named as `deleteEdge` in option.
 
@@ -224,6 +230,8 @@ For more options, i.e. delete edge with vertex being deleted, refer to [nebula/c
   val WRITE_MODE: String   = "writeMode"
   val DELETE_EDGE: String  = "deleteEdge"
 ```
+
+### Call Nebula Spark Connector in PySpark shell and .py file
 
 Also, below are examples on how we run above code with pyspark shell or in python code files:
 

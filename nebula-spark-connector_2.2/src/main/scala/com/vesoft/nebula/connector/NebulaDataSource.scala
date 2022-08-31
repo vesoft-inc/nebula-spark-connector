@@ -1,4 +1,4 @@
-/* Copyright (c) 2020 vesoft inc. All rights reserved.
+/* Copyright (c) 2022 vesoft inc. All rights reserved.
  *
  * This source code is licensed under Apache 2.0 License.
  */
@@ -23,12 +23,14 @@ import org.apache.spark.sql.sources.{
   DataSourceRegister,
   RelationProvider
 }
+import org.apache.spark.sql.types.StructType
 import org.slf4j.LoggerFactory
 
 class NebulaDataSource
     extends RelationProvider
     with CreatableRelationProvider
-    with DataSourceRegister {
+    with DataSourceRegister
+    with Serializable {
   private val LOG = LoggerFactory.getLogger(this.getClass)
 
   /**
@@ -58,7 +60,6 @@ class NebulaDataSource
                               data: DataFrame): BaseRelation = {
 
     val nebulaOptions = getNebulaOptions(parameters, OperaType.WRITE)
-    val dataType      = nebulaOptions.dataType
     if (mode == SaveMode.Ignore || mode == SaveMode.ErrorIfExists) {
       LOG.warn(s"Currently do not support mode")
     }
@@ -67,7 +68,27 @@ class NebulaDataSource
     LOG.info(s"options ${parameters}")
 
     val schema = data.schema
-    val writer: NebulaWriter =
+    data.foreachPartition(iterator => {
+      savePartition(nebulaOptions, schema, iterator)
+    })
+
+    new NebulaWriterResultRelation(sqlContext, data.schema)
+  }
+
+  /**
+    * construct nebula options with DataSourceOptions
+    */
+  def getNebulaOptions(options: Map[String, String],
+                       operateType: OperaType.Value): NebulaOptions = {
+    val nebulaOptions = new NebulaOptions(CaseInsensitiveMap(options))(operateType)
+    nebulaOptions
+  }
+
+  private def savePartition(nebulaOptions: NebulaOptions,
+                            schema: StructType,
+                            iterator: Iterator[Row]): Unit = {
+    val dataType = nebulaOptions.dataType
+    val writer: NebulaWriter = {
       if (DataTypeEnum.VERTEX == DataTypeEnum.withName(dataType)) {
         val vertexFiled = nebulaOptions.vertexField
         val vertexIndex: Int = {
@@ -128,28 +149,15 @@ class NebulaDataSource
                              edgeFieldsIndex._3,
                              schema).asInstanceOf[NebulaWriter]
       }
-
-    val wc: (TaskContext, Iterator[Row]) => NebulaCommitMessage = writer.writeData()
-    val rdd                                                     = data.rdd
-    val commitMessages                                          = sqlContext.sparkContext.runJob(rdd, wc)
-
-    LOG.info(s"runJob finished...${commitMessages.length}")
-    for (msg <- commitMessages) {
-      if (msg.executeStatements.nonEmpty) {
-        LOG.error(s"failed execs:\n ${msg.executeStatements.toString()}")
-      } else {
-        LOG.info(s"execs for spark partition ${msg.partitionId} all succeed")
-      }
     }
-    new NebulaWriterResultRelation(sqlContext, data.schema)
-  }
+    val message = writer.writeData(iterator)
+    LOG.debug(
+      s"spark partition id ${message.partitionId} write failed size: ${message.executeStatements.length}")
+    if (message.executeStatements.nonEmpty) {
+      LOG.error(s"failed execs:\n ${message.executeStatements.toString()}")
+    } else {
+      LOG.info(s"execs for spark partition ${TaskContext.getPartitionId()} all succeed")
+    }
 
-  /**
-    * construct nebula options with DataSourceOptions
-    */
-  def getNebulaOptions(options: Map[String, String],
-                       operateType: OperaType.Value): NebulaOptions = {
-    val nebulaOptions = new NebulaOptions(CaseInsensitiveMap(options))(operateType)
-    nebulaOptions
   }
 }

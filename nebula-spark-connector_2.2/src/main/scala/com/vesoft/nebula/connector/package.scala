@@ -1,4 +1,4 @@
-/* Copyright (c) 2020 vesoft inc. All rights reserved.
+/* Copyright (c) 2022 vesoft inc. All rights reserved.
  *
  * This source code is licensed under Apache 2.0 License.
  */
@@ -7,9 +7,7 @@ package com.vesoft.nebula.connector
 
 import com.vesoft.nebula.connector.ssl.SSLSignType
 import com.vesoft.nebula.connector.writer.NebulaExecutor
-import org.apache.commons.codec.digest.MurmurHash2
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.types.LongType
 import org.apache.spark.sql.{
   DataFrame,
   DataFrameReader,

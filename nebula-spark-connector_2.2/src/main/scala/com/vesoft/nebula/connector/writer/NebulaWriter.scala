@@ -1,4 +1,4 @@
-/* Copyright (c) 2020 vesoft inc. All rights reserved.
+/* Copyright (c) 2022 vesoft inc. All rights reserved.
  *
  * This source code is licensed under Apache 2.0 License.
  */
@@ -68,5 +68,7 @@ abstract class NebulaWriter(nebulaOptions: NebulaOptions, schema: StructType) ex
 
   def write(row: InternalRow): Unit
 
-  def writeData(): (TaskContext, Iterator[Row]) => NebulaCommitMessage
+  /** write dataframe data into nebula for each partition */
+  def writeData(iterator: Iterator[Row]): NebulaCommitMessage
+
 }

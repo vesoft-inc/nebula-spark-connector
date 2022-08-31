@@ -1,4 +1,4 @@
-/* Copyright (c) 2020 vesoft inc. All rights reserved.
+/* Copyright (c) 2022 vesoft inc. All rights reserved.
  *
  * This source code is licensed under Apache 2.0 License.
  */
@@ -40,6 +40,19 @@ class NebulaVertexWriter(nebulaOptions: NebulaOptions, vertexIndex: Int, schema:
 
   prepareSpace()
 
+  override def writeData(iterator: Iterator[Row]): NebulaCommitMessage = {
+    while (iterator.hasNext) {
+      val internalRow = rowEncoder.toRow(iterator.next())
+      write(internalRow)
+    }
+    if (vertices.nonEmpty) {
+      execute()
+    }
+    graphProvider.close()
+    metaProvider.close()
+    NebulaCommitMessage(TaskContext.getPartitionId(), failedExecs.toList)
+  }
+
   /**
     * write one vertex row to buffer
     */
@@ -78,17 +91,4 @@ class NebulaVertexWriter(nebulaOptions: NebulaOptions, vertexIndex: Int, schema:
     vertices.clear()
     submit(exec)
   }
-
-  override def writeData(): (TaskContext, Iterator[Row]) => NebulaCommitMessage =
-    (context, iterRow) => {
-      while (iterRow.hasNext) {
-        val internalRow = rowEncoder.toRow(iterRow.next())
-        write(internalRow)
-      }
-      if (vertices.nonEmpty) {
-        execute()
-      }
-      graphProvider.close()
-      NebulaCommitMessage(TaskContext.getPartitionId(), failedExecs.toList)
-    }
 }

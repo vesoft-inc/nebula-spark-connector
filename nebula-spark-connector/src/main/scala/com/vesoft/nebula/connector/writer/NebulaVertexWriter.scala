@@ -84,6 +84,7 @@ class NebulaVertexWriter(nebulaOptions: NebulaOptions, vertexIndex: Int, schema:
       execute()
     }
     graphProvider.close()
+    metaProvider.close()
     NebulaCommitMessage(failedExecs.toList)
   }
 

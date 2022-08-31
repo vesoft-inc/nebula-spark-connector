@@ -100,6 +100,7 @@ class NebulaEdgeWriter(nebulaOptions: NebulaOptions,
       execute()
     }
     graphProvider.close()
+    metaProvider.close()
     NebulaCommitMessage.apply(failedExecs.toList)
   }
 

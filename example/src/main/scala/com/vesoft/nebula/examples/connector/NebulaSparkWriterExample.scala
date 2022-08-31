@@ -14,7 +14,7 @@ import com.vesoft.nebula.connector.{
 }
 import com.vesoft.nebula.connector.connector.NebulaDataFrameWriter
 import com.vesoft.nebula.connector.ssl.SSLSignType
-import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.storage.StorageLevel
 import org.slf4j.LoggerFactory
@@ -27,59 +27,21 @@ object NebulaSparkWriterExample {
     val sparkConf = new SparkConf
     sparkConf
       .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-      .set("spark.driver.allowMultipleContexts", "true")
       .registerKryoClasses(Array[Class[_]](classOf[TCompactProtocol]))
-//      .set("spark.driver.allowMultipleContexts", "true")
-//      .set("spark.neo4j.bolt.url", "bolt://192.168.8.87:7687/")
-//      .set("spark.neo4j.bolt.user", "neo4j")
-//      .set("spark.neo4j.bolt.password", "nebula")
-
     val spark = SparkSession
       .builder()
       .master("local")
       .config(sparkConf)
       .getOrCreate()
 
-    import org.neo4j.spark._
+    writeVertex(spark)
+    writeEdge(spark)
 
-    val sparkConfSettings = spark.sparkContext.getConf.getAll
+    updateVertex(spark)
+    updateEdge(spark)
 
-    val newSparkConf = new SparkConf()
-      .set("spark.driver.allowMultipleContexts", "true")
-      .set("spark.neo4j.bolt.url", "bolt://192.168.8.87:7687/")
-      .set("spark.neo4j.bolt.user", "neo4j")
-      .set("spark.neo4j.bolt.password", "nebula")
-    for (entry <- sparkConfSettings) {
-      newSparkConf.set(entry._1, entry._2)
-    }
-    val sc  = new SparkContext(newSparkConf)
-    val neo = Neo4j(sc)
-
-    val data = neo
-      .cypher("MATCH (n:对公客户) RETURN id(n) as id ")
-      .partitions(1)
-      .batch(25)
-      .loadDataFrame
-    data.show()
-
-    //   => res36: Long = 100
-
-    //val df = neo.pattern("对公客户", Seq("p"), "对公客户").partitions(12).batch(100).loadDataFrame
-
-    val df = neo
-      .cypher("match p=() -[r:p]->() return r.pop1, r.pop2, r.pop3, r.pop4")
-      .partitions(1)
-      .batch(10)
-      .loadDataFrame
-    df.show()
-//    writeVertex(spark)
-//    writeEdge(spark)
-//
-//    updateVertex(spark)
-//    updateEdge(spark)
-//
-//    deleteVertex(spark)
-//    deleteEdge(spark)
+    deleteVertex(spark)
+    deleteEdge(spark)
 
     spark.close()
   }

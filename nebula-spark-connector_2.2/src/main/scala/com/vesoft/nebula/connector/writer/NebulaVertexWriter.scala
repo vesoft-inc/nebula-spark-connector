@@ -1,4 +1,4 @@
-/* Copyright (c) 2020 vesoft inc. All rights reserved.
+/* Copyright (c) 2022 vesoft inc. All rights reserved.
  *
  * This source code is licensed under Apache 2.0 License.
  */
@@ -12,16 +12,16 @@ import com.vesoft.nebula.connector.{
   NebulaVertices,
   WriteMode
 }
+import org.apache.spark.TaskContext
+import org.apache.spark.sql.Row
 import org.apache.spark.sql.catalyst.InternalRow
-import org.apache.spark.sql.sources.v2.writer.{DataWriter, WriterCommitMessage}
 import org.apache.spark.sql.types.StructType
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable.ListBuffer
 
 class NebulaVertexWriter(nebulaOptions: NebulaOptions, vertexIndex: Int, schema: StructType)
-    extends NebulaWriter(nebulaOptions)
-    with DataWriter[InternalRow] {
+    extends NebulaWriter(nebulaOptions, schema) {
 
   private val LOG = LoggerFactory.getLogger(this.getClass)
 
@@ -39,6 +39,19 @@ class NebulaVertexWriter(nebulaOptions: NebulaOptions, vertexIndex: Int, schema:
   var vertices: ListBuffer[NebulaVertex] = new ListBuffer()
 
   prepareSpace()
+
+  override def writeData(iterator: Iterator[Row]): NebulaCommitMessage = {
+    while (iterator.hasNext) {
+      val internalRow = rowEncoder.toRow(iterator.next())
+      write(internalRow)
+    }
+    if (vertices.nonEmpty) {
+      execute()
+    }
+    graphProvider.close()
+    metaProvider.close()
+    NebulaCommitMessage(TaskContext.getPartitionId(), failedExecs.toList)
+  }
 
   /**
     * write one vertex row to buffer
@@ -64,7 +77,7 @@ class NebulaVertexWriter(nebulaOptions: NebulaOptions, vertexIndex: Int, schema:
   /**
     * submit buffer vertices to nebula
     */
-  def execute(): Unit = {
+  private def execute(): Unit = {
     val nebulaVertices = NebulaVertices(propNames, vertices.toList, policy)
     val exec = nebulaOptions.writeMode match {
       case WriteMode.INSERT => NebulaExecutor.toExecuteSentence(nebulaOptions.label, nebulaVertices)
@@ -77,19 +90,5 @@ class NebulaVertexWriter(nebulaOptions: NebulaOptions, vertexIndex: Int, schema:
     }
     vertices.clear()
     submit(exec)
-  }
-
-  override def commit(): WriterCommitMessage = {
-    if (vertices.nonEmpty) {
-      execute()
-    }
-    graphProvider.close()
-    metaProvider.close()
-    NebulaCommitMessage(failedExecs.toList)
-  }
-
-  override def abort(): Unit = {
-    LOG.error("insert vertex task abort.")
-    graphProvider.close()
   }
 }

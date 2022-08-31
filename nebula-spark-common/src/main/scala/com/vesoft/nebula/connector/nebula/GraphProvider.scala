@@ -13,7 +13,7 @@ import com.vesoft.nebula.client.graph.data.{
   SelfSignedSSLParam
 }
 import com.vesoft.nebula.client.graph.net.{NebulaPool, Session}
-import com.vesoft.nebula.connector.connector.Address
+import com.vesoft.nebula.connector.Address
 import com.vesoft.nebula.connector.exception.GraphConnectException
 import com.vesoft.nebula.connector.ssl.{CASSLSignParams, SSLSignType, SelfSSLSignParams}
 import org.apache.log4j.Logger
@@ -32,7 +32,7 @@ class GraphProvider(addresses: List[Address],
                     selfSignParam: SelfSSLSignParams = null)
     extends AutoCloseable
     with Serializable {
-  private[this] lazy val LOG = Logger.getLogger(this.getClass)
+  @transient private[this] lazy val LOG = Logger.getLogger(this.getClass)
 
   @transient val nebulaPoolConfig = new NebulaPoolConfig
 
@@ -62,7 +62,7 @@ class GraphProvider(addresses: List[Address],
   }
   pool.init(address.asJava, nebulaPoolConfig)
 
-  var session: Session = null
+  var session: Session = _
 
   /**
     * release session

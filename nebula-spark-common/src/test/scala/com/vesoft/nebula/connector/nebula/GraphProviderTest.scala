@@ -5,7 +5,7 @@
 
 package com.vesoft.nebula.connector.nebula
 
-import com.vesoft.nebula.connector.connector.Address
+import com.vesoft.nebula.connector.Address
 import com.vesoft.nebula.connector.mock.NebulaGraphMock
 import org.apache.log4j.BasicConfigurator
 import org.scalatest.BeforeAndAfterAll

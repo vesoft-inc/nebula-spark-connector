@@ -1,4 +1,4 @@
-/* Copyright (c) 2020 vesoft inc. All rights reserved.
+/* Copyright (c) 2022 vesoft inc. All rights reserved.
  *
  * This source code is licensed under Apache 2.0 License.
  */
@@ -12,28 +12,31 @@ import com.vesoft.nebula.client.graph.data.{
   SelfSignedSSLParam,
   ValueWrapper
 }
-import com.vesoft.nebula.client.storage.StorageClient
 import com.vesoft.nebula.client.storage.data.BaseTableRow
-import com.vesoft.nebula.connector.NebulaUtils.NebulaValueGetter
+import com.vesoft.nebula.client.storage.StorageClient
 import com.vesoft.nebula.connector.{NebulaOptions, NebulaUtils, PartitionUtils}
+import com.vesoft.nebula.connector.NebulaUtils.NebulaValueGetter
 import com.vesoft.nebula.connector.exception.GraphConnectException
 import com.vesoft.nebula.connector.nebula.MetaProvider
 import com.vesoft.nebula.connector.ssl.SSLSignType
+import org.apache.spark.Partition
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.SpecificInternalRow
-import org.apache.spark.sql.sources.v2.reader.InputPartitionReader
 import org.apache.spark.sql.types.StructType
 import org.slf4j.{Logger, LoggerFactory}
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
+import scala.collection.JavaConverters._
 
 /**
-  * Read nebula data for each spark partition
+  * @todo
+  * iterator for nebula vertex or edge data
+  * convert each vertex data or edge data to Spark SQL's Row
   */
-abstract class NebulaPartitionReader extends InputPartitionReader[InternalRow] {
-  private val LOG: Logger = LoggerFactory.getLogger(this.getClass)
+abstract class NebulaIterator extends Iterator[InternalRow] {
+
+  private val LOG: Logger = LoggerFactory.getLogger(classOf[NebulaIterator])
 
   private var metaProvider: MetaProvider = _
   private var schema: StructType         = _
@@ -43,12 +46,7 @@ abstract class NebulaPartitionReader extends InputPartitionReader[InternalRow] {
   protected var resultValues: mutable.ListBuffer[List[Object]] = mutable.ListBuffer[List[Object]]()
   protected var storageClient: StorageClient                   = _
 
-  /**
-    * @param index identifier for spark partition
-    * @param nebulaOptions nebula Options
-    * @param schema of data need to read
-    */
-  def this(index: Int, nebulaOptions: NebulaOptions, schema: StructType) {
+  def this(index: Partition, nebulaOptions: NebulaOptions, schema: StructType) {
     this()
     this.schema = schema
 
@@ -101,13 +99,24 @@ abstract class NebulaPartitionReader extends InputPartitionReader[InternalRow] {
     // allocate scanPart to this partition
     val totalPart = metaProvider.getPartitionNumber(nebulaOptions.spaceName)
 
-    // index starts with 1
-    val scanParts = PartitionUtils.getScanParts(index, totalPart, nebulaOptions.partitionNums.toInt)
+    val nebulaPartition = index.asInstanceOf[NebulaPartition]
+    val scanParts =
+      nebulaPartition.getScanParts(totalPart, nebulaOptions.partitionNums.toInt)
     LOG.info(s"partition index: ${index}, scanParts: ${scanParts.toString}")
     scanPartIterator = scanParts.iterator
   }
 
-  override def get(): InternalRow = {
+  /**
+    * @todo
+    * whether this iterator can provide another element.
+    */
+  override def hasNext: Boolean
+
+  /**
+    * @todo
+    * Produces the next vertex or edge of this iterator.
+    */
+  override def next(): InternalRow = {
     val resultSet: Array[ValueWrapper] =
       dataIterator.next().getValues.toArray.map(v => v.asInstanceOf[ValueWrapper])
     val getters: Array[NebulaValueGetter] = NebulaUtils.makeGetters(schema)
@@ -155,8 +164,4 @@ abstract class NebulaPartitionReader extends InputPartitionReader[InternalRow] {
     mutableRow
   }
 
-  override def close(): Unit = {
-    metaProvider.close()
-    storageClient.close()
-  }
 }

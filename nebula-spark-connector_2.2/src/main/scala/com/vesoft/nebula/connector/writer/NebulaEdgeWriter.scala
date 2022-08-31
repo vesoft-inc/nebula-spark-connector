@@ -1,14 +1,14 @@
-/* Copyright (c) 2020 vesoft inc. All rights reserved.
+/* Copyright (c) 2022 vesoft inc. All rights reserved.
  *
  * This source code is licensed under Apache 2.0 License.
  */
 
 package com.vesoft.nebula.connector.writer
 
-import com.vesoft.nebula.connector.{NebulaEdge, NebulaEdges}
-import com.vesoft.nebula.connector.{KeyPolicy, NebulaOptions, WriteMode}
+import com.vesoft.nebula.connector.{KeyPolicy, NebulaEdge, NebulaEdges, NebulaOptions, WriteMode}
+import org.apache.spark.TaskContext
+import org.apache.spark.sql.Row
 import org.apache.spark.sql.catalyst.InternalRow
-import org.apache.spark.sql.sources.v2.writer.{DataWriter, WriterCommitMessage}
 import org.apache.spark.sql.types.StructType
 import org.slf4j.LoggerFactory
 
@@ -19,8 +19,7 @@ class NebulaEdgeWriter(nebulaOptions: NebulaOptions,
                        dstIndex: Int,
                        rankIndex: Option[Int],
                        schema: StructType)
-    extends NebulaWriter(nebulaOptions)
-    with DataWriter[InternalRow] {
+    extends NebulaWriter(nebulaOptions, schema) {
 
   private val LOG = LoggerFactory.getLogger(this.getClass)
 
@@ -48,6 +47,19 @@ class NebulaEdgeWriter(nebulaOptions: NebulaOptions,
   var edges: ListBuffer[NebulaEdge] = new ListBuffer()
 
   prepareSpace()
+
+  override def writeData(iterator: Iterator[Row]): NebulaCommitMessage = {
+    while (iterator.hasNext) {
+      val internalRow = rowEncoder.toRow(iterator.next())
+      write(internalRow)
+    }
+    if (edges.nonEmpty) {
+      execute()
+    }
+    graphProvider.close()
+    metaProvider.close()
+    NebulaCommitMessage(TaskContext.getPartitionId(), failedExecs.toList)
+  }
 
   /**
     * write one edge record to buffer
@@ -93,19 +105,5 @@ class NebulaEdgeWriter(nebulaOptions: NebulaOptions,
     }
     edges.clear()
     submit(exec)
-  }
-
-  override def commit(): WriterCommitMessage = {
-    if (edges.nonEmpty) {
-      execute()
-    }
-    graphProvider.close()
-    metaProvider.close()
-    NebulaCommitMessage.apply(failedExecs.toList)
-  }
-
-  override def abort(): Unit = {
-    LOG.error("insert edge task abort.")
-    graphProvider.close()
   }
 }

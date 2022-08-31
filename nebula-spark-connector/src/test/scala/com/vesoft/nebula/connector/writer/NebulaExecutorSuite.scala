@@ -6,7 +6,7 @@
 package com.vesoft.nebula.connector.writer
 
 import com.vesoft.nebula.connector.KeyPolicy
-import com.vesoft.nebula.connector.connector.{NebulaEdge, NebulaEdges, NebulaVertex, NebulaVertices}
+import com.vesoft.nebula.connector.{NebulaEdge, NebulaEdges, NebulaVertex, NebulaVertices}
 import org.apache.log4j.BasicConfigurator
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.GenericInternalRow
@@ -335,9 +335,13 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
     vertices.append(NebulaVertex("\"vid2\"", List()))
 
     val nebulaVertices              = NebulaVertices(List(), vertices.toList, None)
-    val vertexStatement             = NebulaExecutor.toDeleteExecuteStatement(nebulaVertices)
+    val vertexStatement             = NebulaExecutor.toDeleteExecuteStatement(nebulaVertices, false)
     val expectVertexDeleteStatement = "DELETE VERTEX \"vid1\",\"vid2\""
     assert(expectVertexDeleteStatement.equals(vertexStatement))
+
+    val vertexWithEdgeStatement             = NebulaExecutor.toDeleteExecuteStatement(nebulaVertices, true)
+    val expectVertexWithEdgeDeleteStatement = "DELETE VERTEX \"vid1\",\"vid2\" WITH EDGE"
+    assert(expectVertexWithEdgeDeleteStatement.equals(vertexWithEdgeStatement))
   }
 
   test("test toDeleteExecuteStatement for vertex with HASH policy") {
@@ -346,9 +350,14 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
     vertices.append(NebulaVertex("vid2", List()))
 
     val nebulaVertices              = NebulaVertices(List(), vertices.toList, Some(KeyPolicy.HASH))
-    val vertexStatement             = NebulaExecutor.toDeleteExecuteStatement(nebulaVertices)
+    val vertexStatement             = NebulaExecutor.toDeleteExecuteStatement(nebulaVertices, false)
     val expectVertexDeleteStatement = "DELETE VERTEX hash(\"vid1\"),hash(\"vid2\")"
     assert(expectVertexDeleteStatement.equals(vertexStatement))
+
+    val vertexWithEdgeStatement = NebulaExecutor.toDeleteExecuteStatement(nebulaVertices, true)
+    val expectVertexWithEdgeDeleteStatement =
+      "DELETE VERTEX hash(\"vid1\"),hash(\"vid2\") WITH EDGE"
+    assert(expectVertexWithEdgeDeleteStatement.equals(vertexWithEdgeStatement))
   }
 
   test("test toDeleteExecuteStatement for edge") {

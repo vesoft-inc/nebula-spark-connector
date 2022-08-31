@@ -1,43 +1,36 @@
-/* Copyright (c) 2020 vesoft inc. All rights reserved.
+/* Copyright (c) 2022 vesoft inc. All rights reserved.
  *
  * This source code is licensed under Apache 2.0 License.
  */
 
 package com.vesoft.nebula.connector.reader
 
-import java.util
-
 import com.vesoft.nebula.connector.nebula.MetaProvider
 import com.vesoft.nebula.connector.{DataTypeEnum, NebulaOptions, NebulaUtils}
 import com.vesoft.nebula.meta.ColumnDef
-import org.apache.spark.sql.catalyst.InternalRow
-import org.apache.spark.sql.sources.v2.reader.{DataSourceReader, InputPartition}
-import org.apache.spark.sql.types.{DataTypes, StructField, StructType}
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.{Row, SQLContext}
+import org.apache.spark.sql.sources.{BaseRelation, TableScan}
+import org.apache.spark.sql.types.{DataType, DataTypes, StructField, StructType}
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable.ListBuffer
-import scala.collection.JavaConverters._
 
-/**
-  * Base class of Nebula Source Reader
-  */
-abstract class NebulaSourceReader(nebulaOptions: NebulaOptions) extends DataSourceReader {
+case class NebulaRelation(override val sqlContext: SQLContext, nebulaOptions: NebulaOptions)
+    extends BaseRelation
+    with TableScan {
   private val LOG = LoggerFactory.getLogger(this.getClass)
 
-  private var datasetSchema: StructType = _
+  protected lazy val datasetSchema: StructType = getSchema(nebulaOptions)
 
-  override def readSchema(): StructType = {
-    datasetSchema = getSchema(nebulaOptions)
-    LOG.info(s"dataset's schema: $datasetSchema")
-    datasetSchema
-  }
+  override val needConversion: Boolean = false
 
-  protected def getSchema: StructType = getSchema(nebulaOptions)
+  override def schema: StructType = getSchema(nebulaOptions)
 
   /**
     * return the dataset's schema. Schema includes configured cols in returnCols or includes all properties in nebula.
     */
-  def getSchema(nebulaOptions: NebulaOptions): StructType = {
+  private def getSchema(nebulaOptions: NebulaOptions): StructType = {
     val returnCols                      = nebulaOptions.getReturnCols
     val noColumn                        = nebulaOptions.noColumn
     val fields: ListBuffer[StructField] = new ListBuffer[StructField]
@@ -99,35 +92,8 @@ abstract class NebulaSourceReader(nebulaOptions: NebulaOptions) extends DataSour
     dataSchema = new StructType(fields.toArray)
     dataSchema
   }
-}
 
-/**
-  * DataSourceReader for Nebula Vertex
-  */
-class NebulaDataSourceVertexReader(nebulaOptions: NebulaOptions)
-    extends NebulaSourceReader(nebulaOptions) {
-
-  override def planInputPartitions(): util.List[InputPartition[InternalRow]] = {
-    val partitionNum = nebulaOptions.partitionNums.toInt
-    val partitions = for (index <- 1 to partitionNum)
-      yield {
-        new NebulaVertexPartition(index, nebulaOptions, getSchema)
-      }
-    partitions.map(_.asInstanceOf[InputPartition[InternalRow]]).asJava
-  }
-}
-
-/**
-  * DataSourceReader for Nebula Edge
-  */
-class NebulaDataSourceEdgeReader(nebulaOptions: NebulaOptions)
-    extends NebulaSourceReader(nebulaOptions) {
-
-  override def planInputPartitions(): util.List[InputPartition[InternalRow]] = {
-    val partitionNum = nebulaOptions.partitionNums.toInt
-    val partitions = for (index <- 1 to partitionNum)
-      yield new NebulaEdgePartition(index, nebulaOptions, getSchema)
-
-    partitions.map(_.asInstanceOf[InputPartition[InternalRow]]).asJava
+  override def buildScan(): RDD[Row] = {
+    new NebulaRDD(sqlContext, nebulaOptions, datasetSchema).asInstanceOf[RDD[Row]]
   }
 }

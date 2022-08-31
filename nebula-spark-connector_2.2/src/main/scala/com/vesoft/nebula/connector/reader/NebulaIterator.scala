@@ -99,8 +99,9 @@ abstract class NebulaIterator extends Iterator[InternalRow] {
     // allocate scanPart to this partition
     val totalPart = metaProvider.getPartitionNumber(nebulaOptions.spaceName)
 
+    val nebulaPartition = index.asInstanceOf[NebulaPartition]
     val scanParts =
-      PartitionUtils.getScanParts(index.index, totalPart, nebulaOptions.partitionNums.toInt)
+      nebulaPartition.getScanParts(totalPart, nebulaOptions.partitionNums.toInt)
     LOG.info(s"partition index: ${index}, scanParts: ${scanParts.toString}")
     scanPartIterator = scanParts.iterator
   }

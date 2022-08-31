@@ -5,7 +5,6 @@
 
 package com.vesoft.nebula.connector.reader
 
-import com.sun.prism.PixelFormat.DataType
 import com.vesoft.nebula.connector.{DataTypeEnum, NebulaOptions}
 import org.apache.spark.{Partition, TaskContext}
 import org.apache.spark.rdd.RDD

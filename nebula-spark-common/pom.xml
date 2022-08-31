@@ -19,9 +19,6 @@
         <scalatest.version>3.2.3</scalatest.version>
         <junit.version>4.13.1</junit.version>
         <codec.version>1.13</codec.version>
-
-        <scala.binary.version>2.11</scala.binary.version>
-        <spark.version>2.4.4</spark.version>
     </properties>
 
     <dependencies>

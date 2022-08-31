@@ -28,11 +28,12 @@ class MetaProvider(addresses: List[Address],
                    sslSignType: String = null,
                    caSignParam: CASSLSignParams,
                    selfSignParam: SelfSSLSignParams)
-    extends AutoCloseable {
+    extends AutoCloseable
+    with Serializable {
 
-  val metaAddress        = addresses.map(address => new HostAddress(address._1, address._2)).asJava
-  var client: MetaClient = null
-  var sslParam: SSLParam = null
+  val metaAddress                   = addresses.map(address => new HostAddress(address._1, address._2)).asJava
+  @transient var client: MetaClient = null
+  @transient var sslParam: SSLParam = null
   if (enableSSL) {
     SSLSignType.withName(sslSignType) match {
       case SSLSignType.CA =>

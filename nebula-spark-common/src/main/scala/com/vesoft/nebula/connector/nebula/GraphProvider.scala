@@ -32,7 +32,7 @@ class GraphProvider(addresses: List[Address],
                     selfSignParam: SelfSSLSignParams = null)
     extends AutoCloseable
     with Serializable {
-  private[this] lazy val LOG = Logger.getLogger(this.getClass)
+  @transient private[this] lazy val LOG = Logger.getLogger(this.getClass)
 
   @transient val nebulaPoolConfig = new NebulaPoolConfig
 
@@ -62,7 +62,7 @@ class GraphProvider(addresses: List[Address],
   }
   pool.init(address.asJava, nebulaPoolConfig)
 
-  var session: Session = null
+  var session: Session = _
 
   /**
     * release session

@@ -13,35 +13,28 @@
     <artifactId>nebula-spark-connector</artifactId>
 
     <properties>
-        <spark.version>2.4.4</spark.version>
+        <spark2.4.version>2.4.4</spark2.4.version>
         <compiler.source.version>1.8</compiler.source.version>
         <compiler.target.version>1.8</compiler.target.version>
-        <scalatest.version>3.2.3</scalatest.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_2.11</artifactId>
-            <version>${spark.version}</version>
+            <version>${spark2.4.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_2.11</artifactId>
-            <version>${spark.version}</version>
+            <version>${spark2.4.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-graphx_2.11</artifactId>
-            <version>${spark.version}</version>
+            <version>${spark2.4.version}</version>
         </dependency>
 
-        <!-- scalatest -->
-        <dependency>
-            <groupId>org.scalatest</groupId>
-            <artifactId>scalatest-funsuite_2.11</artifactId>
-            <version>${scalatest.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.vesoft</groupId>
             <artifactId>nebula-spark-common</artifactId>

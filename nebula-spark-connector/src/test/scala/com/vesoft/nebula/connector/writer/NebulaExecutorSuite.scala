@@ -6,7 +6,7 @@
 package com.vesoft.nebula.connector.writer
 
 import com.vesoft.nebula.connector.KeyPolicy
-import com.vesoft.nebula.connector.connector.{NebulaEdge, NebulaEdges, NebulaVertex, NebulaVertices}
+import com.vesoft.nebula.connector.{NebulaEdge, NebulaEdges, NebulaVertex, NebulaVertices}
 import org.apache.log4j.BasicConfigurator
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.GenericInternalRow

@@ -39,6 +39,7 @@ jobs:
         cp ../../nebula-spark-connector/src/test/resources/docker-compose.yaml .
         docker-compose up -d
         sleep 30
+        docker-compose ps
         popd
         popd
 

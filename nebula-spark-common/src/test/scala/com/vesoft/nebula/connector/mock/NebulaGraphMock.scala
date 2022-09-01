@@ -20,6 +20,8 @@ class NebulaGraphMock {
   @transient val pool: NebulaPool = new NebulaPool
   val address = new ListBuffer[HostAddress]()
   address.append(new HostAddress("127.0.0.1", 9669))
+  address.append(new HostAddress("127.0.0.1", 9670))
+  address.append(new HostAddress("127.0.0.1", 9671))
 
   val randAddr = scala.util.Random.shuffle(address)
   val hasInit = pool.init(randAddr.asJava, nebulaPoolConfig)

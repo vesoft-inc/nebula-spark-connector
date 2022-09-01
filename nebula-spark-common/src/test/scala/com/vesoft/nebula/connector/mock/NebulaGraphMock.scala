@@ -18,11 +18,14 @@ class NebulaGraphMock {
 
   @transient val nebulaPoolConfig = new NebulaPoolConfig
   @transient val pool: NebulaPool = new NebulaPool
-  val address                     = new ListBuffer[HostAddress]()
+  val address = new ListBuffer[HostAddress]()
   address.append(new HostAddress("127.0.0.1", 9669))
 
   val randAddr = scala.util.Random.shuffle(address)
-  pool.init(randAddr.asJava, nebulaPoolConfig)
+  val hasInit = pool.init(randAddr.asJava, nebulaPoolConfig)
+  if (!hasInit) {
+    assert(false, "nebula pool init failed.")
+  }
 
   def mockStringIdGraph(): Unit = {
     val session = pool.getSession("root", "nebula", true)

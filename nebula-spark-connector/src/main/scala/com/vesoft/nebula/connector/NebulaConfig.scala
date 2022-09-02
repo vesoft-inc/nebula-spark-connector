@@ -656,20 +656,35 @@ object WriteNebulaEdgeConfig {
   *    you can set noColumn to true to read no vertex col, and you can set returnCols to read the specific cols, if the returnCols is empty, then read all the columns.
   *    you can set partitionNum to define spark partition nums to read nebula graph.
   */
-class ReadNebulaConfig(space: String,
-                       label: String,
-                       returnCols: List[String],
-                       noColumn: Boolean,
-                       partitionNum: Int,
-                       limit: Int)
-    extends Serializable {
-  def getSpace        = space
-  def getLabel        = label
-  def getReturnCols   = returnCols
-  def getNoColumn     = noColumn
-  def getPartitionNum = partitionNum
-  def getLimit        = limit
+class ReadNebulaConfig extends Serializable {
+  var getSpace: String = _
+  var getLabel: String = _
+  var getReturnCols: List[String] = _
+  var getNoColumn: Boolean = _
+  var getPartitionNum: Int = _
+  var getLimit: Int = _
+  var getNgql: String = _
   // todo add filter
+  def this(space: String, label: String, returnCols: List[String], noColumn: Boolean, partitionNum: Int, limit: Int) = {
+    this()
+    this.getSpace = space
+    this.getLabel = label
+    this.getReturnCols = returnCols
+    this.getNoColumn = noColumn
+    this.getPartitionNum = partitionNum
+    this.getLimit = limit
+  }
+
+  def this(space: String, label: String, returnCols: List[String], noColumn: Boolean, ngql: String, limit: Int)={
+    this()
+    this.getNgql = ngql
+    this.getSpace = space
+    this.getLabel = label
+    this.getReturnCols = returnCols
+    this.getNoColumn = noColumn
+    this.getLimit = limit
+    this.getPartitionNum = 1
+  }
 }
 
 /**
@@ -685,6 +700,7 @@ object ReadNebulaConfig {
     var noColumn: Boolean              = false
     var partitionNum: Int              = 100
     var limit: Int                     = 1000
+    var ngql: String = _
 
     def withSpace(space: String): ReadConfigBuilder = {
       this.space = space
@@ -726,9 +742,19 @@ object ReadNebulaConfig {
       this
     }
 
+    def withNgql(ngql: String): ReadConfigBuilder = {
+      this.ngql = ngql
+      this
+    }
+
     def build(): ReadNebulaConfig = {
       check()
-      new ReadNebulaConfig(space, label, returnCols.toList, noColumn, partitionNum, limit)
+      if(ngql!=null && !ngql.isEmpty){
+        new ReadNebulaConfig(space,label,returnCols.toList,noColumn,ngql,limit)
+      }
+      else {
+        new ReadNebulaConfig(space, label, returnCols.toList, noColumn, partitionNum, limit)
+      }
     }
 
     private def check(): Unit = {

@@ -260,6 +260,59 @@ df = spark.read.format(
     "returnCols", "name,age").option(
     "metaAddress", "metad0:9559").option(
     "partitionNumber", 1).load()
+
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.config(
+    "nebula-spark-connector-3.0.0.jar",
+    "/path_to/nebula-spark-connector-3.0.0.jar").appName(
+        "nebula-connector").getOrCreate()
+
+# read vertex
+df = spark.read.format(
+  "com.vesoft.nebula.connector.NebulaDataSource").option(
+    "type", "vertex").option(
+    "spaceName", "basketballplayer").option(
+    "label", "player").option(
+    "returnCols", "name,age").option(
+    "metaAddress", "metad0:9559").option(
+    "partitionNumber", 1).load()
+
+# write vertex
+df.write.format("com.vesoft.nebula.connector.NebulaDataSource")\
+    .mode("overwrite")\
+    .option("timeout", 300000)\
+    .option("connectionRetry", 1)\
+    .option("executionRetry", 2)\
+    .option("vidPolicy", "")\
+    .option("metaAddress", "metad0:9559")\
+    .option("graphAddress", "graphd:9669")\
+    .option("user", "root")\
+    .option("passwd", "nebula")\
+    .option("type", "vertex")\
+    .option("spaceName", "basketballplayer")\
+    .option("label", "player")\
+    .option("vertexField", "vid")\
+    .option("batch", 3000)\
+    .option("writeMode", "insert").save()
+
+# write edge
+df.write.format("com.vesoft.nebula.connector.NebulaDataSource")\
+    .mode("overwrite")\
+    .option("srcPolicy", "")\
+    .option("dstPolicy", "")\
+    .option("metaAddress", "metad0:9559")\
+    .option("graphAddress", "graphd:9669")\
+    .option("user", "root")\
+    .option("passwd", "nebula")\
+    .option("type", "edge")\
+    .option("spaceName", "basketballplayer")\
+    .option("label", "server")\
+    .option("srcVertexField", "srcid")\
+    .option("dstVertexField", "dstid")\
+    .option("rankFiled", "")\
+    .option("batch", 100)\
+    .option("writeMode", "insert").save()   # delete to delete edge, update to update edge
 ```
 
 ## 版本匹配

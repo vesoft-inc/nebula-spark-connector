@@ -176,7 +176,7 @@ only showing top 2 rows
 ### Write in PySpark
 
 Let's try a write example, by default, the `writeMode` is `insert`
-
+#### write vertex
 ```python
 df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
     "type", "vertex").option(
@@ -190,7 +190,7 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
     "passwd", "nebula").option(
     "user", "root").save()
 ```
-
+#### delete vertex
 For delete or update write mode, we could(for instance)specify with `writeMode` as `delete` like:
 ```python
 df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
@@ -205,6 +205,44 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
     "passwd", "nebula").option(
     "writeMode", "delete").option(
     "user", "root").save()
+```
+#### write edge
+```python
+df.write.format("com.vesoft.nebula.connector.NebulaDataSource")\
+    .mode("overwrite")\
+    .option("srcPolicy", "")\
+    .option("dstPolicy", "")\
+    .option("metaAddress", "metad0:9559")\
+    .option("graphAddress", "graphd:9669")\
+    .option("user", "root")\
+    .option("passwd", "nebula")\
+    .option("type", "edge")\
+    .option("spaceName", "basketballplayer")\
+    .option("label", "server")\
+    .option("srcVertexField", "srcid")\
+    .option("dstVertexField", "dstid")\
+    .option("rankFiled", "")\
+    .option("batch", 100)\
+    .option("writeMode", "insert").save()   # delete to delete edge, update to update edge
+```
+#### delete edge
+```python
+df.write.format("com.vesoft.nebula.connector.NebulaDataSource")\
+    .mode("overwrite")\
+    .option("srcPolicy", "")\
+    .option("dstPolicy", "")\
+    .option("metaAddress", "metad0:9559")\
+    .option("graphAddress", "graphd:9669")\
+    .option("user", "root")\
+    .option("passwd", "nebula")\
+    .option("type", "edge")\
+    .option("spaceName", "basketballplayer")\
+    .option("label", "server")\
+    .option("srcVertexField", "srcid")\
+    .option("dstVertexField", "dstid")\
+    .option("rankFiled", "")\
+    .option("batch", 100)\
+    .option("writeMode", "delete").save()   # delete to delete edge, update to update edge
 ```
 
 ### Options in PySpark
@@ -260,42 +298,6 @@ df = spark.read.format(
     "returnCols", "name,age").option(
     "metaAddress", "metad0:9559").option(
     "partitionNumber", 1).load()
-
-# write vertex
-df.write.format("com.vesoft.nebula.connector.NebulaDataSource")\
-    .mode("overwrite")\
-    .option("timeout", 300000)\
-    .option("connectionRetry", 1)\
-    .option("executionRetry", 2)\
-    .option("vidPolicy", "")\
-    .option("metaAddress", "metad0:9559")\
-    .option("graphAddress", "graphd:9669")\
-    .option("user", "root")\
-    .option("passwd", "nebula")\
-    .option("type", "vertex")\
-    .option("spaceName", "basketballplayer")\
-    .option("label", "player")\
-    .option("vertexField", "vid")\
-    .option("batch", 3000)\
-    .option("writeMode", "insert").save()
-
-# write edge
-df.write.format("com.vesoft.nebula.connector.NebulaDataSource")\
-    .mode("overwrite")\
-    .option("srcPolicy", "")\
-    .option("dstPolicy", "")\
-    .option("metaAddress", "metad0:9559")\
-    .option("graphAddress", "graphd:9669")\
-    .option("user", "root")\
-    .option("passwd", "nebula")\
-    .option("type", "edge")\
-    .option("spaceName", "basketballplayer")\
-    .option("label", "server")\
-    .option("srcVertexField", "srcid")\
-    .option("dstVertexField", "dstid")\
-    .option("rankFiled", "")\
-    .option("batch", 100)\
-    .option("writeMode", "insert").save()   # delete to delete edge, update to update edge
 ```
 
 ## Version match

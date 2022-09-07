@@ -252,22 +252,6 @@ spark = SparkSession.builder.config(
     "/path_to/nebula-spark-connector-3.0.0.jar").appName(
         "nebula-connector").getOrCreate()
 
-df = spark.read.format(
-  "com.vesoft.nebula.connector.NebulaDataSource").option(
-    "type", "vertex").option(
-    "spaceName", "basketballplayer").option(
-    "label", "player").option(
-    "returnCols", "name,age").option(
-    "metaAddress", "metad0:9559").option(
-    "partitionNumber", 1).load()
-
-from pyspark.sql import SparkSession
-
-spark = SparkSession.builder.config(
-    "nebula-spark-connector-3.0.0.jar",
-    "/path_to/nebula-spark-connector-3.0.0.jar").appName(
-        "nebula-connector").getOrCreate()
-
 # read vertex
 df = spark.read.format(
   "com.vesoft.nebula.connector.NebulaDataSource").option(

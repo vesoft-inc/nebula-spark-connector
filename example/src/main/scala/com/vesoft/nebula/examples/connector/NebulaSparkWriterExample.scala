@@ -205,6 +205,9 @@ object NebulaSparkWriterExample {
       .withUser("root")
       .withPasswd("nebula")
       .withWriteMode(WriteMode.DELETE)
+      // config deleteEdge true, means delete related edges when delete vertex
+      // refer https://docs.nebula-graph.com.cn/master/3.ngql-guide/12.vertex-statements/4.delete-vertex/#_1
+      .withDeleteEdge(true)
       .build()
     df.write.nebula(config, nebulaWriteVertexConfig).writeVertices()
   }

@@ -133,6 +133,7 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
   var dstAsProp: Boolean         = _
   var rankAsProp: Boolean        = _
   var writeMode: WriteMode.Value = _
+  var deleteEdge: Boolean        = _
 
   if (operaType == OperaType.WRITE) {
     require(parameters.isDefinedAt(GRAPH_ADDRESS),
@@ -168,6 +169,7 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
     rankAsProp = parameters.getOrElse(RANK_AS_PROP, false).toString.toBoolean
     writeMode =
       WriteMode.withName(parameters.getOrElse(WRITE_MODE, DEFAULT_WRITE_MODE).toString.toLowerCase)
+    deleteEdge = parameters.getOrElse(DELETE_EDGE, false).toString.toBoolean
   }
 
   def getReturnCols: List[String] = {
@@ -254,6 +256,7 @@ object NebulaOptions {
   val DST_AS_PROP: String  = "dstAsProp"
   val RANK_AS_PROP: String = "rankAsProp"
   val WRITE_MODE: String   = "writeMode"
+  val DELETE_EDGE: String  = "deleteEdge"
 
   val DEFAULT_TIMEOUT: Int            = 3000
   val DEFAULT_CONNECTION_TIMEOUT: Int = 3000

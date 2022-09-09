@@ -304,6 +304,7 @@ package object connector {
         .option(NebulaOptions.BATCH, writeConfig.getBatch)
         .option(NebulaOptions.VID_AS_PROP, writeConfig.getVidAsProp)
         .option(NebulaOptions.WRITE_MODE, writeConfig.getWriteMode)
+        .option(NebulaOptions.DELETE_EDGE, writeConfig.getDeleteEdge)
         .option(NebulaOptions.META_ADDRESS, connectionConfig.getMetaAddress)
         .option(NebulaOptions.GRAPH_ADDRESS, connectionConfig.getGraphAddress)
         .option(NebulaOptions.TIMEOUT, connectionConfig.getTimeout)

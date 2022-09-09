@@ -191,6 +191,7 @@ package object connector {
         .option(NebulaOptions.PARTITION_NUMBER, readConfig.getPartitionNum)
         .option(NebulaOptions.NGQL, readConfig.getNgql)
         .option(NebulaOptions.META_ADDRESS, connectionConfig.getMetaAddress)
+        .option(NebulaOptions.GRAPH_ADDRESS, connectionConfig.getGraphAddress)
         .option(NebulaOptions.TIMEOUT, connectionConfig.getTimeout)
         .option(NebulaOptions.CONNECTION_RETRY, connectionConfig.getConnectionRetry)
         .option(NebulaOptions.EXECUTION_RETRY, connectionConfig.getExecRetry)

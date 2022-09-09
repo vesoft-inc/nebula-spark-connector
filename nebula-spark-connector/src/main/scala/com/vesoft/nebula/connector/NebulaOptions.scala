@@ -116,6 +116,12 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
     partitionNums = parameters(PARTITION_NUMBER)
     limit = parameters.getOrElse(LIMIT, DEFAULT_LIMIT).toString.toInt
     ngql = parameters.getOrElse(NGQL,EMPTY_STRING)
+    ngql = parameters.getOrElse(NGQL,EMPTY_STRING)
+    if(ngql!=EMPTY_STRING){
+      require(parameters.isDefinedAt(GRAPH_ADDRESS),
+        s"option $GRAPH_ADDRESS is required for ngql and can not be blank")
+      graphAddress = parameters(GRAPH_ADDRESS)
+    }
   }
 
   /** write parameters */

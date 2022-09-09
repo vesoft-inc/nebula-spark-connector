@@ -141,6 +141,126 @@ Nebula Spark Connector 2.0/3.0 only supports Nebula Graph 2.x/3.x. If you are us
 
 For more information on usage, please refer to [Example](https://github.com/vesoft-inc/nebula-spark-connector/tree/master/example/src/main/scala/com/vesoft/nebula/examples/connector).
 
+## PySpark with Nebula Spark Connector
+
+Below is an example of calling nebula-spark-connector jar package in pyspark.
+
+### Read in PySpark
+
+Read from NebulaGraph with `metaAddress` of `"metad0:9559"` as a dataframe:
+
+```python
+df = spark.read.format(
+  "com.vesoft.nebula.connector.NebulaDataSource").option(
+    "type", "vertex").option(
+    "spaceName", "basketballplayer").option(
+    "label", "player").option(
+    "returnCols", "name,age").option(
+    "metaAddress", "metad0:9559").option(
+    "partitionNumber", 1).load()
+```
+
+You may then `show` the dataframe as follow:
+
+```python
+>>> df.show(n=2)
++---------+--------------+---+
+|_vertexId|          name|age|
++---------+--------------+---+
+|player105|   Danny Green| 31|
+|player109|Tiago Splitter| 34|
++---------+--------------+---+
+only showing top 2 rows
+```
+
+### Write in PySpark
+
+Let's try a write example, by default, the `writeMode` is `insert`
+
+```python
+df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
+    "type", "vertex").option(
+    "spaceName", "basketballplayer").option(
+    "label", "player").option(
+    "vidPolicy", "").option(
+    "vertexField", "_vertexId").option(
+    "batch", 1).option(
+    "metaAddress", "metad0:9559").option(
+    "graphAddress", "graphd1:9669").option(
+    "passwd", "nebula").option(
+    "user", "root").save()
+```
+
+For delete or update write mode, we could(for instance)specify with `writeMode` as `delete` like:
+```python
+df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
+    "type", "vertex").option(
+    "spaceName", "basketballplayer").option(
+    "label", "player").option(
+    "vidPolicy", "").option(
+    "vertexField", "_vertexId").option(
+    "batch", 1).option(
+    "metaAddress", "metad0:9559").option(
+    "graphAddress", "graphd1:9669").option(
+    "passwd", "nebula").option(
+    "writeMode", "delete").option(
+    "user", "root").save()
+```
+
+### Options in PySpark
+
+For more options, i.e. delete edge with vertex being deleted, refer to [nebula/connector/NebulaOptions.scala
+](https://github.com/vesoft-inc/nebula-spark-connector/blob/master/nebula-spark-connector/src/main/scala/com/vesoft/nebula/connector/NebulaOptions.scala), we could know it's named as `deleteEdge` in option.
+
+```scala
+  /** write config */
+  val RATE_LIMIT: String   = "rateLimit"
+  val VID_POLICY: String   = "vidPolicy"
+  val SRC_POLICY: String   = "srcPolicy"
+  val DST_POLICY: String   = "dstPolicy"
+  val VERTEX_FIELD         = "vertexField"
+  val SRC_VERTEX_FIELD     = "srcVertexField"
+  val DST_VERTEX_FIELD     = "dstVertexField"
+  val RANK_FIELD           = "rankFiled"
+  val BATCH: String        = "batch"
+  val VID_AS_PROP: String  = "vidAsProp"
+  val SRC_AS_PROP: String  = "srcAsProp"
+  val DST_AS_PROP: String  = "dstAsProp"
+  val RANK_AS_PROP: String = "rankAsProp"
+  val WRITE_MODE: String   = "writeMode"
+  val DELETE_EDGE: String  = "deleteEdge"
+```
+
+### Call Nebula Spark Connector in PySpark shell and .py file
+
+Also, below are examples on how we run above code with pyspark shell or in python code files:
+
+- Call with PySpark shell:
+
+```bash
+/spark/bin/pyspark --driver-class-path nebula-spark-connector-3.0.0.jar --jars nebula-spark-connector-3.0.0.jar
+```
+
+- In Python code:
+
+```
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.config(
+    "nebula-spark-connector-3.0.0.jar",
+    "/path_to/nebula-spark-connector-3.0.0.jar").appName(
+        "nebula-connector").getOrCreate()
+
+df = spark.read.format(
+  "com.vesoft.nebula.connector.NebulaDataSource").option(
+    "type", "vertex").option(
+    "spaceName", "basketballplayer").option(
+    "label", "player").option(
+    "returnCols", "name,age").option(
+    "metaAddress", "metad0:9559").option(
+    "partitionNumber", 1).load()
+```
+
 ## Version match
 
 There are the version correspondence between Nebula Spark Connector and Nebula:
@@ -154,7 +274,7 @@ There are the version correspondence between Nebula Spark Connector and Nebula:
 |           2.5.1                |  2.5.0, 2.5.1  |
 |           2.6.0                |  2.6.0, 2.6.1  |
 |           2.6.1                |  2.6.0, 2.6.1  |
-|           3.0.0                |      3.0.0     |
+|           3.0.0                |  3.0.x, 3.1.x  |
 |         3.0-SNAPSHOT           |     nightly    |
 
 ## Performance

@@ -241,12 +241,14 @@ class WriteNebulaVertexConfig(space: String,
                               vidAsProp: Boolean,
                               user: String,
                               passwd: String,
-                              writeMode: String)
+                              writeMode: String,
+                              deleteEdge: Boolean)
     extends WriteNebulaConfig(space, user, passwd, batch, writeMode) {
-  def getTagName   = tagName
-  def getVidField  = vidField
-  def getVidPolicy = if (vidPolicy == null) "" else vidPolicy
-  def getVidAsProp = vidAsProp
+  def getTagName    = tagName
+  def getVidField   = vidField
+  def getVidPolicy  = if (vidPolicy == null) "" else vidPolicy
+  def getVidAsProp  = vidAsProp
+  def getDeleteEdge = deleteEdge
 }
 
 /**
@@ -269,6 +271,9 @@ object WriteNebulaVertexConfig {
 
     /** whether set vid as property */
     var vidAsProp: Boolean = false
+
+    /** whether delete the related edges of vertex */
+    var deleteEdge: Boolean = false
 
     /**
       * set space name
@@ -344,6 +349,14 @@ object WriteNebulaVertexConfig {
     }
 
     /**
+      * set whether delete related edges when delete vertex
+      */
+    def withDeleteEdge(deleteEdge: Boolean): WriteVertexConfigBuilder = {
+      this.deleteEdge = deleteEdge
+      this
+    }
+
+    /**
       * check and get WriteNebulaVertexConfig
       */
     def build(): WriteNebulaVertexConfig = {
@@ -356,7 +369,8 @@ object WriteNebulaVertexConfig {
                                   vidAsProp,
                                   user,
                                   passwd,
-                                  writeMode)
+                                  writeMode,
+                                  deleteEdge)
     }
 
     private def check(): Unit = {
@@ -388,7 +402,7 @@ object WriteNebulaVertexConfig {
       }
       LOG.info(
         s"NebulaWriteVertexConfig={space=$space,tagName=$tagName,vidField=$vidField," +
-          s"vidPolicy=$vidPolicy,batch=$batch,writeMode=$writeMode}")
+          s"vidPolicy=$vidPolicy,batch=$batch,writeMode=$writeMode,deleteEdge=$deleteEdge}")
     }
   }
 

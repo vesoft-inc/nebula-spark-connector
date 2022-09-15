@@ -221,7 +221,7 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource")\
     .option("label", "server")\
     .option("srcVertexField", "srcid")\
     .option("dstVertexField", "dstid")\
-    .option("rankFiled", "")\
+    .option("randkField", "")\
     .option("batch", 100)\
     .option("writeMode", "insert").save()   # delete to delete edge, update to update edge
 ```
@@ -240,7 +240,7 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource")\
     .option("label", "server")\
     .option("srcVertexField", "srcid")\
     .option("dstVertexField", "dstid")\
-    .option("rankFiled", "")\
+    .option("randkField", "")\
     .option("batch", 100)\
     .option("writeMode", "delete").save()   # delete to delete edge, update to update edge
 ```
@@ -259,7 +259,7 @@ For more options, i.e. delete edge with vertex being deleted, refer to [nebula/c
   val VERTEX_FIELD         = "vertexField"
   val SRC_VERTEX_FIELD     = "srcVertexField"
   val DST_VERTEX_FIELD     = "dstVertexField"
-  val RANK_FIELD           = "rankFiled"
+  val RANK_FIELD           = "randkField"
   val BATCH: String        = "batch"
   val VID_AS_PROP: String  = "vidAsProp"
   val SRC_AS_PROP: String  = "srcAsProp"

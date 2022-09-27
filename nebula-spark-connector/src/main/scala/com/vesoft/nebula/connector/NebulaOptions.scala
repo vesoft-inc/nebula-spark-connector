@@ -244,7 +244,7 @@ object NebulaOptions {
   val VERTEX_FIELD         = "vertexField"
   val SRC_VERTEX_FIELD     = "srcVertexField"
   val DST_VERTEX_FIELD     = "dstVertexField"
-  val RANK_FIELD           = "rankFiled"
+  val RANK_FIELD           = "rankField"
   val BATCH: String        = "batch"
   val VID_AS_PROP: String  = "vidAsProp"
   val SRC_AS_PROP: String  = "srcAsProp"

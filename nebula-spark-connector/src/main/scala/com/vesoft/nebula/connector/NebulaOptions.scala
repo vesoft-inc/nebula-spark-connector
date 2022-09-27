@@ -220,7 +220,7 @@ object NebulaOptions {
   val TIMEOUT: String            = "timeout"
   val CONNECTION_RETRY: String   = "connectionRetry"
   val EXECUTION_RETRY: String    = "executionRetry"
-  val RATE_TIME_OUT: String      = "reteTimeOut"
+  val RATE_TIME_OUT: String      = "rateTimeOut"
   val USER_NAME: String          = "user"
   val PASSWD: String             = "passwd"
   val ENABLE_GRAPH_SSL: String   = "enableGraphSSL"

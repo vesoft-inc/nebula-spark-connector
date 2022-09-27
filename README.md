@@ -176,7 +176,7 @@ only showing top 2 rows
 ### Write in PySpark
 
 Let's try a write example, by default, the `writeMode` is `insert`
-
+#### write vertex
 ```python
 df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
     "type", "vertex").option(
@@ -190,7 +190,7 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
     "passwd", "nebula").option(
     "user", "root").save()
 ```
-
+#### delete vertex
 For delete or update write mode, we could(for instance)specify with `writeMode` as `delete` like:
 ```python
 df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
@@ -205,6 +205,44 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
     "passwd", "nebula").option(
     "writeMode", "delete").option(
     "user", "root").save()
+```
+#### write edge
+```python
+df.write.format("com.vesoft.nebula.connector.NebulaDataSource")\
+    .mode("overwrite")\
+    .option("srcPolicy", "")\
+    .option("dstPolicy", "")\
+    .option("metaAddress", "metad0:9559")\
+    .option("graphAddress", "graphd:9669")\
+    .option("user", "root")\
+    .option("passwd", "nebula")\
+    .option("type", "edge")\
+    .option("spaceName", "basketballplayer")\
+    .option("label", "server")\
+    .option("srcVertexField", "srcid")\
+    .option("dstVertexField", "dstid")\
+    .option("randkField", "")\
+    .option("batch", 100)\
+    .option("writeMode", "insert").save()   # delete to delete edge, update to update edge
+```
+#### delete edge
+```python
+df.write.format("com.vesoft.nebula.connector.NebulaDataSource")\
+    .mode("overwrite")\
+    .option("srcPolicy", "")\
+    .option("dstPolicy", "")\
+    .option("metaAddress", "metad0:9559")\
+    .option("graphAddress", "graphd:9669")\
+    .option("user", "root")\
+    .option("passwd", "nebula")\
+    .option("type", "edge")\
+    .option("spaceName", "basketballplayer")\
+    .option("label", "server")\
+    .option("srcVertexField", "srcid")\
+    .option("dstVertexField", "dstid")\
+    .option("randkField", "")\
+    .option("batch", 100)\
+    .option("writeMode", "delete").save()   # delete to delete edge, update to update edge
 ```
 
 ### Options in PySpark
@@ -221,7 +259,7 @@ For more options, i.e. delete edge with vertex being deleted, refer to [nebula/c
   val VERTEX_FIELD         = "vertexField"
   val SRC_VERTEX_FIELD     = "srcVertexField"
   val DST_VERTEX_FIELD     = "dstVertexField"
-  val RANK_FIELD           = "rankField"
+  val RANK_FIELD           = "randkField"
   val BATCH: String        = "batch"
   val VID_AS_PROP: String  = "vidAsProp"
   val SRC_AS_PROP: String  = "srcAsProp"
@@ -251,6 +289,7 @@ spark = SparkSession.builder.config(
     "/path_to/nebula-spark-connector-3.0.0.jar").appName(
         "nebula-connector").getOrCreate()
 
+# read vertex
 df = spark.read.format(
   "com.vesoft.nebula.connector.NebulaDataSource").option(
     "type", "vertex").option(

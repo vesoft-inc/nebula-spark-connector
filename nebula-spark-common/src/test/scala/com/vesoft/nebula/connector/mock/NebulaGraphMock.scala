@@ -25,9 +25,7 @@ class NebulaGraphMock {
 
   val randAddr = scala.util.Random.shuffle(address)
   val hasInit = pool.init(randAddr.asJava, nebulaPoolConfig)
-  if (!hasInit) {
-    assert(false, "nebula pool init failed.")
-  }
+  assert(hasInit, "nebula pool init failed.")
 
   def mockStringIdGraph(): Unit = {
     val session = pool.getSession("root", "nebula", true)

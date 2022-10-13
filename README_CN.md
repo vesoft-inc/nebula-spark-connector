@@ -14,7 +14,7 @@ Nebula Spark Connector 2.0/3.0 仅支持 Nebula Graph 2.x/3.x。如果您正在�
     $ mvn clean package -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true
     ```
 
-    编译打包完成后，可以在 nebula-spark-connector/nebula-spark-connector/target/ 目录下看到 nebula-spark-connector-3.0-SNAPSHOT.jar 文件。
+    编译打包完成后，可以在 nebula-spark-connector/nebula-spark-connector/target/ 目录下看到 nebula-spark-connector-3.0.0.jar 文件。
 
 ## 特性
 
@@ -32,7 +32,7 @@ Nebula Spark Connector 2.0/3.0 仅支持 Nebula Graph 2.x/3.x。如果您正在�
   <dependency>
      <groupId>com.vesoft</groupId>
      <artifactId>nebula-spark-connector</artifactId>
-     <version>3.0-SNAPSHOT</version>
+     <version>3.0.0</version>
   </dependency>
   ```
   

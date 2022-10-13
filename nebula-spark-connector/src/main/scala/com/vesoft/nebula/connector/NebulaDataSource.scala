@@ -7,9 +7,8 @@ package com.vesoft.nebula.connector
 
 import java.util.Map.Entry
 import java.util.Optional
-
 import com.vesoft.nebula.connector.exception.IllegalOptionException
-import com.vesoft.nebula.connector.reader.{NebulaDataSourceEdgeReader, NebulaDataSourceVertexReader}
+import com.vesoft.nebula.connector.reader.{NebulaDataSourceEdgeReader, NebulaDataSourceNgqlEdgeReader, NebulaDataSourceVertexReader}
 import com.vesoft.nebula.connector.writer.{NebulaDataSourceEdgeWriter, NebulaDataSourceVertexWriter}
 import org.apache.spark.sql.SaveMode
 import org.apache.spark.sql.catalyst.util.CaseInsensitiveMap
@@ -46,6 +45,8 @@ class NebulaDataSource
 
     if (DataTypeEnum.VERTEX == DataTypeEnum.withName(dataType)) {
       new NebulaDataSourceVertexReader(nebulaOptions)
+    } else if (nebulaOptions.ngql != null && nebulaOptions.ngql.nonEmpty) {
+      new NebulaDataSourceNgqlEdgeReader(nebulaOptions)
     } else {
       new NebulaDataSourceEdgeReader(nebulaOptions)
     }

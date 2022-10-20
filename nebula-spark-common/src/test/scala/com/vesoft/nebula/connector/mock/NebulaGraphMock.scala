@@ -8,7 +8,7 @@ package com.vesoft.nebula.connector.mock
 import com.vesoft.nebula.client.graph.NebulaPoolConfig
 import com.vesoft.nebula.client.graph.data.HostAddress
 import com.vesoft.nebula.client.graph.net.NebulaPool
-import org.apache.log4j.Logger
+import org.apache.log4j.{BasicConfigurator, Logger}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
@@ -16,16 +16,15 @@ import scala.collection.mutable.ListBuffer
 class NebulaGraphMock {
   private[this] val LOG = Logger.getLogger(this.getClass)
 
+  BasicConfigurator.configure()
+
   @transient val nebulaPoolConfig = new NebulaPoolConfig
   @transient val pool: NebulaPool = new NebulaPool
   val address = new ListBuffer[HostAddress]()
   address.append(new HostAddress("127.0.0.1", 9669))
-  address.append(new HostAddress("127.0.0.1", 9670))
-  address.append(new HostAddress("127.0.0.1", 9671))
 
-  val randAddr = scala.util.Random.shuffle(address)
-  val hasInit = pool.init(randAddr.asJava, nebulaPoolConfig)
-  assert(hasInit, "nebula pool init failed.")
+  val hasInit = pool.init(address.asJava, nebulaPoolConfig)
+  assert(hasInit, s"nebula pool init failed, address: $address")
 
   def mockStringIdGraph(): Unit = {
     val session = pool.getSession("root", "nebula", true)

@@ -5,7 +5,7 @@
 
 package com.vesoft.nebula.connector.writer
 
-import com.vesoft.nebula.connector.connector.{NebulaEdge, NebulaEdges}
+import com.vesoft.nebula.connector.{NebulaEdge, NebulaEdges}
 import com.vesoft.nebula.connector.{KeyPolicy, NebulaOptions, WriteMode}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.sources.v2.writer.{DataWriter, WriterCommitMessage}
@@ -100,6 +100,7 @@ class NebulaEdgeWriter(nebulaOptions: NebulaOptions,
       execute()
     }
     graphProvider.close()
+    metaProvider.close()
     NebulaCommitMessage.apply(failedExecs.toList)
   }
 

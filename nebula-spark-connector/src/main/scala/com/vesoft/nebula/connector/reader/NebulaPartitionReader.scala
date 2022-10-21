@@ -13,10 +13,10 @@ import com.vesoft.nebula.client.graph.data.{
   ValueWrapper
 }
 import com.vesoft.nebula.client.storage.StorageClient
-import com.vesoft.nebula.client.storage.data.{BaseTableRow, VertexTableRow}
+import com.vesoft.nebula.client.storage.data.BaseTableRow
 import com.vesoft.nebula.connector.NebulaUtils.NebulaValueGetter
-import com.vesoft.nebula.connector.exception.GraphConnectException
 import com.vesoft.nebula.connector.{NebulaOptions, NebulaUtils, PartitionUtils}
+import com.vesoft.nebula.connector.exception.GraphConnectException
 import com.vesoft.nebula.connector.nebula.MetaProvider
 import com.vesoft.nebula.connector.ssl.SSLSignType
 import org.apache.spark.sql.catalyst.InternalRow
@@ -101,6 +101,7 @@ abstract class NebulaPartitionReader extends InputPartitionReader[InternalRow] {
     // allocate scanPart to this partition
     val totalPart = metaProvider.getPartitionNumber(nebulaOptions.spaceName)
 
+    // index starts with 1
     val scanParts = PartitionUtils.getScanParts(index, totalPart, nebulaOptions.partitionNums.toInt)
     LOG.info(s"partition index: ${index}, scanParts: ${scanParts.toString}")
     scanPartIterator = scanParts.iterator

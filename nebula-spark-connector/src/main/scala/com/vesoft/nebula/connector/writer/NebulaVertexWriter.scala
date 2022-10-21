@@ -5,8 +5,13 @@
 
 package com.vesoft.nebula.connector.writer
 
-import com.vesoft.nebula.connector.connector.{NebulaVertex, NebulaVertices}
-import com.vesoft.nebula.connector.{KeyPolicy, NebulaOptions, WriteMode}
+import com.vesoft.nebula.connector.{
+  KeyPolicy,
+  NebulaOptions,
+  NebulaVertex,
+  NebulaVertices,
+  WriteMode
+}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.sources.v2.writer.{DataWriter, WriterCommitMessage}
 import org.apache.spark.sql.types.StructType
@@ -79,6 +84,7 @@ class NebulaVertexWriter(nebulaOptions: NebulaOptions, vertexIndex: Int, schema:
       execute()
     }
     graphProvider.close()
+    metaProvider.close()
     NebulaCommitMessage(failedExecs.toList)
   }
 

@@ -5,6 +5,8 @@
 
 Nebula Spark Connector 2.0/3.0 only supports Nebula Graph 2.x/3.x. If you are using Nebula Graph v1.x, please use [Nebula Spark Connector v1.0](https://github.com/vesoft-inc/nebula-java/tree/v1.0/tools/nebula-spark) .
 
+Nebula Spark Connector support spark 2.2 and 2.4.
+
 ## How to Compile
 
 1. Package Nebula Spark Connector.
@@ -14,6 +16,11 @@ Nebula Spark Connector 2.0/3.0 only supports Nebula Graph 2.x/3.x. If you are us
     $ cd nebula-spark-connector/nebula-spark-connector
     $ mvn clean package -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true
     ```
+   if you want to use connector for spark 2.2.x, use the command:
+   ```
+   $ cd nebula-spark-connector/nebula-spark-connector_2.2
+   $ mvn clean package -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true
+   ```
 
     After the packaging, you can see the newly generated nebula-spark-connector-3.0-SNAPSHOT.jar under the nebula-spark-connector/nebula-spark-connector/target/ directory.
 

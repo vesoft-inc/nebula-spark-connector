@@ -6,7 +6,7 @@
 package com.vesoft.nebula.connector.writer
 
 import com.vesoft.nebula.client.graph.data.ResultSet
-import com.vesoft.nebula.connector.connector.Address
+import com.vesoft.nebula.connector.Address
 import com.vesoft.nebula.connector.mock.{NebulaGraphMock, SparkMock}
 import com.vesoft.nebula.connector.nebula.GraphProvider
 import org.apache.log4j.BasicConfigurator
@@ -26,7 +26,7 @@ class WriteInsertSuite extends AnyFunSuite with BeforeAndAfterAll {
   test("write vertex into test_write_string space with insert mode") {
     SparkMock.writeVertex()
     val addresses: List[Address] = List(new Address("127.0.0.1", 9669))
-    val graphProvider            = new GraphProvider(addresses, 3000)
+    val graphProvider = new GraphProvider(addresses, 3000)
 
     graphProvider.switchSpace("root", "nebula", "test_write_string")
     val createIndexResult: ResultSet = graphProvider.submit(
@@ -40,19 +40,16 @@ class WriteInsertSuite extends AnyFunSuite with BeforeAndAfterAll {
     graphProvider.submit("use test_write_string;")
     val resultSet: ResultSet =
       graphProvider.submit("match (v:person_connector) return v;")
+    assert(resultSet.isSucceeded)
     assert(resultSet.getColumnNames.size() == 1)
     assert(resultSet.getRows.size() == 13)
-
-    for (i <- 0 until resultSet.getRows.size) {
-      println(resultSet.rowValues(i).toString)
-    }
   }
 
   test("write edge into test_write_string space with insert mode") {
     SparkMock.writeEdge()
 
     val addresses: List[Address] = List(new Address("127.0.0.1", 9669))
-    val graphProvider            = new GraphProvider(addresses, 3000)
+    val graphProvider = new GraphProvider(addresses, 3000)
 
     graphProvider.switchSpace("root", "nebula", "test_write_string")
     val createIndexResult: ResultSet = graphProvider.submit(
@@ -66,11 +63,8 @@ class WriteInsertSuite extends AnyFunSuite with BeforeAndAfterAll {
     graphProvider.submit("use test_write_string;")
     val resultSet: ResultSet =
       graphProvider.submit("match (v:person_connector)-[e:friend_connector] -> ()  return e;")
+    assert(resultSet.isSucceeded)
     assert(resultSet.getColumnNames.size() == 1)
     assert(resultSet.getRows.size() == 13)
-
-    for (i <- 0 until resultSet.getRows.size) {
-      println(resultSet.rowValues(i).toString)
-    }
   }
 }

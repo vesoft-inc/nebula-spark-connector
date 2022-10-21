@@ -4,6 +4,7 @@
 
 Nebula Spark Connector 2.0/3.0 仅支持 Nebula Graph 2.x/3.x。如果您正在使用 Nebula Graph v1.x，请使用 [Nebula Spark Connector v1.0](https://github.com/vesoft-inc/nebula-java/tree/v1.0/tools)。
 
+Nebula Spark Connector 支持 Spark 2.2 和 2.4.
 ## 如何编译
 
 1. 编译打包 Nebula Spark Connector。
@@ -16,6 +17,7 @@ Nebula Spark Connector 2.0/3.0 仅支持 Nebula Graph 2.x/3.x。如果您正在�
 
     编译打包完成后，可以在 nebula-spark-connector/nebula-spark-connector/target/ 目录下看到 nebula-spark-connector-3.0-SNAPSHOT.jar 文件。
 
+    若在 spark 2.2 环境中使用 Nebula Spark Connector，请在 nebula-spark-connector_2.2 目录下进行编译。
 ## 特性
 
 * 提供了更多连接配置项，如超时时间、连接重试次数、执行重试次数

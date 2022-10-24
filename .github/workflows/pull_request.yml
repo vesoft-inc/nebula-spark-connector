@@ -48,10 +48,3 @@ jobs:
         mvn -B package
 
     - uses: codecov/codecov-action@v2
-
-    - name: Upload logs
-        uses: actions/upload-artifact@v2
-        if: ${{ failure() }}
-        with:
-          name: nebula-logs
-          path: tmp/nebula-docker-compose/logs/*

@@ -30,7 +30,7 @@ class GraphProviderTest extends AnyFunSuite with BeforeAndAfterAll {
   }
 
   test("switchSpace") {
-    assert(!graphProvider.switchSpace("root", "nebula", "not_exit_space"))
+    assertThrows[RuntimeException](graphProvider.switchSpace("root", "nebula", "not_exit_space"))
     assert(graphProvider.switchSpace("root", "nebula", "test_int"))
   }
 

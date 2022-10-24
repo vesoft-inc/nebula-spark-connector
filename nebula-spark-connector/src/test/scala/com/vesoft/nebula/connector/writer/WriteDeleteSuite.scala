@@ -21,6 +21,7 @@ class WriteDeleteSuite extends AnyFunSuite with BeforeAndAfterAll {
     graphMock.mockStringIdGraphSchema()
     graphMock.mockIntIdGraphSchema()
     graphMock.close()
+    Thread.sleep(10000)
     SparkMock.writeVertex()
     SparkMock.writeEdge()
   }

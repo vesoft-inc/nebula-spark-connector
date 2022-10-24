@@ -21,6 +21,7 @@ class WriteInsertSuite extends AnyFunSuite with BeforeAndAfterAll {
     graphMock.mockStringIdGraphSchema()
     graphMock.mockIntIdGraphSchema()
     graphMock.close()
+    Thread.sleep(10000)
   }
 
   test("write vertex into test_write_string space with insert mode") {

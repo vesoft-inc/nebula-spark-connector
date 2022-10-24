@@ -90,7 +90,11 @@ class GraphProvider(addresses: List[Address],
     val switchStatment = s"use $space"
     LOG.info(s"switch space $space")
     val result = submit(switchStatment)
-    result.isSucceeded
+    if(!result.isSucceeded){
+      LOG.error(s"switch space $space failed, ${result.getErrorMessage}")
+      throw new RuntimeException(s"switch space $space failed, ${result.getErrorMessage}")
+    }
+    true
   }
 
   /**

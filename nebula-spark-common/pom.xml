@@ -70,29 +70,45 @@
                     <execution>
                         <id>default-deploy</id>
                         <phase>deploy</phase>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
-            <!-- skip nexus staging deploy -->
+            <!-- nexus staging deploy -->
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+
+            <!-- maven-jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
-                        <id>default-deploy</id>
-                        <phase>deploy</phase>
                         <goals>
-                            <goal>deploy</goal>
+                            <goal>test-jar</goal>
                         </goals>
-                        <configuration>
-                            <serverId>ossrh</serverId>
-                            <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
-                        </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- maven-compiler -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>${compiler.source.version}</source>
+                    <target>${compiler.target.version}</target>
+                </configuration>
             </plugin>
 
             <!-- Source plugin -->

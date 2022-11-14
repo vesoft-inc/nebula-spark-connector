@@ -34,14 +34,14 @@ object NebulaSparkWriterExample {
       .config(sparkConf)
       .getOrCreate()
 
-    writeVertex(spark)
+//    writeVertex(spark)
     writeEdge(spark)
 
-    updateVertex(spark)
-    updateEdge(spark)
-
-    deleteVertex(spark)
-    deleteEdge(spark)
+//    updateVertex(spark)
+//    updateEdge(spark)
+//
+//    deleteVertex(spark)
+//    deleteEdge(spark)
 
     spark.close()
   }
@@ -51,8 +51,8 @@ object NebulaSparkWriterExample {
     val config =
       NebulaConnectionConfig
         .builder()
-        .withMetaAddress("127.0.0.1:9559")
-        .withGraphAddress("127.0.0.1:9669")
+        .withMetaAddress("192.168.8.171:9559")
+        .withGraphAddress("192.168.8.171:9669")
         .withConenctionRetry(2)
         .build()
 
@@ -130,9 +130,9 @@ object NebulaSparkWriterExample {
       .withSrcIdField("src")
       .withDstIdField("dst")
       .withRankField("degree")
-      .withSrcAsProperty(false)
-      .withDstAsProperty(false)
-      .withRankAsProperty(false)
+      .withSrcAsProperty(true)
+      .withDstAsProperty(true)
+      .withRankAsProperty(true)
       .withBatch(1000)
       .build()
     df.write.nebula(config, nebulaWriteEdgeConfig).writeEdges()

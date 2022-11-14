@@ -8,6 +8,7 @@ package com.vesoft.nebula.connector
 import java.util.Properties
 
 import com.google.common.net.HostAndPort
+import com.vesoft.nebula.connector.NebulaOptions.OPERATE_TYPE
 import com.vesoft.nebula.connector.ssl.{CASSLSignParams, SSLSignType, SelfSSLSignParams}
 import org.apache.commons.lang.StringUtils
 import org.apache.spark.internal.Logging
@@ -15,22 +16,17 @@ import org.apache.spark.sql.catalyst.util.CaseInsensitiveMap
 
 import scala.collection.mutable.ListBuffer
 
-class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
-    operaType: OperaType.Value)
+class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])
     extends Serializable
     with Logging {
 
   import NebulaOptions._
 
-  def this(parameters: Map[String, String], operaType: OperaType.Value) =
-    this(CaseInsensitiveMap(parameters))(operaType)
-
   def this(hostAndPorts: String,
            spaceName: String,
            dataType: String,
            label: String,
-           parameters: Map[String, String],
-           operaType: OperaType.Value) = {
+           parameters: Map[String, String]) = {
     this(
       CaseInsensitiveMap(
         parameters ++ Map(
@@ -39,8 +35,9 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
           NebulaOptions.TYPE         -> dataType,
           NebulaOptions.LABEL        -> label
         ))
-    )(operaType)
+    )
   }
+  val operaType = OperaType.withName(parameters(OPERATE_TYPE))
 
   /**
     * Return property with all options
@@ -104,15 +101,18 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
   val label: String = parameters(LABEL)
 
   /** read parameters */
-  var returnCols: String    = _
-  var partitionNums: String = _
-  var noColumn: Boolean     = _
-  var limit: Int            = _
+  var returnCols: String              = _
+  var partitionNums: String           = _
+  var noColumn: Boolean               = _
+  var limit: Int                      = _
+  var pushDownFiltersEnabled: Boolean = _
   if (operaType == OperaType.READ) {
     returnCols = parameters(RETURN_COLS)
     noColumn = parameters.getOrElse(NO_COLUMN, false).toString.toBoolean
     partitionNums = parameters(PARTITION_NUMBER)
     limit = parameters.getOrElse(LIMIT, DEFAULT_LIMIT).toString.toInt
+    // TODO explore the pushDownFiltersEnabled parameter to users
+    pushDownFiltersEnabled = parameters.getOrElse(PUSHDOWN_FILTERS_ENABLE, false).toString.toBoolean
   }
 
   /** write parameters */
@@ -203,9 +203,6 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
 
 }
 
-class NebulaOptionsInWrite(@transient override val parameters: CaseInsensitiveMap[String])
-    extends NebulaOptions(parameters)(OperaType.WRITE) {}
-
 object NebulaOptions {
 
   /** nebula common config */
@@ -229,11 +226,14 @@ object NebulaOptions {
   val CA_SIGN_PARAM: String      = "caSignParam"
   val SELF_SIGN_PARAM: String    = "selfSignParam"
 
+  val OPERATE_TYPE: String = "operateType"
+
   /** read config */
-  val RETURN_COLS: String      = "returnCols"
-  val NO_COLUMN: String        = "noColumn"
-  val PARTITION_NUMBER: String = "partitionNumber"
-  val LIMIT: String            = "limit"
+  val RETURN_COLS: String             = "returnCols"
+  val NO_COLUMN: String               = "noColumn"
+  val PARTITION_NUMBER: String        = "partitionNumber"
+  val LIMIT: String                   = "limit"
+  val PUSHDOWN_FILTERS_ENABLE: String = "pushDownFiltersEnable"
 
   /** write config */
   val RATE_LIMIT: String   = "rateLimit"

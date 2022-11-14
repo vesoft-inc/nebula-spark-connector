@@ -6,7 +6,9 @@
         <artifactId>nebula-spark</artifactId>
         <groupId>com.vesoft</groupId>
         <version>3.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>nebula-spark-common</artifactId>
@@ -20,9 +22,9 @@
         <junit.version>4.13.1</junit.version>
         <codec.version>1.13</codec.version>
 
-        <scala.binary.version>2.11</scala.binary.version>
-        <spark.version>2.4.4</spark.version>
-        <scala.version>2.11.12</scala.version>
+        <scala.binary.version>2.12</scala.binary.version>
+        <spark.version>3.0.0</spark.version>
+        <scala.version>2.12.10</scala.version>
     </properties>
 
     <dependencies>
@@ -54,7 +56,7 @@
         <!-- scalatest -->
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest-funsuite_2.11</artifactId>
+            <artifactId>scalatest-funsuite_2.12</artifactId>
             <version>${scalatest.version}</version>
         </dependency>
     </dependencies>

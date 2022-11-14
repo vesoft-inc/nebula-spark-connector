@@ -89,48 +89,25 @@
                 </configuration>
             </plugin>
 
-            <!-- maven-shade -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.3</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>single</goal>
                         </goals>
-                        <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <artifactSet>
-                                <excludes>
-                                    <exclude>org.apache.spark:*</exclude>
-                                    <exclude>org.apache.hadoop:*</exclude>
-                                    <exclude>org.apache.hive:*</exclude>
-                                    <exclude>log4j:log4j</exclude>
-                                    <exclude>org.apache.orc:*</exclude>
-                                    <exclude>xml-apis:xml-apis</exclude>
-                                    <exclude>javax.inject:javax.inject</exclude>
-                                    <exclude>org.spark-project.hive:hive-exec</exclude>
-                                    <exclude>stax:stax-api</exclude>
-                                    <exclude>org.glassfish.hk2.external:aopalliance-repackaged
-                                    </exclude>
-                                </excludes>
-                            </artifactSet>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>com/vesoft/tools/**</exclude>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <finalName>${project.artifactId}-${project.version}-jar-with-dependencies</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -154,7 +131,6 @@
                         </goals>
                         <configuration>
                             <excludes>
-                                <exclude>com/vesoft/tools/**</exclude>
                                 <exclude>META-INF/*.SF</exclude>
                                 <exclude>META-INF/*.DSA</exclude>
                                 <exclude>META-INF/*.RSA</exclude>
@@ -166,11 +142,6 @@
                         <goals>
                             <goal>testCompile</goal>
                         </goals>
-                        <configuration>
-                            <excludes>
-                                com/vesoft/tools/**
-                            </excludes>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -254,10 +225,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.2.0</version>
-                <configuration>
-                    <excludePackageNames>com.facebook.thrift:com.facebook.thrift.*
-                    </excludePackageNames>
-                </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>

@@ -8,62 +8,25 @@
         <version>3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>nebula-spark-common</artifactId>
-
+    <artifactId>nebula-spark-connector_3.0</artifactId>
 
     <properties>
-        <nebula.version>3.0-SNAPSHOT</nebula.version>
         <compiler.source.version>1.8</compiler.source.version>
         <compiler.target.version>1.8</compiler.target.version>
-        <scalatest.version>3.2.3</scalatest.version>
-        <junit.version>4.13.1</junit.version>
-        <codec.version>1.13</codec.version>
-
-        <scala.binary.version>2.12</scala.binary.version>
-        <spark.version>3.0.0</spark.version>
-        <scala.version>2.12.10</scala.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-graphx_${scala.binary.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.vesoft</groupId>
-            <artifactId>client</artifactId>
-            <version>${nebula.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>commons-codec</artifactId>
-            <groupId>commons-codec</groupId>
-            <version>${codec.version}</version>
-        </dependency>
-        <!-- scalatest -->
-        <dependency>
-            <groupId>org.scalatest</groupId>
-            <artifactId>scalatest-funsuite_2.12</artifactId>
-            <version>${scalatest.version}</version>
+            <artifactId>nebula-spark-common</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- deploy plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -75,7 +38,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- nexus staging deploy -->
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -87,7 +49,6 @@
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
-
             <!-- maven-jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -113,74 +74,56 @@
                 </configuration>
             </plugin>
 
-            <!-- Source plugin -->
+            <!-- maven-shade -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.0</version>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Javadoc plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <encoding>UTF-8</encoding>
-                            <charset>UTF-8</charset>
-                            <additionalOptions>
-                                <additionalparam>-source 8</additionalparam>
-                                <additionalOption>-Xdoclint:none</additionalOption>
-                            </additionalOptions>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>org.apache.spark:*</exclude>
+                                    <exclude>org.apache.hadoop:*</exclude>
+                                    <exclude>org.apache.hive:*</exclude>
+                                    <exclude>log4j:log4j</exclude>
+                                    <exclude>org.apache.orc:*</exclude>
+                                    <exclude>xml-apis:xml-apis</exclude>
+                                    <exclude>javax.inject:javax.inject</exclude>
+                                    <exclude>org.spark-project.hive:hive-exec</exclude>
+                                    <exclude>stax:stax-api</exclude>
+                                    <exclude>org.glassfish.hk2.external:aopalliance-repackaged
+                                    </exclude>
+                                </excludes>
+                            </artifactSet>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>com/vesoft/tools/**</exclude>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-            <!-- test plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.12.4</version>
-                <configuration>
-                    <includes>
-                        <include>**/*Test.*</include>
-                        <include>**/*Suite.*</include>
-                    </includes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.scalatest</groupId>
-                <artifactId>scalatest-maven-plugin</artifactId>
-                <version>2.0.0</version>
-                <executions>
-                    <execution>
-                        <id>test</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
                 <version>2.15.2</version>
                 <configuration>
-                    <scalaVersion>${scala.version}</scalaVersion>
+                    <scalaVersion>2.11.12</scalaVersion>
                     <args>
                         <arg>-target:jvm-1.8</arg>
                     </args>
@@ -196,6 +139,7 @@
                         </goals>
                         <configuration>
                             <excludes>
+                                <exclude>com/vesoft/tools/**</exclude>
                                 <exclude>META-INF/*.SF</exclude>
                                 <exclude>META-INF/*.DSA</exclude>
                                 <exclude>META-INF/*.RSA</exclude>
@@ -207,14 +151,40 @@
                         <goals>
                             <goal>testCompile</goal>
                         </goals>
+                        <configuration>
+                            <excludes>
+                                com/vesoft/tools/**
+                            </excludes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- scala-maven -->
+            <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
-                <version>4.4.0</version>
+                <version>3.2.2</version>
                 <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
                     <execution>
                         <id>Scaladoc</id>
                         <goals>
@@ -240,15 +210,58 @@
                             </args>
                         </configuration>
                     </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12.4</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.*</include>
+                        <include>**/*Suite.*</include>
+                    </includes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.scalatest</groupId>
+                <artifactId>scalatest-maven-plugin</artifactId>
+                <version>2.0.0</version>
+                <executions>
                     <execution>
-                        <id>scala-compile-first</id>
+                        <id>test</id>
                         <goals>
-                            <goal>compile</goal>
+                            <goal>test</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
-            <!-- jacoco plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <excludePackageNames>com.facebook.thrift:com.facebook.thrift.*
+                    </excludePackageNames>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <encoding>UTF-8</encoding>
+                            <charset>UTF-8</charset>
+                            <additionalOptions>
+                                <additionalparam>-source 8</additionalparam>
+                                <additionalOption>-Xdoclint:none</additionalOption>
+                            </additionalOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -270,7 +283,6 @@
             </plugin>
         </plugins>
     </build>
-
     <repositories>
         <repository>
             <id>snapshots</id>

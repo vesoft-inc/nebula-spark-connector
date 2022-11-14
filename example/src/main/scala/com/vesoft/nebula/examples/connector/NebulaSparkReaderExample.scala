@@ -29,10 +29,10 @@ object NebulaSparkReaderExample {
       .config(sparkConf)
       .getOrCreate()
 
-    readVertex(spark)
+//    readVertex(spark)
     readEdges(spark)
-    readVertexGraph(spark)
-    readEdgeGraph(spark)
+//    readVertexGraph(spark)
+//    readEdgeGraph(spark)
 
     spark.close()
     sys.exit()
@@ -43,16 +43,16 @@ object NebulaSparkReaderExample {
     val config =
       NebulaConnectionConfig
         .builder()
-        .withMetaAddress("127.0.0.1:9559")
+        .withMetaAddress("192.168.8.171:9559")
         .withConenctionRetry(2)
         .build()
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
-      .withSpace("test")
-      .withLabel("person")
+      .withSpace("nicole_sf30")
+      .withLabel("Organisation")
       .withNoColumn(false)
-      .withReturnCols(List("birthday"))
-      .withLimit(10)
+      .withReturnCols(List("name"))
+      .withLimit(500)
       .withPartitionNum(10)
       .build()
     val vertex = spark.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
@@ -67,23 +67,26 @@ object NebulaSparkReaderExample {
     val config =
       NebulaConnectionConfig
         .builder()
-        .withMetaAddress("127.0.0.1:9559")
+        .withMetaAddress("192.168.8.171:9559")
         .withTimeout(6000)
         .withConenctionRetry(2)
         .build()
     val nebulaReadEdgeConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
       .withSpace("test")
-      .withLabel("knows")
+      .withLabel("friend")
       .withNoColumn(false)
       .withReturnCols(List("degree"))
       .withLimit(10)
       .withPartitionNum(10)
       .build()
-    val edge = spark.read.nebula(config, nebulaReadEdgeConfig).loadEdgesToDF()
-    edge.printSchema()
-    edge.show(20)
+    import spark.implicits._
+    val edge =
+      spark.read.nebula(config, nebulaReadEdgeConfig).loadEdgesToDF().where($"degree" >= 30)
+    edge.cache()
     println("edge count: " + edge.count())
+    edge.printSchema()
+    edge.show(1)
   }
 
   def readVertexGraph(spark: SparkSession): Unit = {

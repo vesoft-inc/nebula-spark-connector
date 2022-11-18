@@ -7,21 +7,26 @@ package com.vesoft.nebula.connector
 
 import com.vesoft.nebula.PropertyType
 import com.vesoft.nebula.client.graph.data.{DateTimeWrapper, DurationWrapper, TimeWrapper}
+import com.vesoft.nebula.connector.nebula.MetaProvider
 import com.vesoft.nebula.meta.{ColumnDef, ColumnTypeDef}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.types.{
   BooleanType,
   DataType,
+  DataTypes,
   DoubleType,
   FloatType,
   IntegerType,
   LongType,
   StringType,
+  StructField,
   StructType,
   TimestampType
 }
 import org.apache.spark.unsafe.types.UTF8String
 import org.slf4j.LoggerFactory
+
+import scala.collection.mutable.ListBuffer
 
 object NebulaUtils {
   private val LOG = LoggerFactory.getLogger(this.getClass)
@@ -154,6 +159,72 @@ object NebulaUtils {
       s = s.replaceAll("\b", "\\\\b")
     }
     s
+  }
+
+  /**
+    * return the dataset's schema. Schema includes configured cols in returnCols or includes all properties in nebula.
+    */
+  def getSchema(nebulaOptions: NebulaOptions): StructType = {
+    val returnCols                      = nebulaOptions.getReturnCols
+    val noColumn                        = nebulaOptions.noColumn
+    val fields: ListBuffer[StructField] = new ListBuffer[StructField]
+    val metaProvider = new MetaProvider(
+      nebulaOptions.getMetaAddress,
+      nebulaOptions.timeout,
+      nebulaOptions.connectionRetry,
+      nebulaOptions.executionRetry,
+      nebulaOptions.enableMetaSSL,
+      nebulaOptions.sslSignType,
+      nebulaOptions.caSignParam,
+      nebulaOptions.selfSignParam
+    )
+
+    import scala.collection.JavaConverters._
+    var schemaCols: Seq[ColumnDef] = Seq()
+    val isVertex                   = DataTypeEnum.VERTEX.toString.equalsIgnoreCase(nebulaOptions.dataType)
+
+    // construct vertex or edge default prop
+    if (isVertex) {
+      fields.append(DataTypes.createStructField("_vertexId", DataTypes.StringType, false))
+    } else {
+      fields.append(DataTypes.createStructField("_srcId", DataTypes.StringType, false))
+      fields.append(DataTypes.createStructField("_dstId", DataTypes.StringType, false))
+      fields.append(DataTypes.createStructField("_rank", DataTypes.LongType, false))
+    }
+
+    var dataSchema: StructType = null
+    // read no column
+    if (noColumn) {
+      dataSchema = new StructType(fields.toArray)
+      return dataSchema
+    }
+    // get tag schema or edge schema
+    val schema = if (isVertex) {
+      metaProvider.getTag(nebulaOptions.spaceName, nebulaOptions.label)
+    } else {
+      metaProvider.getEdge(nebulaOptions.spaceName, nebulaOptions.label)
+    }
+
+    schemaCols = schema.columns.asScala
+
+    // read all columns
+    if (returnCols.isEmpty) {
+      schemaCols.foreach(columnDef => {
+        LOG.info(s"prop name ${new String(columnDef.getName)}, type ${columnDef.getType.getType} ")
+        fields.append(
+          DataTypes.createStructField(new String(columnDef.getName),
+                                      NebulaUtils.convertDataType(columnDef.getType),
+                                      true))
+      })
+    } else {
+      for (col: String <- returnCols) {
+        fields.append(
+          DataTypes
+            .createStructField(col, NebulaUtils.getColDataType(schemaCols.toList, col), true))
+      }
+    }
+    dataSchema = new StructType(fields.toArray)
+    dataSchema
   }
 
 }

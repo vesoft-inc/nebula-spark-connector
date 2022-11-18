@@ -40,11 +40,10 @@ object NebulaSparkReaderExample {
   }
 
   def readVertex(spark: SparkSession): Unit = {
-    LOG.info("start to read nebula vertices")
     val config =
       NebulaConnectionConfig
         .builder()
-        .withMetaAddress("127.0.0.1:9559")
+        .withMetaAddress("192.168.8.171:9559")
         .withConenctionRetry(2)
         .build()
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
@@ -52,7 +51,7 @@ object NebulaSparkReaderExample {
       .withSpace("test")
       .withLabel("person")
       .withNoColumn(false)
-      .withReturnCols(List("birthday"))
+      .withReturnCols(List())
       .withLimit(10)
       .withPartitionNum(10)
       .build()

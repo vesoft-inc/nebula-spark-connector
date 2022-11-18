@@ -46,8 +46,6 @@ class SimpleScanBuilder(nebulaOptions: NebulaOptions, schema: StructType)
   override def pruneColumns(requiredColumns: StructType): Unit = {
     if (!nebulaOptions.pushDownFiltersEnabled || requiredColumns == schema) {
       new StructType()
-    } else {
-      requiredColumns
     }
   }
 }

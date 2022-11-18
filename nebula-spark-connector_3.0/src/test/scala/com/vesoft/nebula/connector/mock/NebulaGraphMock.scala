@@ -169,6 +169,7 @@ class NebulaGraphMock {
       LOG.error("create string type space failed," + createResp.getErrorMessage)
       sys.exit(-1)
     }
+    Thread.sleep(10000)
   }
 
   def mockIntIdGraphSchema(): Unit = {
@@ -184,6 +185,7 @@ class NebulaGraphMock {
       LOG.error("create int type space failed," + createResp.getErrorMessage)
       sys.exit(-1)
     }
+    Thread.sleep(10000)
   }
 
   def close(): Unit = {

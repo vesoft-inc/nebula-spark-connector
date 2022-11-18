@@ -19,10 +19,6 @@
         <scalatest.version>3.2.3</scalatest.version>
         <junit.version>4.13.1</junit.version>
         <codec.version>1.13</codec.version>
-
-        <scala.binary.version>2.11</scala.binary.version>
-        <spark.version>2.4.4</spark.version>
-        <scala.version>2.12.10</scala.version>
     </properties>
 
     <dependencies>
@@ -57,7 +53,7 @@
         <!-- scalatest -->
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest-funsuite_2.11</artifactId>
+            <artifactId>scalatest-funsuite_${scala.binary.version}</artifactId>
             <version>${scalatest.version}</version>
             <scope>test</scope>
         </dependency>

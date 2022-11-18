@@ -40,10 +40,29 @@ jobs:
         popd
         popd
 
-    - name: Deploy SNAPSHOT to Sonatype
+    - name: Deploy SNAPSHOT for spark2.4 to Sonatype
       uses: samuelmeuli/action-maven-publish@v1
       with:
         gpg_private_key: ${{ secrets.JAVA_GPG_PRIVATE_KEY }}
         gpg_passphrase: ${{ secrets.JAVA_GPG_PASSPHRASE }}
         nexus_username: ${{ secrets.OSSRH_USERNAME }}
         nexus_password: ${{ secrets.OSSRH_TOKEN }}
+        maven_args: -pl nebula-spark-connector -am -Pscala-2.11 -Pspark-2.4
+
+    - name: Deploy SNAPSHOT for spark2.2 to Sonatype
+      uses: samuelmeuli/action-maven-publish@v1
+      with:
+        gpg_private_key: ${{ secrets.JAVA_GPG_PRIVATE_KEY }}
+        gpg_passphrase: ${{ secrets.JAVA_GPG_PASSPHRASE }}
+        nexus_username: ${{ secrets.OSSRH_USERNAME }}
+        nexus_password: ${{ secrets.OSSRH_TOKEN }}
+        maven_args: -pl nebula-spark-connector_2.2 -am -Pscala-2.11 -Pspark-2.2
+
+    - name: Deploy SNAPSHOT for spark3.0 to Sonatype
+      uses: samuelmeuli/action-maven-publish@v1
+      with:
+        gpg_private_key: ${{ secrets.JAVA_GPG_PRIVATE_KEY }}
+        gpg_passphrase: ${{ secrets.JAVA_GPG_PASSPHRASE }}
+        nexus_username: ${{ secrets.OSSRH_USERNAME }}
+        nexus_password: ${{ secrets.OSSRH_TOKEN }}
+        maven_args: -pl nebula-spark-connector_3.0 -am -Pscala-2.12 -Pspark-3.0

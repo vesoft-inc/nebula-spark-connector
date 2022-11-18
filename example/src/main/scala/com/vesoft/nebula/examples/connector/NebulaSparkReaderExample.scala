@@ -62,12 +62,10 @@ object NebulaSparkReaderExample {
   }
 
   def readEdges(spark: SparkSession): Unit = {
-    LOG.info("start to read nebula edges")
-
     val config =
       NebulaConnectionConfig
         .builder()
-        .withMetaAddress("127.0.0.1:9559")
+        .withMetaAddress("192.168.8.171:9559")
         .withTimeout(6000)
         .withConenctionRetry(2)
         .build()
@@ -76,7 +74,7 @@ object NebulaSparkReaderExample {
       .withSpace("test")
       .withLabel("knows")
       .withNoColumn(false)
-      .withReturnCols(List("degree"))
+      .withReturnCols(List())
       .withLimit(10)
       .withPartitionNum(10)
       .build()

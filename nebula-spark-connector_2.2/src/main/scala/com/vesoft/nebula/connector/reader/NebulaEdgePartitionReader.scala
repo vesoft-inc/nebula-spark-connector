@@ -12,7 +12,6 @@ import org.slf4j.{Logger, LoggerFactory}
 
 class NebulaEdgePartitionReader(index: Partition, nebulaOptions: NebulaOptions, schema: StructType)
     extends NebulaIterator(index, nebulaOptions, schema) {
-  private val LOG: Logger = LoggerFactory.getLogger(this.getClass)
 
   override def hasNext(): Boolean = hasNextEdgeRow
 }

@@ -5,9 +5,8 @@
 
 package com.vesoft.nebula.connector.reader
 
-import com.vesoft.nebula.connector.{NebulaOptions}
+import com.vesoft.nebula.connector.{NebulaOptions, PartitionUtils}
 import org.apache.spark.sql.catalyst.InternalRow
-
 import org.apache.spark.sql.sources.v2.reader.InputPartitionReader
 import org.apache.spark.sql.types.StructType
 import org.slf4j.{Logger, LoggerFactory}
@@ -25,7 +24,11 @@ abstract class NebulaPartitionReader extends InputPartitionReader[InternalRow] w
     */
   def this(index: Int, nebulaOptions: NebulaOptions, schema: StructType) {
     this()
-    super.init(index, nebulaOptions, schema)
+    val totalPart = super.init(index, nebulaOptions, schema)
+    // index starts with 1
+    val scanParts = PartitionUtils.getScanParts(index, totalPart, nebulaOptions.partitionNums.toInt)
+    LOG.info(s"partition index: ${index}, scanParts: ${scanParts.toString}")
+    scanPartIterator = scanParts.iterator
   }
 
   override def get(): InternalRow = super.getRow()

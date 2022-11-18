@@ -52,7 +52,7 @@ trait NebulaReader {
   /**
     * init the reader: init metaProvider, storageClient
     */
-  def init(index: Int, nebulaOptions: NebulaOptions, schema: StructType) {
+  def init(index: Int, nebulaOptions: NebulaOptions, schema: StructType): Int = {
     this.schema = schema
     this.nebulaOptions = nebulaOptions
 
@@ -104,11 +104,7 @@ trait NebulaReader {
     }
     // allocate scanPart to this partition
     val totalPart = metaProvider.getPartitionNumber(nebulaOptions.spaceName)
-
-    // index starts with 1
-    val scanParts = PartitionUtils.getScanParts(index, totalPart, nebulaOptions.partitionNums.toInt)
-    LOG.info(s"partition index: ${index}, scanParts: ${scanParts.toString}")
-    scanPartIterator = scanParts.iterator
+    totalPart
   }
 
   /**

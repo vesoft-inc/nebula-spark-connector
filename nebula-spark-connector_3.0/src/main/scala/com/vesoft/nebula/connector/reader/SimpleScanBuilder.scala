@@ -31,7 +31,7 @@ class SimpleScanBuilder(nebulaOptions: NebulaOptions, schema: StructType)
   private var filters: Array[Filter] = Array[Filter]()
 
   override def build(): Scan = {
-    new SimpleScan(nebulaOptions, 10, schema)
+    new SimpleScan(nebulaOptions, nebulaOptions.partitionNums.toInt, schema)
   }
 
   override def pushFilters(pushFilters: Array[Filter]): Array[Filter] = {
@@ -56,12 +56,12 @@ class SimpleScan(nebulaOptions: NebulaOptions, nebulaTotalPart: Int, schema: Str
   override def toBatch: Batch = this
 
   override def planInputPartitions(): Array[InputPartition] = {
-    val partitionSize                                   = nebulaTotalPart
-    val inputPartitions: java.util.List[InputPartition] = new util.ArrayList[InputPartition]()
-    for (i <- 1 to partitionSize) {
-      inputPartitions.add(NebulaPartition(i))
-    }
-    inputPartitions.asScala.toArray
+    val partitionSize = nebulaTotalPart
+    val inputPartitions = for (i <- 1 to partitionSize)
+      yield {
+        NebulaPartition(i)
+      }
+    inputPartitions.map(_.asInstanceOf[InputPartition]).toArray
   }
 
   override def readSchema(): StructType = schema
@@ -69,3 +69,8 @@ class SimpleScan(nebulaOptions: NebulaOptions, nebulaTotalPart: Int, schema: Str
   override def createReaderFactory(): PartitionReaderFactory =
     new NebulaPartitionReaderFactory(nebulaOptions, schema)
 }
+
+/**
+  * An identifier for a partition in an NebulaRDD.
+  */
+case class NebulaPartition(partition: Int) extends InputPartition

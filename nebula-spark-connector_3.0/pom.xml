@@ -27,6 +27,13 @@
             <artifactId>nebula-spark-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- scalatest -->
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest-funsuite_2.12</artifactId>
+            <version>3.2.3</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

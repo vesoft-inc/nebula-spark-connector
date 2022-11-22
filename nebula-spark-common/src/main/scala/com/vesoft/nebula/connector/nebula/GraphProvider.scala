@@ -67,11 +67,14 @@ class GraphProvider(addresses: List[Address],
   /**
     * release session
     */
-  def releaseGraphClient(session: Session): Unit = {
-    session.release()
+  def releaseGraphClient(): Unit = {
+    if (session != null) {
+      session.release()
+    }
   }
 
   override def close(): Unit = {
+    releaseGraphClient()
     pool.close()
   }
 
@@ -90,7 +93,7 @@ class GraphProvider(addresses: List[Address],
     val switchStatment = s"use $space"
     LOG.info(s"switch space $space")
     val result = submit(switchStatment)
-    if(!result.isSucceeded){
+    if (!result.isSucceeded) {
       LOG.error(s"switch space $space failed, ${result.getErrorMessage}")
       throw new RuntimeException(s"switch space $space failed, ${result.getErrorMessage}")
     }

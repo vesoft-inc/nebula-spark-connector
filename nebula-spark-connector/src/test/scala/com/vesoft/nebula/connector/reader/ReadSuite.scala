@@ -55,7 +55,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .build()
     val vertex = sparkSession.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
     vertex.printSchema()
-    vertex.show()
+    vertex.show(truncate = false)
     assert(vertex.count() == 18)
     assert(vertex.schema.fields.length == 1)
   }
@@ -78,7 +78,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .build()
     val vertex = sparkSession.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
     vertex.printSchema()
-    vertex.show()
+    vertex.show(truncate = false)
     assert(vertex.count() == 18)
     assert(vertex.schema.fields.length == 2)
 
@@ -114,7 +114,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .build()
     val vertex = sparkSession.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
     vertex.printSchema()
-    vertex.show()
+    vertex.show(truncate = false)
     assert(vertex.count() == 18)
     assert(vertex.schema.fields.length == 14)
 
@@ -173,7 +173,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .build()
     val vertex = sparkSession.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
     vertex.printSchema()
-    vertex.show()
+    vertex.show(truncate = false)
     assert(vertex.count() == 3)
     assert(vertex.schema.fields.length == 2)
 
@@ -211,7 +211,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .build()
     val vertex = sparkSession.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
     vertex.printSchema()
-    vertex.show()
+    vertex.show(truncate = false)
     assert(vertex.count() == 1)
     assert(vertex.schema.fields.length == 2)
 
@@ -243,7 +243,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .build()
     val edge = sparkSession.read.nebula(config, nebulaReadEdgeConfig).loadEdgesToDF()
     edge.printSchema()
-    edge.show()
+    edge.show(truncate = false)
     assert(edge.count() == 12)
     assert(edge.schema.fields.length == 3)
 
@@ -276,7 +276,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .build()
     val edge = sparkSession.read.nebula(config, nebulaReadEdgeConfig).loadEdgesToDF()
     edge.printSchema()
-    edge.show(20)
+    edge.show(truncate = false)
     assert(edge.count() == 12)
     assert(edge.schema.fields.length == 4)
     edge.map(row => {
@@ -309,7 +309,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .build()
     val edge = sparkSession.read.nebula(config, nebulaReadVertexConfig).loadEdgesToDF()
     edge.printSchema()
-    edge.show()
+    edge.show(truncate = false)
     assert(edge.count() == 12)
     assert(edge.schema.fields.length == 16)
 

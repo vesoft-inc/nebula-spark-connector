@@ -16,7 +16,8 @@ import org.apache.spark.sql.{
   Encoder,
   Encoders,
   Row,
-  SaveMode
+  SaveMode,
+  SparkSession
 }
 
 import scala.collection.mutable.ListBuffer

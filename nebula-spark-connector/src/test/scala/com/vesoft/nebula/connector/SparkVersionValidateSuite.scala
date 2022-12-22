@@ -13,7 +13,7 @@ class SparkVersionValidateSuite extends AnyFunSuite {
   test("spark version validate") {
     try {
       val version = SparkSession.getActiveSession.map(_.version).getOrElse("UNKNOWN")
-      SparkValidate.validate(version, "2.4.*")
+      SparkValidate.validate("2.4.*")
     } catch {
       case e: Exception => assert(false)
     }

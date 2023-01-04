@@ -174,6 +174,45 @@ package object connector {
     }
 
     /**
+      * Reading edges from Nebula Graph by ngql
+      * @return DataFrame
+      */
+    def loadEdgesToDfByNgql(): DataFrame = {
+      assert(connectionConfig != null && readConfig != null,
+             "nebula config is not set, please call nebula() before loadEdgesToDfByNgql")
+
+      val dfReader = reader
+        .format(classOf[NebulaDataSource].getName)
+        .option(NebulaOptions.TYPE, DataTypeEnum.EDGE.toString)
+        .option(NebulaOptions.SPACE_NAME, readConfig.getSpace)
+        .option(NebulaOptions.LABEL, readConfig.getLabel)
+        .option(NebulaOptions.RETURN_COLS, readConfig.getReturnCols.mkString(","))
+        .option(NebulaOptions.NO_COLUMN, readConfig.getNoColumn)
+        .option(NebulaOptions.LIMIT, readConfig.getLimit)
+        .option(NebulaOptions.PARTITION_NUMBER, readConfig.getPartitionNum)
+        .option(NebulaOptions.NGQL, readConfig.getNgql)
+        .option(NebulaOptions.META_ADDRESS, connectionConfig.getMetaAddress)
+        .option(NebulaOptions.GRAPH_ADDRESS, connectionConfig.getGraphAddress)
+        .option(NebulaOptions.TIMEOUT, connectionConfig.getTimeout)
+        .option(NebulaOptions.CONNECTION_RETRY, connectionConfig.getConnectionRetry)
+        .option(NebulaOptions.EXECUTION_RETRY, connectionConfig.getExecRetry)
+        .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
+        .option(NebulaOptions.ENABLE_STORAGE_SSL, connectionConfig.getEnableStorageSSL)
+
+      if (connectionConfig.getEnableStorageSSL || connectionConfig.getEnableMetaSSL) {
+        dfReader.option(NebulaOptions.SSL_SIGN_TYPE, connectionConfig.getSignType)
+        SSLSignType.withName(connectionConfig.getSignType) match {
+          case SSLSignType.CA =>
+            dfReader.option(NebulaOptions.CA_SIGN_PARAM, connectionConfig.getCaSignParam)
+          case SSLSignType.SELF =>
+            dfReader.option(NebulaOptions.SELF_SIGN_PARAM, connectionConfig.getSelfSignParam)
+        }
+      }
+
+      dfReader.load()
+    }
+
+    /**
       * read nebula vertex edge to graphx's vertex
       * use hash() for String type vertex id.
       */

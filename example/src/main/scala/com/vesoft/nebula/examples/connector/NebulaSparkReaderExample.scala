@@ -164,4 +164,25 @@ object NebulaSparkReaderExample {
     vertex.show(20)
     println("vertex count: " + vertex.count())
   }
+
+  def readEdgeWithNgql(spark: SparkSession): Unit = {
+    LOG.info("start to read nebula edge with ngql")
+    val config =
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
+        .withConenctionRetry(2)
+        .build()
+    val nebulaReadConfig: ReadNebulaConfig = ReadNebulaConfig
+      .builder()
+      .withSpace("test")
+      .withLabel("friend")
+      .withNgql("match (v)-[e:friend]-(v2) return e")
+      .build()
+    val edge = spark.read.nebula(config, nebulaReadConfig).loadEdgesToDfByNgql()
+    edge.printSchema()
+    edge.show(20)
+    println("veedgertex count: " + edge.count())
+  }
 }

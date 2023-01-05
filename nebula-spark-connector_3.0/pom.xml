@@ -111,7 +111,7 @@
                 <artifactId>maven-scala-plugin</artifactId>
                 <version>2.15.2</version>
                 <configuration>
-                    <scalaVersion>2.11.12</scalaVersion>
+                    <scalaVersion>2.12.10</scalaVersion>
                     <args>
                         <arg>-target:jvm-1.8</arg>
                     </args>

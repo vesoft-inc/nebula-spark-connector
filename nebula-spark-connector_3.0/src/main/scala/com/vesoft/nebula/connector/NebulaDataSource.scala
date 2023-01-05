@@ -61,6 +61,9 @@ class NebulaDataSource extends TableProvider with DataSourceRegister {
   override def getTable(tableSchema: StructType,
                         transforms: Array[Transform],
                         map: util.Map[String, String]): Table = {
+    if (nebulaOptions == null) {
+      nebulaOptions = getNebulaOptions(new CaseInsensitiveStringMap(map))
+    }
     new NebulaTable(tableSchema, nebulaOptions)
   }
 

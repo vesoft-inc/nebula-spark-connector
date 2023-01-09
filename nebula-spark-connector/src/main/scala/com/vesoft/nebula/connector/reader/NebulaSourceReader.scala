@@ -131,3 +131,16 @@ class NebulaDataSourceEdgeReader(nebulaOptions: NebulaOptions)
     partitions.map(_.asInstanceOf[InputPartition[InternalRow]]).asJava
   }
 }
+
+/**
+  * DataSourceReader for Nebula Edge by ngql
+  */
+class NebulaDataSourceNgqlEdgeReader(nebulaOptions: NebulaOptions)
+    extends NebulaSourceReader(nebulaOptions) {
+
+  override def planInputPartitions(): util.List[InputPartition[InternalRow]] = {
+    val partitions = new util.ArrayList[InputPartition[InternalRow]]()
+    partitions.add(new NebulaNgqlEdgePartition(nebulaOptions, getSchema))
+    partitions
+  }
+}

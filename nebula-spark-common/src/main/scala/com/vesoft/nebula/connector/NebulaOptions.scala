@@ -108,11 +108,19 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
   var partitionNums: String = _
   var noColumn: Boolean     = _
   var limit: Int            = _
+  var ngql: String          = _
   if (operaType == OperaType.READ) {
     returnCols = parameters(RETURN_COLS)
     noColumn = parameters.getOrElse(NO_COLUMN, false).toString.toBoolean
     partitionNums = parameters(PARTITION_NUMBER)
     limit = parameters.getOrElse(LIMIT, DEFAULT_LIMIT).toString.toInt
+    ngql = parameters.getOrElse(NGQL,EMPTY_STRING)
+    ngql = parameters.getOrElse(NGQL,EMPTY_STRING)
+    if(ngql!=EMPTY_STRING){
+      require(parameters.isDefinedAt(GRAPH_ADDRESS),
+        s"option $GRAPH_ADDRESS is required for ngql and can not be blank")
+      graphAddress = parameters(GRAPH_ADDRESS)
+    }
   }
 
   /** write parameters */
@@ -234,6 +242,9 @@ object NebulaOptions {
   val NO_COLUMN: String        = "noColumn"
   val PARTITION_NUMBER: String = "partitionNumber"
   val LIMIT: String            = "limit"
+
+  /** read by ngql **/
+  val NGQL: String             = "ngql"
 
   /** write config */
   val RATE_LIMIT: String   = "rateLimit"

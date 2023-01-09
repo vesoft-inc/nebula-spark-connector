@@ -94,6 +94,10 @@ case class NebulaRelation(override val sqlContext: SQLContext, nebulaOptions: Ne
   }
 
   override def buildScan(): RDD[Row] = {
-    new NebulaRDD(sqlContext, nebulaOptions, datasetSchema).asInstanceOf[RDD[Row]]
+    if (nebulaOptions.ngql != null && nebulaOptions.ngql.nonEmpty) {
+      new NebulaNgqlRDD(sqlContext, nebulaOptions, datasetSchema).asInstanceOf[RDD[Row]]
+    } else {
+      new NebulaRDD(sqlContext, nebulaOptions, datasetSchema).asInstanceOf[RDD[Row]]
+    }
   }
 }

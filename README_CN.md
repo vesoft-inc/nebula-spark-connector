@@ -330,7 +330,7 @@ Nebula Spark Connector 和 Nebula 的版本对应关系如下:
 读取Nebula数据的配置是 2000 limit 和 100 partitionNum，其中 space 的 分区数也是100。
 
 
-|data type|ldbc 6.712million with No Property| ldbc 22 million with No Property|ldbc  6.712million with All Property|ldbc 22million with All Property|
+|data type|ldbc 67.12million with No Property| ldbc 220 million with No Property|ldbc  67.12million with All Property|ldbc 220million with All Property|
 |:-------:|:--------------------------------:|:-------------------------------:|:----------------------------------:|:------------------------------:|
 | vertex  |                 9.405s           |           64.611s               |               13.897s              |            57.417s             |
 |  edge   |                10.798s           |           71.499s               |               10.244s              |            67.43s              |
@@ -345,7 +345,7 @@ comment_replyOf_post.csv and comment_replyOf_comment.csv 写入 REPLY_OF 边类�
 写入Nebula的配置是 2000 batch size， 待写入的数据 DataFrame 有 60 个 Spark 分区。
 
 
-|data type|ldbc 6.712million with All Property| ldbc 22 million with All Property|
+|data type|ldbc 67.12million with All Property| ldbc 220 million with All Property|
 |:-------:|:--------------------------------:|:-------------------------------:|
 | vertex  |                 66.578s          |           112.829s              |
 |  edge   |                 39.138s          |           51.198s               |

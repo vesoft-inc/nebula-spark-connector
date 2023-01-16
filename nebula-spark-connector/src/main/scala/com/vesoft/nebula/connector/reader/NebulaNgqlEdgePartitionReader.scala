@@ -89,7 +89,7 @@ class NebulaNgqlEdgePartitionReader extends InputPartitionReader[InternalRow] {
     val edge: ListBuffer[ValueWrapper] = new ListBuffer[ValueWrapper]
     edge.append(relationship.srcId())
     edge.append(relationship.dstId())
-    edge.append(new ValueWrapper(new Value(3, relationship.ranking()), "utf-8"))
+    edge.append(new ValueWrapper(new Value(Value.IVAL, relationship.ranking()), "utf-8"))
     if (properties == null || properties.isEmpty)
       return edge
     else {

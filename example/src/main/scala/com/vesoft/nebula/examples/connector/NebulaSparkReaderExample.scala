@@ -33,6 +33,7 @@ object NebulaSparkReaderExample {
     readEdges(spark)
     readVertexGraph(spark)
     readEdgeGraph(spark)
+    readEdgeWithNgql(spark)
 
     spark.close()
     sys.exit()
@@ -178,11 +179,15 @@ object NebulaSparkReaderExample {
       .builder()
       .withSpace("test")
       .withLabel("friend")
+      // please make sure you have config the NoColumn true or returnCols with at least one column.
+      //.withNoColumn(true)
+      .withReturnCols(List("degree"))
+      // please make sure your ngql statement result is edge, connector does not check the statement.
       .withNgql("match (v)-[e:friend]-(v2) return e")
       .build()
     val edge = spark.read.nebula(config, nebulaReadConfig).loadEdgesToDfByNgql()
     edge.printSchema()
     edge.show(20)
-    println("veedgertex count: " + edge.count())
+    println("edge count: " + edge.count())
   }
 }

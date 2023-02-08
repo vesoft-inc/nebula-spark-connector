@@ -65,7 +65,7 @@ class WriteInsertSuite extends AnyFunSuite with BeforeAndAfterAll {
 
     graphProvider.submit("use test_write_string;")
     val resultSet: ResultSet =
-      graphProvider.submit("match (v:person_connector)-[e:friend_connector] -> ()  return e;")
+      graphProvider.submit("match (v:person_connector)-[e:friend_connector]-> ()  return e;")
     assert(resultSet.getColumnNames.size() == 1)
     assert(resultSet.getRows.size() == 13)
 

@@ -30,16 +30,19 @@
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_${scala.binary.version}</artifactId>
             <version>${spark.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_${scala.binary.version}</artifactId>
             <version>${spark.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-graphx_${scala.binary.version}</artifactId>
             <version>${spark.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.vesoft</groupId>
@@ -56,6 +59,7 @@
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest-funsuite_2.11</artifactId>
             <version>${scalatest.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

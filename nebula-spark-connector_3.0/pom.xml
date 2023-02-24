@@ -16,12 +16,30 @@
         <compiler.source.version>1.8</compiler.source.version>
         <compiler.target.version>1.8</compiler.target.version>
         <scala.binary.version>2.12</scala.binary.version>
-        <spark.version>3.0.0</spark.version>
+        <spark3.0.version>3.0.0</spark3.0.version>
         <scala.version>2.12.10</scala.version>
         <scalatest.version>3.2.3</scalatest.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.12</artifactId>
+            <version>${spark3.0.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_2.12</artifactId>
+            <version>${spark3.0.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-graphx_2.12</artifactId>
+            <version>${spark3.0.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>com.vesoft</groupId>
             <artifactId>nebula-spark-common</artifactId>

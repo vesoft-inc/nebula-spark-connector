@@ -6,6 +6,7 @@
 package com.vesoft.nebula.connector
 
 import com.vesoft.nebula.connector.ssl.SSLSignType
+import com.vesoft.nebula.connector.utils.SparkValidate
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{
   DataFrame,
@@ -30,6 +31,7 @@ package object connector {
 
     def nebula(connectionConfig: NebulaConnectionConfig,
                readConfig: ReadNebulaConfig): NebulaDataFrameReader = {
+      SparkValidate.validate("3.0.*", "3.1.*", "3.2.*", "3.3.*")
       this.connectionConfig = connectionConfig
       this.readConfig = readConfig
       this
@@ -179,6 +181,7 @@ package object connector {
       */
     def nebula(connectionConfig: NebulaConnectionConfig,
                writeNebulaConfig: WriteNebulaConfig): NebulaDataFrameWriter = {
+      SparkValidate.validate("3.0.*", "3.1.*", "3.2.*", "3.3.*")
       this.connectionConfig = connectionConfig
       this.writeNebulaConfig = writeNebulaConfig
       this

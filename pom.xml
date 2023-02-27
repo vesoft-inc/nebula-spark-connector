@@ -11,6 +11,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spark.version>2.4.4</spark.version>
+        <scala.binary.version>2.12</scala.binary.version>
+        <scala.version>2.12.10</scala.version>
         <scalatest.version>3.2.3</scalatest.version>
     </properties>
 
@@ -48,6 +51,7 @@
     <modules>
         <module>nebula-spark-connector</module>
         <module>nebula-spark-connector_2.2</module>
+        <module>nebula-spark-connector_3.0</module>
         <module>example</module>
         <module>nebula-spark-common</module>
     </modules>
@@ -126,6 +130,38 @@
             </build>
         </profile>
 
+        <profile>
+            <id>scala-2.11</id>
+            <properties>
+                <scala.version>2.11.12</scala.version>
+                <scala.binary.version>2.11</scala.binary.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>scala-2.12</id>
+            <properties>
+                <scala.version>2.12.10</scala.version>
+                <scala.binary.version>2.12</scala.binary.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>spark-2.2</id>
+            <properties>
+                <spark.version>2.2.0</spark.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>spark-2.4</id>
+            <properties>
+                <spark.version>2.4.4</spark.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>spark-3.0</id>
+            <properties>
+                <spark.version>3.0.0</spark.version>
+            </properties>
+        </profile>
     </profiles>
 
     <build>

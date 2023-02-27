@@ -42,7 +42,7 @@ class NebulaDataSource
     * Creates a {@link DataSourceReader} to scan the data from Nebula Graph.
     */
   override def createReader(options: DataSourceOptions): DataSourceReader = {
-    val nebulaOptions = getNebulaOptions(options, OperaType.READ)
+    val nebulaOptions = getNebulaOptions(options)
     val dataType      = nebulaOptions.dataType
 
     LOG.info("create reader")
@@ -65,7 +65,7 @@ class NebulaDataSource
                             mode: SaveMode,
                             options: DataSourceOptions): Optional[DataSourceWriter] = {
 
-    val nebulaOptions = getNebulaOptions(options, OperaType.WRITE)
+    val nebulaOptions = getNebulaOptions(options)
     val dataType      = nebulaOptions.dataType
     if (mode == SaveMode.Ignore || mode == SaveMode.ErrorIfExists) {
       LOG.warn(s"Currently do not support mode")
@@ -140,12 +140,12 @@ class NebulaDataSource
   /**
     * construct nebula options with DataSourceOptions
     */
-  def getNebulaOptions(options: DataSourceOptions, operateType: OperaType.Value): NebulaOptions = {
+  def getNebulaOptions(options: DataSourceOptions): NebulaOptions = {
     var parameters: Map[String, String] = Map()
     for (entry: Entry[String, String] <- options.asMap().entrySet) {
       parameters += (entry.getKey -> entry.getValue)
     }
-    val nebulaOptions = new NebulaOptions(CaseInsensitiveMap(parameters))(operateType)
+    val nebulaOptions = new NebulaOptions(CaseInsensitiveMap(parameters))
     nebulaOptions
   }
 }

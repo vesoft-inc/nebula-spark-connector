@@ -15,22 +15,18 @@ import org.apache.spark.sql.catalyst.util.CaseInsensitiveMap
 
 import scala.collection.mutable.ListBuffer
 
-class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
-    operaType: OperaType.Value)
-    extends Serializable
-    with Logging {
+class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) extends Serializable {
 
   import NebulaOptions._
 
   def this(parameters: Map[String, String], operaType: OperaType.Value) =
-    this(CaseInsensitiveMap(parameters))(operaType)
+    this(CaseInsensitiveMap(parameters))
 
   def this(hostAndPorts: String,
            spaceName: String,
            dataType: String,
            label: String,
-           parameters: Map[String, String],
-           operaType: OperaType.Value) = {
+           parameters: Map[String, String]) = {
     this(
       CaseInsensitiveMap(
         parameters ++ Map(
@@ -39,8 +35,9 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
           NebulaOptions.TYPE         -> dataType,
           NebulaOptions.LABEL        -> label
         ))
-    )(operaType)
+    )
   }
+  val operaType = OperaType.withName(parameters(OPERATE_TYPE))
 
   /**
     * Return property with all options
@@ -104,21 +101,24 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
   val label: String = parameters(LABEL)
 
   /** read parameters */
-  var returnCols: String    = _
-  var partitionNums: String = _
-  var noColumn: Boolean     = _
-  var limit: Int            = _
-  var ngql: String          = _
+  var returnCols: String              = _
+  var partitionNums: String           = _
+  var noColumn: Boolean               = _
+  var limit: Int                      = _
+  var pushDownFiltersEnabled: Boolean = _
+  var ngql: String                    = _
   if (operaType == OperaType.READ) {
     returnCols = parameters(RETURN_COLS)
     noColumn = parameters.getOrElse(NO_COLUMN, false).toString.toBoolean
     partitionNums = parameters(PARTITION_NUMBER)
     limit = parameters.getOrElse(LIMIT, DEFAULT_LIMIT).toString.toInt
-    ngql = parameters.getOrElse(NGQL,EMPTY_STRING)
-    ngql = parameters.getOrElse(NGQL,EMPTY_STRING)
-    if(ngql!=EMPTY_STRING){
+    // TODO explore the pushDownFiltersEnabled parameter to users
+    pushDownFiltersEnabled = parameters.getOrElse(PUSHDOWN_FILTERS_ENABLE, false).toString.toBoolean
+    ngql = parameters.getOrElse(NGQL, EMPTY_STRING)
+    ngql = parameters.getOrElse(NGQL, EMPTY_STRING)
+    if (ngql != EMPTY_STRING) {
       require(parameters.isDefinedAt(GRAPH_ADDRESS),
-        s"option $GRAPH_ADDRESS is required for ngql and can not be blank")
+              s"option $GRAPH_ADDRESS is required for ngql and can not be blank")
       graphAddress = parameters(GRAPH_ADDRESS)
     }
   }
@@ -187,13 +187,11 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
 
   def getMetaAddress: List[Address] = {
     val hostPorts: ListBuffer[Address] = new ListBuffer[Address]
-    metaAddress
-      .split(",")
-      .foreach(hostPort => {
-        // check host & port by getting HostAndPort
-        val addr = HostAndPort.fromString(hostPort)
-        hostPorts.append((addr.getHostText, addr.getPort))
-      })
+    for (hostPort <- metaAddress.split(",")) {
+      // check host & port by getting HostAndPort
+      val addr = HostAndPort.fromString(hostPort)
+      hostPorts.append((addr.getHostText, addr.getPort))
+    }
     hostPorts.toList
   }
 
@@ -210,9 +208,6 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String])(
   }
 
 }
-
-class NebulaOptionsInWrite(@transient override val parameters: CaseInsensitiveMap[String])
-    extends NebulaOptions(parameters)(OperaType.WRITE) {}
 
 object NebulaOptions {
 
@@ -237,14 +232,17 @@ object NebulaOptions {
   val CA_SIGN_PARAM: String      = "caSignParam"
   val SELF_SIGN_PARAM: String    = "selfSignParam"
 
+  val OPERATE_TYPE: String = "operateType"
+
   /** read config */
-  val RETURN_COLS: String      = "returnCols"
-  val NO_COLUMN: String        = "noColumn"
-  val PARTITION_NUMBER: String = "partitionNumber"
-  val LIMIT: String            = "limit"
+  val RETURN_COLS: String             = "returnCols"
+  val NO_COLUMN: String               = "noColumn"
+  val PARTITION_NUMBER: String        = "partitionNumber"
+  val LIMIT: String                   = "limit"
+  val PUSHDOWN_FILTERS_ENABLE: String = "pushDownFiltersEnable"
 
   /** read by ngql **/
-  val NGQL: String             = "ngql"
+  val NGQL: String = "ngql"
 
   /** write config */
   val RATE_LIMIT: String   = "rateLimit"

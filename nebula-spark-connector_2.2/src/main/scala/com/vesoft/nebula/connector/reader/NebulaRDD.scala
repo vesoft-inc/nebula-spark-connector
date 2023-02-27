@@ -27,8 +27,8 @@ class NebulaRDD(val sqlContext: SQLContext, var nebulaOptions: NebulaOptions, sc
   override def compute(split: Partition, context: TaskContext): Iterator[InternalRow] = {
     val dataType = nebulaOptions.dataType
     if (DataTypeEnum.VERTEX.toString.equalsIgnoreCase(dataType))
-      new NebulaVertexReader(split, nebulaOptions, schema)
-    else new NebulaEdgeReader(split, nebulaOptions, schema)
+      new NebulaVertexPartitionReader(split, nebulaOptions, schema)
+    else new NebulaEdgePartitionReader(split, nebulaOptions, schema)
   }
 
   override def getPartitions = {

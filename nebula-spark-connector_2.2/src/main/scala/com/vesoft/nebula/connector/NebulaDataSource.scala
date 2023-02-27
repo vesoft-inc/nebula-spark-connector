@@ -43,7 +43,7 @@ class NebulaDataSource
     */
   override def createRelation(sqlContext: SQLContext,
                               parameters: Map[String, String]): BaseRelation = {
-    val nebulaOptions = getNebulaOptions(parameters, OperaType.READ)
+    val nebulaOptions = getNebulaOptions(parameters)
 
     LOG.info("create relation")
     LOG.info(s"options ${parameters}")
@@ -59,7 +59,7 @@ class NebulaDataSource
                               parameters: Map[String, String],
                               data: DataFrame): BaseRelation = {
 
-    val nebulaOptions = getNebulaOptions(parameters, OperaType.WRITE)
+    val nebulaOptions = getNebulaOptions(parameters)
     if (mode == SaveMode.Ignore || mode == SaveMode.ErrorIfExists) {
       LOG.warn(s"Currently do not support mode")
     }
@@ -78,9 +78,8 @@ class NebulaDataSource
   /**
     * construct nebula options with DataSourceOptions
     */
-  def getNebulaOptions(options: Map[String, String],
-                       operateType: OperaType.Value): NebulaOptions = {
-    val nebulaOptions = new NebulaOptions(CaseInsensitiveMap(options))(operateType)
+  def getNebulaOptions(options: Map[String, String]): NebulaOptions = {
+    val nebulaOptions = new NebulaOptions(CaseInsensitiveMap(options))
     nebulaOptions
   }
 

@@ -94,16 +94,22 @@ object NebulaSparkWriterExample {
     * if your withVidAsProp is true, then tag schema also should have property name: id
     */
   def writeVertex(spark: SparkSession): Unit = {
-    LOG.info("start to write nebula vertices")
-    val df = spark.read.json("example/src/main/resources/vertex")
+    val df = spark.read.json("vertex")
     df.show()
 
-    val config = getNebulaConnectionConfig()
+    val config =
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("192.168.8.171:9559")
+        .withGraphAddress("192.168.8.171:9669")
+        .withConenctionRetry(2)
+        .build()
     val nebulaWriteVertexConfig: WriteNebulaVertexConfig = WriteNebulaVertexConfig
       .builder()
       .withSpace("test")
       .withTag("person")
       .withVidField("id")
+      .withWriteMode(WriteMode.DELETE)
       .withVidAsProp(false)
       .withBatch(1000)
       .build()
@@ -117,8 +123,7 @@ object NebulaSparkWriterExample {
     * if your withRankAsProperty is true, then edge schema also should have property name: degree
     */
   def writeEdge(spark: SparkSession): Unit = {
-    LOG.info("start to write nebula edges")
-    val df = spark.read.json("example/src/main/resources/edge")
+    val df = spark.read.json("edge")
     df.show()
     df.persist(StorageLevel.MEMORY_AND_DISK_SER)
 

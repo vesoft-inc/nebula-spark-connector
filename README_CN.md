@@ -29,11 +29,26 @@ Nebula Spark Connector 支持 Spark 2.2 和 2.4.
 * Nebula Spark Connector 2.5.0 增加了 DELETE 写入模式，相关说明参考[Delete Vertex](https://docs.nebula-graph.com.cn/2.5.1/3.ngql-guide/12.vertex-statements/4.delete-vertex/)
 
 ## 使用说明
-  如果你使用Maven管理项目，请在pom.xml文件中增加依赖:
+  如果你使用Maven管理项目，请在pom.xml文件中增加下列某一项依赖:
   ```
+  <!-- connector for spark 2.4 -->
   <dependency>
      <groupId>com.vesoft</groupId>
      <artifactId>nebula-spark-connector</artifactId>
+     <version>3.0-SNAPSHOT</version>
+  </dependency>
+
+ <!-- connector for spark 2.2 -->
+  <dependency>
+     <groupId>com.vesoft</groupId>
+     <artifactId>nebula-spark-connector_2.2</artifactId>
+     <version>3.0-SNAPSHOT</version>
+  </dependency>
+
+ <!-- connector for spark 3.0 -->
+  <dependency>
+     <groupId>com.vesoft</groupId>
+     <artifactId>nebula-spark-connector_3.0</artifactId>
      <version>3.0-SNAPSHOT</version>
   </dependency>
   ```
@@ -305,19 +320,26 @@ df = spark.read.format(
 ```
 
 ## 版本匹配
-Nebula Spark Connector 和 Nebula 的版本对应关系如下:
+Nebula Spark Connector 和 Nebula 、Spark 的版本对应关系如下:
 
-| Nebula Spark Connector Version | Nebula Version |
-|:------------------------------:|:--------------:|
-|          2.0.0                 |  2.0.0, 2.0.1  |
-|          2.0.1                 |  2.0.0, 2.0.1  |
-|          2.1.0                 |  2.0.0, 2.0.1  |
-|          2.5.0                 |  2.5.0, 2.5.1  |
-|          2.5.1                 |  2.5.0, 2.5.1  |
-|          2.6.0                 |  2.6.0, 2.6.1  |
-|          2.6.1                 |  2.6.0, 2.6.1  |
-|          3.0.0                 |     3.0.0      |
-|        3.0-SNAPSHOT            |     nightly    |
+| Nebula Spark Connector Version            | Nebula Version | Spark Version |
+|:-----------------------------------------:|:--------------:|:-------------:|
+|nebula-spark-connector-2.0.0.jar           |  2.0.0, 2.0.1  | 2.4.* |
+|nebula-spark-connector-2.0.1.jar           |  2.0.0, 2.0.1  | 2.4.* | 
+|nebula-spark-connector-2.1.0.jar           |  2.0.0, 2.0.1  | 2.4.* |
+|nebula-spark-connector-2.5.0.jar           |  2.5.0, 2.5.1  | 2.4.* |
+|nebula-spark-connector-2.5.1.jar           |  2.5.0, 2.5.1  | 2.4.* |
+|nebula-spark-connector-2.6.0.jar           |  2.6.0, 2.6.1  | 2.4.* |
+|nebula-spark-connector-2.6.1.jar           |  2.6.0, 2.6.1  | 2.4.* |
+|nebula-spark-connector-3.0.0.jar           |      3.x       | 2.4.* |
+|nebula-spark-connector-3.3.0.jar           |      3.x       | 2.4.* |
+|nebula-spark-connector_2.2-3.3.0.jar       |      3.x       | 2.2.* |
+|nebula-spark-connector-3.4.0.jar           |      3.x       | 2.4.* |
+|nebula-spark-connector_2.2-3.4.0.jar       |      3.x       | 2.2.* |
+|nebula-spark-connector-3.0-SNAPSHOT.jar    |     nightly    | 2.4.* |
+|nebula-spark-connector_2.2-3.0-SNAPSHOT.jar|     nightly    | 2.2.* |
+|nebula-spark-connector_3.0-3.0-SNAPSHOT.jar|     nightly    | 3.*   |
+
 
 ## 性能
 我们使用LDBC数据集进行Nebula-Spark-Connector的性能测试，测试结果如下：

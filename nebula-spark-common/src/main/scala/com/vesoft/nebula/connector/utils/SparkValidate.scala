@@ -12,8 +12,8 @@ object SparkValidate {
     val sparkVersion = SparkSession.getActiveSession.map(_.version).getOrElse("UNKNOWN")
     if (sparkVersion != "UNKNOWN" && !supportedVersions.exists(sparkVersion.matches)) {
       throw new RuntimeException(
-        s"""Your current spark version ${sparkVersion} is not supported by the current NebulaGraph Exchange.
-           | please visit https://github.com/vesoft-inc/nebula-exchange#version-match to know which Exchange you need.
+        s"""Your current spark version ${sparkVersion} is not supported by the current NebulaGraph Spark Connector.
+           | please visit https://github.com/vesoft-inc/nebula-spark-connector#version-match to know which Connector you need.
            | """.stripMargin)
     }
   }

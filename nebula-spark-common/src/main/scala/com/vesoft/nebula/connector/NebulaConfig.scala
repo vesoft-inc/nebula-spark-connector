@@ -784,7 +784,8 @@ object ReadNebulaConfig {
       assert(space != null && !space.isEmpty, s"config space is empty.")
       assert(label != null && !label.isEmpty, s"config label is empty.")
       assert(limit > 0, s"config limit must be positive, your limit is $limit")
-      assert(partitionNum > 0, s"config partitionNum must be positive, your partitionNum is $limit")
+      assert(partitionNum > 0,
+             s"config partitionNum must be positive, your partitionNum is $partitionNum")
       if (noColumn && returnCols.nonEmpty) {
         LOG.warn(
           s"noColumn is true, returnCols will be invalidate "

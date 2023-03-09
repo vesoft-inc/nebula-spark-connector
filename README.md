@@ -308,9 +308,9 @@ Also, below are examples on how we run above code with pyspark shell or in pytho
 from pyspark.sql import SparkSession
 
 spark = SparkSession.builder.config(
-    "nebula-spark-connector-3.0.0.jar",
-    "/path_to/nebula-spark-connector-3.0.0.jar").appName(
-        "nebula-connector").getOrCreate()
+    "spark.jars","/path_to/nebula-spark-connector-3.0.0.jar").config(
+    "spark.driver.extraClassPath","/path_to/nebula-spark-connector-3.0.0.jar").appName(
+    "nebula-connector").getOrCreate()
 
 # read vertex
 df = spark.read.format(

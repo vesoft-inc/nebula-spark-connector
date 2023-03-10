@@ -5,7 +5,7 @@
 
 NebulaGraph Spark Connector 2.0/3.0 only supports NebulaGraph 2.x/3.x. If you are using NebulaGraph v1.x, please use [NebulaGraph Spark Connector v1.0](https://github.com/vesoft-inc/nebula-java/tree/v1.0/tools/nebula-spark) .
 
-NebulaGraph Spark Connector support spark 2.2 and 2.4.
+NebulaGraph Spark Connector support spark 2.2, 2.4 and 3.0.
 
 ## How to Compile
 
@@ -13,13 +13,18 @@ NebulaGraph Spark Connector support spark 2.2 and 2.4.
 
     ```bash
     $ git clone https://github.com/vesoft-inc/nebula-spark-connector.git
-    $ cd nebula-spark-connector/nebula-spark-connector
-    $ mvn clean package -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true
+    $ cd nebula-spark-connector
+    $ mvn clean package -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true -pl nebula-spark-connector -am -Pscala-2.11 -Pspark-2.4
     ```
    if you want to use connector for spark 2.2.x, use the command:
    ```
-   $ cd nebula-spark-connector/nebula-spark-connector_2.2
-   $ mvn clean package -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true
+   $ cd nebula-spark-connector
+   $ mvn clean package -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true -pl nebula-spark-connector_2.2 -am -Pscala-2.11 -Pspark-2.2
+   ```
+   if you want to use connector for spark 3.x, use the command:
+   ```
+   $ cd nebula-spark-connector
+   $ mvn clean package -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true -pl nebula-spark-connector_3.0 -am -Pscala-2.12 -Pspark-3.0
    ```
 
     After the packaging, you can see the newly generated nebula-spark-connector-3.0-SNAPSHOT.jar under the nebula-spark-connector/nebula-spark-connector/target/ directory.

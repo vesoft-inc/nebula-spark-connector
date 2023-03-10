@@ -4,20 +4,29 @@
 
 Nebula Spark Connector 2.0/3.0 仅支持 Nebula Graph 2.x/3.x。如果您正在使用 Nebula Graph v1.x，请使用 [Nebula Spark Connector v1.0](https://github.com/vesoft-inc/nebula-java/tree/v1.0/tools)。
 
-Nebula Spark Connector 支持 Spark 2.2 和 2.4.
+Nebula Spark Connector 支持 Spark 2.2， 2.4 和 3.x.
 ## 如何编译
 
 1. 编译打包 Nebula Spark Connector。
 
-    ```bash
-    $ git clone https://github.com/vesoft-inc/nebula-spark-connector.git
-    $ cd nebula-spark-connector/nebula-spark-connector
-    $ mvn clean package -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true
-    ```
+        ```bash
+        $ git clone https://github.com/vesoft-inc/nebula-spark-connector.git
+        $ cd nebula-spark-connector
+        $ mvn clean package -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true -pl nebula-spark-connector -am -Pscala-2.11 -Pspark-2.4
+        ```
+       若想在spark2.2环境中使用connector，请使用如下命令编译：
+       ```
+       $ cd nebula-spark-connector
+       $ mvn clean package -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true -pl nebula-spark-connector_2.2 -am -Pscala-2.11 -Pspark-2.2
+       ```
+       若想在spark3.0环境中使用connector，请使用如下命令编译：
+       ```
+       $ cd nebula-spark-connector
+       $ mvn clean package -Dmaven.test.skip=true -Dgpg.skip -Dmaven.javadoc.skip=true -pl nebula-spark-connector_3.0 -am -Pscala-2.12 -Pspark-3.0
+       ```
 
     编译打包完成后，可以在 nebula-spark-connector/nebula-spark-connector/target/ 目录下看到 nebula-spark-connector-3.0-SNAPSHOT.jar 文件。
 
-    若在 spark 2.2 环境中使用 Nebula Spark Connector，请在 nebula-spark-connector_2.2 目录下进行编译。
 ## 特性
 
 * 提供了更多连接配置项，如超时时间、连接重试次数、执行重试次数

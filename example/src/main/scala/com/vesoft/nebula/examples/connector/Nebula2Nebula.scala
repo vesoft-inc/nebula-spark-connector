@@ -50,7 +50,8 @@ object Nebula2Nebula {
       .config(sparkConf)
       .getOrCreate()
 
-    // 需要暴露的参数：源meta地址，源space，源读取limit； 目标meta地址，目标graphd地址，目标space，目标batch
+    // args：source metad address,source space name,data limit for one reading request;
+    // target metad address,target graphd address,target space name, batch size for on writing request
 
     val sourceMetaOption =
       new Option("sourceMeta", "sourceMetaAddress", true, "source nebulagraph metad address")

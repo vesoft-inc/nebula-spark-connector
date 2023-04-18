@@ -60,7 +60,8 @@ class GraphProvider(addresses: List[Address],
       case _ => throw new IllegalArgumentException("ssl sign type is not supported")
     }
   }
-  pool.init(address.asJava, nebulaPoolConfig)
+  val randAddr = scala.util.Random.shuffle(address)
+  pool.init(randAddr.asJava, nebulaPoolConfig)
 
   var session: Session = _
 

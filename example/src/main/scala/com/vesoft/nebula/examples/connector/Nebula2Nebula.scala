@@ -83,10 +83,10 @@ object Nebula2Nebula {
     passwdOption.setRequired(true)
 
     // filter out some tags /edges
-    val missTagsOption =
-      new Option("misstags", "misstags", true, "filter out these tags, separate with `,`")
-    val missEdgesOption =
-      new Option("missedges", "missedges", true, "filter out these edges, separate with `,`")
+    val excludeTagsOption =
+      new Option("excludeTags", "excludeTags", true, "filter out these tags, separate with `,`")
+    val excludeEdgesOption =
+      new Option("excludeEdges", "excludeEdges", true, "filter out these edges, separate with `,`")
 
     val options = new Options
     options.addOption(sourceMetaOption)
@@ -100,8 +100,8 @@ object Nebula2Nebula {
     options.addOption(timeoutOption)
     options.addOption(userOption)
     options.addOption(passwdOption)
-    options.addOption(missTagsOption)
-    options.addOption(missEdgesOption)
+    options.addOption(excludeTagsOption)
+    options.addOption(excludeEdgesOption)
 
     var cli: CommandLine             = null
     val cliParser: CommandLineParser = new DefaultParser
@@ -127,10 +127,12 @@ object Nebula2Nebula {
     val timeout: Int            = cli.getOptionValue("timeout").toInt
     val user: String            = cli.getOptionValue("u")
     val passed: String          = cli.getOptionValue("passwd")
-    val misstags: List[String] =
-      if (cli.hasOption("misstags")) cli.getOptionValue("misstags").split(",").toList else List()
-    val missedges: List[String] =
-      if (cli.hasOption("missedges")) cli.getOptionValue("missedges").split(",").toList else List()
+    val excludeTags: List[String] =
+      if (cli.hasOption("excludeTags")) cli.getOptionValue("excludeTags").split(",").toList
+      else List()
+    val excludeEdges: List[String] =
+      if (cli.hasOption("excludeEdges")) cli.getOptionValue("excludeEdges").split(",").toList
+      else List()
 
     // common config
     val sourceConnectConfig =
@@ -154,11 +156,11 @@ object Nebula2Nebula {
     var (tags, edges, partitions) =
       getTagsAndEdges(metaHostAndPort(0), metaHostAndPort(1).toInt, sourceSpace)
 
-    if (misstags.nonEmpty) {
-      tags = tags.dropWhile(ele => misstags.contains(ele))
+    if (excludeTags.nonEmpty) {
+      tags = tags.dropWhile(ele => excludeTags.contains(ele))
     }
-    if (missedges.nonEmpty) {
-      edges = edges.dropWhile(ele => missedges.contains(ele))
+    if (excludeEdges.nonEmpty) {
+      edges = edges.dropWhile(ele => excludeEdges.contains(ele))
     }
 
     tags.foreach(tag => {

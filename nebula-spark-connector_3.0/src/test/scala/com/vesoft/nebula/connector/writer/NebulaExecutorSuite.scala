@@ -140,7 +140,7 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
     vertices.append(NebulaVertex("\"vid2\"", props2))
 
     val nebulaVertices  = NebulaVertices(propNames, vertices.toList, None)
-    val vertexStatement = NebulaExecutor.toExecuteSentence(tagName, nebulaVertices)
+    val vertexStatement = NebulaExecutor.toExecuteSentence(tagName, nebulaVertices, true)
 
     val expectStatement = "INSERT vertex `person`(`col_string`,`col_fixed_string`,`col_bool`," +
       "`col_int`,`col_int64`,`col_double`,`col_date`,`col_geo`) VALUES \"vid1\": (" + props1
@@ -174,7 +174,7 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
     vertices.append(NebulaVertex("vid2", props2))
 
     val nebulaVertices  = NebulaVertices(propNames, vertices.toList, Some(KeyPolicy.HASH))
-    val vertexStatement = NebulaExecutor.toExecuteSentence(tagName, nebulaVertices)
+    val vertexStatement = NebulaExecutor.toExecuteSentence(tagName, nebulaVertices, true)
 
     val expectStatement = "INSERT vertex `person`(`col_string`,`col_fixed_string`,`col_bool`," +
       "`col_int`,`col_int64`,`col_double`,`col_date`,`col_geo`) VALUES hash(\"vid1\"): (" + props1
@@ -208,14 +208,15 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
     edges.append(NebulaEdge("\"vid2\"", "\"vid1\"", Some(2L), props2))
 
     val nebulaEdges   = NebulaEdges(propNames, edges.toList, None, None)
-    val edgeStatement = NebulaExecutor.toExecuteSentence(edgeName, nebulaEdges)
+    val edgeStatement = NebulaExecutor.toExecuteSentence(edgeName, nebulaEdges, true)
 
     val expectStatement = "INSERT edge `friend`(`col_string`,`col_fixed_string`,`col_bool`,`col_int`" +
       ",`col_int64`,`col_double`,`col_date`,`col_geo`) VALUES \"vid1\"->\"vid2\"@1: (" +
       props1.mkString(", ") + "), \"vid2\"->\"vid1\"@2: (" + props2.mkString(", ") + ")"
     assert(expectStatement.equals(edgeStatement))
 
-    val edgeWithoutOverwriteStatement = NebulaExecutor.toExecuteSentence(edgeName, nebulaEdges)
+    val edgeWithoutOverwriteStatement =
+      NebulaExecutor.toExecuteSentence(edgeName, nebulaEdges, true)
     val expectWithoutOverwriteStatement = "INSERT edge IF NOT EXISTS `friend`(`col_string`," +
       "`col_fixed_string`,`col_bool`,`col_int`,`col_int64`,`col_double`,`col_date`,`col_geo`) " +
       "VALUES \"vid1\"->\"vid2\"@1: (" + props1.mkString(", ") + "), \"vid2\"->\"vid1\"@2: (" +

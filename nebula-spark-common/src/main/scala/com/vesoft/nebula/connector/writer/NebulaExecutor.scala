@@ -216,9 +216,7 @@ object NebulaExecutor {
   /**
     * construct insert statement for vertex
     */
-  def toExecuteSentence(tagName: String,
-                        vertices: NebulaVertices,
-                        overwrite: Boolean = true): String = {
+  def toExecuteSentence(tagName: String, vertices: NebulaVertices, overwrite: Boolean): String = {
     (if (overwrite) BATCH_INSERT_TEMPLATE else BATCH_INSERT_NO_OVERWRITE_TEMPLATE).format(
       DataTypeEnum.VERTEX.toString,
       tagName,
@@ -247,7 +245,7 @@ object NebulaExecutor {
   /**
     * construct insert statement for edge
     */
-  def toExecuteSentence(edgeName: String, edges: NebulaEdges, overwrite: Boolean = true): String = {
+  def toExecuteSentence(edgeName: String, edges: NebulaEdges, overwrite: Boolean): String = {
     val values = edges.values
       .map { edge =>
         val source = edges.getSourcePolicy match {

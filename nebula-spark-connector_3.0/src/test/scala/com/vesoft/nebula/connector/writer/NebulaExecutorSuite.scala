@@ -146,6 +146,13 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
       "`col_int`,`col_int64`,`col_double`,`col_date`,`col_geo`) VALUES \"vid1\": (" + props1
       .mkString(", ") + "), \"vid2\": (" + props2.mkString(", ") + ")"
     assert(expectStatement.equals(vertexStatement))
+
+    val vertexWithoutOverwriteStatement =
+      NebulaExecutor.toExecuteSentence(tagName, nebulaVertices, false)
+    val expectWithoutOverwriteStatement = "INSERT vertex IF NOT EXISTS `person`(`col_string`," +
+      "`col_fixed_string`,`col_bool`,`col_int`,`col_int64`,`col_double`,`col_date`,`col_geo`) " +
+      "VALUES \"vid1\": (" + props1.mkString(", ") + "), \"vid2\": (" + props2.mkString(", ") + ")"
+    assert(expectWithoutOverwriteStatement.equals(vertexWithoutOverwriteStatement))
   }
 
   test("test toExecuteSentence for vertex with hash policy") {
@@ -207,6 +214,13 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
       ",`col_int64`,`col_double`,`col_date`,`col_geo`) VALUES \"vid1\"->\"vid2\"@1: (" +
       props1.mkString(", ") + "), \"vid2\"->\"vid1\"@2: (" + props2.mkString(", ") + ")"
     assert(expectStatement.equals(edgeStatement))
+
+    val edgeWithoutOverwriteStatement = NebulaExecutor.toExecuteSentence(edgeName, nebulaEdges)
+    val expectWithoutOverwriteStatement = "INSERT edge IF NOT EXISTS `friend`(`col_string`," +
+      "`col_fixed_string`,`col_bool`,`col_int`,`col_int64`,`col_double`,`col_date`,`col_geo`) " +
+      "VALUES \"vid1\"->\"vid2\"@1: (" + props1.mkString(", ") + "), \"vid2\"->\"vid1\"@2: (" +
+      props2.mkString(", ") + ")"
+    assert(expectWithoutOverwriteStatement.equals(edgeWithoutOverwriteStatement))
   }
 
   test("test toUpdateExecuteSentence for vertex") {

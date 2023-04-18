@@ -139,6 +139,7 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
   var rankAsProp: Boolean        = _
   var writeMode: WriteMode.Value = _
   var deleteEdge: Boolean        = _
+  var overwrite: Boolean         = _
 
   if (operaType == OperaType.WRITE) {
     require(parameters.isDefinedAt(GRAPH_ADDRESS),
@@ -175,6 +176,7 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
     writeMode =
       WriteMode.withName(parameters.getOrElse(WRITE_MODE, DEFAULT_WRITE_MODE).toString.toLowerCase)
     deleteEdge = parameters.getOrElse(DELETE_EDGE, false).toString.toBoolean
+    overwrite = parameters.getOrElse(OVERWRITE, true).toString.toBoolean
   }
 
   def getReturnCols: List[String] = {
@@ -260,6 +262,7 @@ object NebulaOptions {
   val RANK_AS_PROP: String = "rankAsProp"
   val WRITE_MODE: String   = "writeMode"
   val DELETE_EDGE: String  = "deleteEdge"
+  val OVERWRITE: String    = "overwrite"
 
   val DEFAULT_TIMEOUT: Int            = 3000
   val DEFAULT_CONNECTION_TIMEOUT: Int = 3000

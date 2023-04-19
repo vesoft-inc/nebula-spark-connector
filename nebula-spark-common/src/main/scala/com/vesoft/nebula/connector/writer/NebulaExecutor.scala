@@ -7,6 +7,7 @@ package com.vesoft.nebula.connector.writer
 
 import com.vesoft.nebula.PropertyType
 import com.vesoft.nebula.connector.NebulaTemplate.{
+  BATCH_INSERT_NO_OVERWRITE_TEMPLATE,
   BATCH_INSERT_TEMPLATE,
   DELETE_EDGE_TEMPLATE,
   DELETE_VERTEX_TEMPLATE,
@@ -215,8 +216,8 @@ object NebulaExecutor {
   /**
     * construct insert statement for vertex
     */
-  def toExecuteSentence(tagName: String, vertices: NebulaVertices): String = {
-    BATCH_INSERT_TEMPLATE.format(
+  def toExecuteSentence(tagName: String, vertices: NebulaVertices, overwrite: Boolean): String = {
+    (if (overwrite) BATCH_INSERT_TEMPLATE else BATCH_INSERT_NO_OVERWRITE_TEMPLATE).format(
       DataTypeEnum.VERTEX.toString,
       tagName,
       vertices.propertyNames,
@@ -244,7 +245,7 @@ object NebulaExecutor {
   /**
     * construct insert statement for edge
     */
-  def toExecuteSentence(edgeName: String, edges: NebulaEdges): String = {
+  def toExecuteSentence(edgeName: String, edges: NebulaEdges, overwrite: Boolean): String = {
     val values = edges.values
       .map { edge =>
         val source = edges.getSourcePolicy match {
@@ -278,7 +279,8 @@ object NebulaExecutor {
           EDGE_VALUE_TEMPLATE.format(source, target, edge.rank.get, edge.propertyValues)
       }
       .mkString(", ")
-    BATCH_INSERT_TEMPLATE.format(DataTypeEnum.EDGE.toString, edgeName, edges.propertyNames, values)
+    (if (overwrite) BATCH_INSERT_TEMPLATE else BATCH_INSERT_NO_OVERWRITE_TEMPLATE)
+      .format(DataTypeEnum.EDGE.toString, edgeName, edges.propertyNames, values)
   }
 
   /**

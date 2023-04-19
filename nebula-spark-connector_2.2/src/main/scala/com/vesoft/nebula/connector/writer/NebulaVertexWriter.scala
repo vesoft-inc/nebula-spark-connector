@@ -80,7 +80,10 @@ class NebulaVertexWriter(nebulaOptions: NebulaOptions, vertexIndex: Int, schema:
   private def execute(): Unit = {
     val nebulaVertices = NebulaVertices(propNames, vertices.toList, policy)
     val exec = nebulaOptions.writeMode match {
-      case WriteMode.INSERT => NebulaExecutor.toExecuteSentence(nebulaOptions.label, nebulaVertices)
+      case WriteMode.INSERT =>
+        NebulaExecutor.toExecuteSentence(nebulaOptions.label,
+                                         nebulaVertices,
+                                         nebulaOptions.overwrite)
       case WriteMode.UPDATE =>
         NebulaExecutor.toUpdateExecuteStatement(nebulaOptions.label, nebulaVertices)
       case WriteMode.DELETE =>

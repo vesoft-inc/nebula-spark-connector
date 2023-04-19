@@ -215,13 +215,15 @@ private[connector] class WriteNebulaConfig(space: String,
                                            user: String,
                                            passwd: String,
                                            batch: Int,
-                                           writeMode: String)
+                                           writeMode: String,
+                                           overwrite: Boolean)
     extends Serializable {
   def getSpace     = space
   def getBatch     = batch
   def getUser      = user
   def getPasswd    = passwd
   def getWriteMode = writeMode
+  def isOverwrite  = overwrite
 }
 
 /**
@@ -242,8 +244,9 @@ class WriteNebulaVertexConfig(space: String,
                               user: String,
                               passwd: String,
                               writeMode: String,
-                              deleteEdge: Boolean)
-    extends WriteNebulaConfig(space, user, passwd, batch, writeMode) {
+                              deleteEdge: Boolean,
+                              overwrite: Boolean)
+    extends WriteNebulaConfig(space, user, passwd, batch, writeMode, overwrite) {
   def getTagName    = tagName
   def getVidField   = vidField
   def getVidPolicy  = if (vidPolicy == null) "" else vidPolicy
@@ -274,6 +277,9 @@ object WriteNebulaVertexConfig {
 
     /** whether delete the related edges of vertex */
     var deleteEdge: Boolean = false
+
+    /** whether overwrite the exists vertex */
+    var overwrite: Boolean = true
 
     /**
       * set space name
@@ -357,6 +363,14 @@ object WriteNebulaVertexConfig {
     }
 
     /**
+      * set whether overwrite the exists vertex
+      */
+    def withOverwrite(overwrite: Boolean): WriteVertexConfigBuilder = {
+      this.overwrite = overwrite
+      this;
+    }
+
+    /**
       * check and get WriteNebulaVertexConfig
       */
     def build(): WriteNebulaVertexConfig = {
@@ -370,7 +384,8 @@ object WriteNebulaVertexConfig {
                                   user,
                                   passwd,
                                   writeMode,
-                                  deleteEdge)
+                                  deleteEdge,
+                                  overwrite)
     }
 
     private def check(): Unit = {
@@ -436,8 +451,9 @@ class WriteNebulaEdgeConfig(space: String,
                             rankAsProp: Boolean,
                             user: String,
                             passwd: String,
-                            writeMode: String)
-    extends WriteNebulaConfig(space, user, passwd, batch, writeMode) {
+                            writeMode: String,
+                            overwrite: Boolean)
+    extends WriteNebulaConfig(space, user, passwd, batch, writeMode, overwrite) {
   def getEdgeName  = edgeName
   def getSrcFiled  = srcFiled
   def getSrcPolicy = if (srcPolicy == null) "" else srcPolicy
@@ -486,6 +502,9 @@ object WriteNebulaEdgeConfig {
 
     /** write mode for nebula, insert or update */
     var writeMode: String = WriteMode.INSERT.toString
+
+    /** whether overwrite the exists edge */
+    var overwrite: Boolean = true
 
     /**
       * set space name
@@ -601,6 +620,14 @@ object WriteNebulaEdgeConfig {
     }
 
     /**
+      * set whether overwrite the exists edge
+      */
+    def withOverwrite(overwrite: Boolean): WriteEdgeConfigBuilder = {
+      this.overwrite = overwrite
+      this
+    }
+
+    /**
       * check configs and get WriteNebulaEdgeConfig
       */
     def build(): WriteNebulaEdgeConfig = {
@@ -618,7 +645,8 @@ object WriteNebulaEdgeConfig {
                                 rankAsProp,
                                 user,
                                 passwd,
-                                writeMode)
+                                writeMode,
+                                overwrite)
     }
 
     private def check(): Unit = {

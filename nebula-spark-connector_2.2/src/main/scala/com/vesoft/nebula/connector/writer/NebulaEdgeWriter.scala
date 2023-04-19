@@ -95,7 +95,8 @@ class NebulaEdgeWriter(nebulaOptions: NebulaOptions,
   def execute(): Unit = {
     val nebulaEdges = NebulaEdges(propNames, edges.toList, srcPolicy, dstPolicy)
     val exec = nebulaOptions.writeMode match {
-      case WriteMode.INSERT => NebulaExecutor.toExecuteSentence(nebulaOptions.label, nebulaEdges)
+      case WriteMode.INSERT =>
+        NebulaExecutor.toExecuteSentence(nebulaOptions.label, nebulaEdges, nebulaOptions.overwrite)
       case WriteMode.UPDATE =>
         NebulaExecutor.toUpdateExecuteStatement(nebulaOptions.label, nebulaEdges)
       case WriteMode.DELETE =>

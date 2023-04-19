@@ -47,7 +47,6 @@ object Nebula2Nebula {
       .registerKryoClasses(Array[Class[_]](classOf[TCompactProtocol]))
     val spark = SparkSession
       .builder()
-      .master("local")
       .config(sparkConf)
       .getOrCreate()
 
@@ -163,26 +162,28 @@ object Nebula2Nebula {
     var (tags, edges, partitions) =
       getTagsAndEdges(metaHostAndPort(0), metaHostAndPort(1).toInt, sourceSpace)
 
-    if (excludeTags.nonEmpty) {
-      println(s"source space tags: ${tags}")
-      println(s"exclude tags: ${excludeTags}")
-      tags = tags.dropWhile(ele => excludeTags.contains(ele))
-      println(s"tags need to sync: ${tags}")
+    val syncTags = new ListBuffer[String]
+
+    println(s"source space tags: ${tags}")
+    println(s"exclude tags: ${excludeTags}")
+    for (i <- tags.indices) {
+      if (!excludeTags.contains(tags(i))) {
+        syncTags.append(tags(i))
+      }
     }
+    println(s"tags need to sync: ${syncTags}")
 
     val syncEdges = new ListBuffer[String]
-    if (excludeEdges.nonEmpty) {
-      println(s"source space edges: ${edges}")
-      println(s"exclude edges: ${excludeEdges}")
-      for (i <- 0 until edges.size - 1) {
-        if (!excludeEdges.contains(edges(i))) {
-          syncEdges.append(edges(i))
-        }
+    println(s"source space edges: ${edges}")
+    println(s"exclude edges: ${excludeEdges}")
+    for (i <- edges.indices) {
+      if (!excludeEdges.contains(edges(i))) {
+        syncEdges.append(edges(i))
       }
-      println(s"edges need to sync: ${syncEdges}")
     }
+    println(s"edges need to sync: ${syncEdges}")
 
-    tags.foreach(tag => {
+    syncTags.foreach(tag => {
       syncTag(spark,
               sourceConnectConfig,
               sourceSpace,
@@ -290,7 +291,7 @@ object Nebula2Nebula {
                user: String,
                passwd: String,
                overwrite: Boolean): Unit = {
-    println(s">>>>>> start to sync edge ${edge}")
+    println(s" >>>>>> start to sync edge ${edge}")
     val nebulaReadEdgeConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
       .withSpace(sourceSpace)

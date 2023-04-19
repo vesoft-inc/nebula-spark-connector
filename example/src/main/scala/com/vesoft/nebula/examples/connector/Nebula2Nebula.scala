@@ -82,6 +82,8 @@ object Nebula2Nebula {
     val passwdOption = new Option("passwd", "password", true, "password")
     passwdOption.setRequired(true)
 
+    val overwriteOption =
+      new Option("o", "overwrite", true, "overwrite the old data, default is true")
     // filter out some tags /edges
     val excludeTagsOption =
       new Option("excludeTags", "excludeTags", true, "filter out these tags, separate with `,`")
@@ -102,6 +104,7 @@ object Nebula2Nebula {
     options.addOption(passwdOption)
     options.addOption(excludeTagsOption)
     options.addOption(excludeEdgesOption)
+    options.addOption(overwriteOption)
 
     var cli: CommandLine             = null
     val cliParser: CommandLineParser = new DefaultParser
@@ -133,6 +136,9 @@ object Nebula2Nebula {
     val excludeEdges: List[String] =
       if (cli.hasOption("excludeEdges")) cli.getOptionValue("excludeEdges").split(",").toList
       else List()
+
+    val overwrite: Boolean =
+      if (cli.hasOption("o")) cli.getOptionValue("o").toBoolean else true
 
     // common config
     val sourceConnectConfig =
@@ -175,7 +181,8 @@ object Nebula2Nebula {
               tag,
               parallel,
               user,
-              passed)
+              passed,
+              overwrite)
     })
 
     edges.foreach(edge => {
@@ -190,7 +197,8 @@ object Nebula2Nebula {
                edge,
                parallel,
                user,
-               passed)
+               passed,
+               overwrite)
     })
   }
 
@@ -225,7 +233,8 @@ object Nebula2Nebula {
               tag: String,
               writeParallel: Int,
               user: String,
-              passwd: String): Unit = {
+              passwd: String,
+              overwrite: Boolean): Unit = {
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
       .withSpace(sourceSpace)
@@ -248,6 +257,7 @@ object Nebula2Nebula {
       .withTag(tag)
       .withVidField("_vertexId")
       .withBatch(batch)
+      .withOverwrite(overwrite)
       .build()
     vertex.write.nebula(targetConfig, nebulaWriteVertexConfig).writeVertices()
 
@@ -264,7 +274,8 @@ object Nebula2Nebula {
                edge: String,
                writeParallel: Int,
                user: String,
-               passwd: String): Unit = {
+               passwd: String,
+               overwrite: Boolean): Unit = {
     val nebulaReadEdgeConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
       .withSpace(sourceSpace)
@@ -289,6 +300,7 @@ object Nebula2Nebula {
       .withDstIdField("_dstId")
       .withRankField("_rank")
       .withBatch(batch)
+      .withOverwrite(overwrite)
       .build()
     edgeDf.write.nebula(targetConfig, nebulaWriteEdgeConfig).writeEdges()
   }

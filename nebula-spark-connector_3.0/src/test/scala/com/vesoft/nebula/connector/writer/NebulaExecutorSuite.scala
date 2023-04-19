@@ -216,7 +216,7 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
     assert(expectStatement.equals(edgeStatement))
 
     val edgeWithoutOverwriteStatement =
-      NebulaExecutor.toExecuteSentence(edgeName, nebulaEdges, true)
+      NebulaExecutor.toExecuteSentence(edgeName, nebulaEdges, false)
     val expectWithoutOverwriteStatement = "INSERT edge IF NOT EXISTS `friend`(`col_string`," +
       "`col_fixed_string`,`col_bool`,`col_int`,`col_int64`,`col_double`,`col_date`,`col_geo`) " +
       "VALUES \"vid1\"->\"vid2\"@1: (" + props1.mkString(", ") + "), \"vid2\"->\"vid1\"@2: (" +

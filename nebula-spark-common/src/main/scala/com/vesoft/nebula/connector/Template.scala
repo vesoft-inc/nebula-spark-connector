@@ -9,7 +9,7 @@ object NebulaTemplate {
 
   private[connector] val BATCH_INSERT_TEMPLATE = "INSERT %s `%s`(%s) VALUES %s"
   private[connector] val BATCH_INSERT_NO_OVERWRITE_TEMPLATE =
-    "INSERT IF NOT EXISTS %s `%s`(%s) VALUES %s"
+    "INSERT %s IF NOT EXISTS `%s`(%s) VALUES %s"
   private[connector] val VERTEX_VALUE_TEMPLATE               = "%s: (%s)"
   private[connector] val VERTEX_VALUE_TEMPLATE_WITH_POLICY   = "%s(\"%s\"): (%s)"
   private[connector] val ENDPOINT_TEMPLATE                   = "%s(\"%s\")"

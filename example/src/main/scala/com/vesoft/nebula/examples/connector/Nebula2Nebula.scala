@@ -47,6 +47,7 @@ object Nebula2Nebula {
       .registerKryoClasses(Array[Class[_]](classOf[TCompactProtocol]))
     val spark = SparkSession
       .builder()
+      .master("local")
       .config(sparkConf)
       .getOrCreate()
 
@@ -163,10 +164,22 @@ object Nebula2Nebula {
       getTagsAndEdges(metaHostAndPort(0), metaHostAndPort(1).toInt, sourceSpace)
 
     if (excludeTags.nonEmpty) {
+      println(s"source space tags: ${tags}")
+      println(s"exclude tags: ${excludeTags}")
       tags = tags.dropWhile(ele => excludeTags.contains(ele))
+      println(s"tags need to sync: ${tags}")
     }
+
+    val syncEdges = new ListBuffer[String]
     if (excludeEdges.nonEmpty) {
-      edges = edges.dropWhile(ele => excludeEdges.contains(ele))
+      println(s"source space edges: ${edges}")
+      println(s"exclude edges: ${excludeEdges}")
+      for (i <- 0 until edges.size - 1) {
+        if (!excludeEdges.contains(edges(i))) {
+          syncEdges.append(edges(i))
+        }
+      }
+      println(s"edges need to sync: ${syncEdges}")
     }
 
     tags.foreach(tag => {
@@ -185,7 +198,7 @@ object Nebula2Nebula {
               overwrite)
     })
 
-    edges.foreach(edge => {
+    syncEdges.foreach(edge => {
       syncEdge(spark,
                sourceConnectConfig,
                sourceSpace,
@@ -219,7 +232,7 @@ object Nebula2Nebula {
     }
 
     val partitions = metaClient.getPartsAlloc(space).size()
-    (tags.toList, edges.toList, partitions)
+    (tags.toList.distinct, edges.toList.distinct, partitions)
   }
 
   def syncTag(spark: SparkSession,
@@ -235,6 +248,7 @@ object Nebula2Nebula {
               user: String,
               passwd: String,
               overwrite: Boolean): Unit = {
+    println(s" >>>>>> start to sync tag ${tag}")
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
       .withSpace(sourceSpace)
@@ -276,6 +290,7 @@ object Nebula2Nebula {
                user: String,
                passwd: String,
                overwrite: Boolean): Unit = {
+    println(s">>>>>> start to sync edge ${edge}")
     val nebulaReadEdgeConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
       .withSpace(sourceSpace)

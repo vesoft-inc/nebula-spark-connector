@@ -20,11 +20,11 @@ import org.apache.spark.sql.SparkSession
 import org.apache.commons.cli.{
   CommandLine,
   CommandLineParser,
-  DefaultParser,
   HelpFormatter,
   Option,
   Options,
-  ParseException
+  ParseException,
+  PosixParser
 }
 
 import scala.collection.JavaConverters.asScalaBufferConverter
@@ -89,6 +89,8 @@ object Nebula2Nebula {
       new Option("excludeTags", "excludeTags", true, "filter out these tags, separate with `,`")
     val excludeEdgesOption =
       new Option("excludeEdges", "excludeEdges", true, "filter out these edges, separate with `,`")
+    val includeTagOption =
+      new Option("includeTag", "includeTag", true, "only migrate the specific tag")
 
     val options = new Options
     options.addOption(sourceMetaOption)
@@ -105,9 +107,10 @@ object Nebula2Nebula {
     options.addOption(excludeTagsOption)
     options.addOption(excludeEdgesOption)
     options.addOption(overwriteOption)
+    options.addOption(includeTagOption)
 
     var cli: CommandLine             = null
-    val cliParser: CommandLineParser = new DefaultParser
+    val cliParser: CommandLineParser = new PosixParser()
     val helpFormatter                = new HelpFormatter
 
     try {
@@ -137,6 +140,9 @@ object Nebula2Nebula {
       if (cli.hasOption("excludeEdges")) cli.getOptionValue("excludeEdges").split(",").toList
       else List()
 
+    val includeTag: String =
+      if (cli.hasOption("includeTag")) cli.getOptionValue("includeTag") else null
+
     val overwrite: Boolean =
       if (cli.hasOption("o")) cli.getOptionValue("o").toBoolean else true
 
@@ -162,28 +168,8 @@ object Nebula2Nebula {
     var (tags, edges, partitions) =
       getTagsAndEdges(metaHostAndPort(0), metaHostAndPort(1).toInt, sourceSpace)
 
-    val syncTags = new ListBuffer[String]
-
-    println(s"source space tags: ${tags}")
-    println(s"exclude tags: ${excludeTags}")
-    for (i <- tags.indices) {
-      if (!excludeTags.contains(tags(i))) {
-        syncTags.append(tags(i))
-      }
-    }
-    println(s"tags need to sync: ${syncTags}")
-
-    val syncEdges = new ListBuffer[String]
-    println(s"source space edges: ${edges}")
-    println(s"exclude edges: ${excludeEdges}")
-    for (i <- edges.indices) {
-      if (!excludeEdges.contains(edges(i))) {
-        syncEdges.append(edges(i))
-      }
-    }
-    println(s"edges need to sync: ${syncEdges}")
-
-    syncTags.foreach(tag => {
+    if (includeTag != null) {
+      println(s"source space tag: ${includeTag}")
       syncTag(spark,
               sourceConnectConfig,
               sourceSpace,
@@ -192,28 +178,66 @@ object Nebula2Nebula {
               targetConnectConfig,
               targetSpace,
               batch,
-              tag,
+              includeTag,
               parallel,
               user,
               passed,
               overwrite)
-    })
+      spark.stop()
+    } else {
+      val syncTags = new ListBuffer[String]
 
-    syncEdges.foreach(edge => {
-      syncEdge(spark,
-               sourceConnectConfig,
-               sourceSpace,
-               limit,
-               partitions,
-               targetConnectConfig,
-               targetSpace,
-               batch,
-               edge,
-               parallel,
-               user,
-               passed,
-               overwrite)
-    })
+      println(s"source space tags: ${tags}")
+      println(s"exclude tags: ${excludeTags}")
+      for (i <- tags.indices) {
+        if (!excludeTags.contains(tags(i))) {
+          syncTags.append(tags(i))
+        }
+      }
+      println(s"tags need to sync: ${syncTags}")
+
+      val syncEdges = new ListBuffer[String]
+      println(s"source space edges: ${edges}")
+      println(s"exclude edges: ${excludeEdges}")
+      for (i <- edges.indices) {
+        if (!excludeEdges.contains(edges(i))) {
+          syncEdges.append(edges(i))
+        }
+      }
+      println(s"edges need to sync: ${syncEdges}")
+
+      syncTags.foreach(tag => {
+        syncTag(spark,
+                sourceConnectConfig,
+                sourceSpace,
+                limit,
+                partitions,
+                targetConnectConfig,
+                targetSpace,
+                batch,
+                tag,
+                parallel,
+                user,
+                passed,
+                overwrite)
+      })
+
+      syncEdges.foreach(edge => {
+        syncEdge(spark,
+                 sourceConnectConfig,
+                 sourceSpace,
+                 limit,
+                 partitions,
+                 targetConnectConfig,
+                 targetSpace,
+                 batch,
+                 edge,
+                 parallel,
+                 user,
+                 passed,
+                 overwrite)
+      })
+    }
   }
 
   def getTagsAndEdges(metaHost: String,

@@ -49,11 +49,7 @@
     </developers>
 
     <modules>
-        <module>nebula-spark-connector</module>
-        <module>nebula-spark-connector_2.2</module>
-        <module>nebula-spark-connector_3.0</module>
         <module>example</module>
-        <module>nebula-spark-common</module>
     </modules>
 
     <distributionManagement>

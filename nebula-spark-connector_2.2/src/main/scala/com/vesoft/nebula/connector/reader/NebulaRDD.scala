@@ -12,8 +12,6 @@ import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.types.StructType
 
-import scala.collection.mutable.ListBuffer
-
 class NebulaRDD(val sqlContext: SQLContext, var nebulaOptions: NebulaOptions, schema: StructType)
     extends RDD[InternalRow](sqlContext.sparkContext, Nil) {
 
@@ -53,13 +51,7 @@ case class NebulaPartition(indexNum: Int) extends Partition {
     * @param totalPart nebula data part num
     * @return scan data part list
     */
-  def getScanParts(totalPart: Int, totalPartition: Int): List[Integer] = {
-    val scanParts   = new ListBuffer[Integer]
-    var currentPart = indexNum + 1
-    while (currentPart <= totalPart) {
-      scanParts.append(currentPart)
-      currentPart += totalPartition
-    }
-    scanParts.toList
-  }
+  def getScanParts(totalPart: Int, totalPartition: Int): List[Int] =
+    (indexNum + 1 to totalPart by totalPartition).toList
+
 }

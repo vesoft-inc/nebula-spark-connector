@@ -21,10 +21,10 @@ import com.vesoft.nebula.client.storage.scan.{
   ScanVertexResultIterator
 }
 import com.vesoft.nebula.connector.NebulaUtils.NebulaValueGetter
-import com.vesoft.nebula.connector.{NebulaOptions, NebulaUtils, PartitionUtils}
 import com.vesoft.nebula.connector.exception.GraphConnectException
 import com.vesoft.nebula.connector.nebula.MetaProvider
 import com.vesoft.nebula.connector.ssl.SSLSignType
+import com.vesoft.nebula.connector.{NebulaOptions, NebulaUtils}
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.expressions.SpecificInternalRow
 import org.apache.spark.sql.types.StructType
@@ -41,7 +41,7 @@ trait NebulaReader {
   private var schema: StructType         = _
 
   protected var dataIterator: Iterator[BaseTableRow]           = _
-  protected var scanPartIterator: Iterator[Integer]            = _
+  protected var scanPartIterator: Iterator[Int]                = _
   protected var resultValues: mutable.ListBuffer[List[Object]] = mutable.ListBuffer[List[Object]]()
   protected var storageClient: StorageClient                   = _
   protected var nebulaOptions: NebulaOptions                   = _

@@ -64,10 +64,8 @@ class MetaProvider(addresses: List[Address],
     */
   def getVidType(space: String): VidType.Value = {
     val vidType = client.getSpace(space).getProperties.getVid_type.getType
-    if (vidType == PropertyType.FIXED_STRING) {
-      return VidType.STRING
-    }
-    VidType.INT
+    if (vidType == PropertyType.FIXED_STRING) VidType.STRING
+    else VidType.INT
   }
 
   /**
@@ -133,18 +131,13 @@ class MetaProvider(addresses: List[Address],
     */
   def getLabelType(space: String, label: String): DataTypeEnum.Value = {
     val tags = client.getTags(space)
-    for (tag <- tags.asScala) {
-      if (new String(tag.getTag_name).equals(label)) {
-        return DataTypeEnum.VERTEX
+    tags.asScala.collectFirst {
+      case tag if new String(tag.getTag_name).equals(label) => DataTypeEnum.VERTEX
+    }.orElse {
+      client.getEdges(space).asScala.collectFirst {
+        case edge if new String(edge.getEdge_name).equals(label) => DataTypeEnum.EDGE
       }
-    }
-    val edges = client.getEdges(space)
-    for (edge <- edges.asScala) {
-      if (new String(edge.getEdge_name).equals(label)) {
-        return DataTypeEnum.EDGE
-      }
-    }
-    null
+    }.orNull
   }
 
   override def close(): Unit = {

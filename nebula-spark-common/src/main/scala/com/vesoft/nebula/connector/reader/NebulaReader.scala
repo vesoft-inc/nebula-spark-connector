@@ -162,10 +162,7 @@ trait NebulaReader {
     * if the scan response has next vertex
     */
   protected def hasNextVertexRow: Boolean = {
-    {
-      if (dataIterator == null && vertexResponseIterator == null && !scanPartIterator.hasNext)
-        return false
-
+    (dataIterator != null || vertexResponseIterator != null || scanPartIterator.hasNext) && {
       var continue: Boolean = false
       var break: Boolean    = false
       while ((dataIterator == null || !dataIterator.hasNext) && !break) {
@@ -214,20 +211,15 @@ trait NebulaReader {
         }
       }
 
-      if (dataIterator == null) {
-        return false
-      }
-      dataIterator.hasNext
+      dataIterator != null && dataIterator.hasNext
     }
   }
 
   /**
     * if the scan response has next edge
     */
-  protected def hasNextEdgeRow: Boolean = {
-    if (dataIterator == null && edgeResponseIterator == null && !scanPartIterator.hasNext)
-      return false
-
+  protected def hasNextEdgeRow: Boolean =
+    (dataIterator != null || edgeResponseIterator != null || scanPartIterator.hasNext) && {
     var continue: Boolean = false
     var break: Boolean    = false
     while ((dataIterator == null || !dataIterator.hasNext) && !break) {
@@ -275,10 +267,7 @@ trait NebulaReader {
       }
     }
 
-    if (dataIterator == null) {
-      return false
-    }
-    dataIterator.hasNext
+    dataIterator != null && dataIterator.hasNext
   }
 
   /**

@@ -29,6 +29,9 @@ import org.apache.commons.cli.{
 
 import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 /**
   * spark-submit --master local \
@@ -166,7 +169,7 @@ object Nebula2Nebula {
 
     val metaHostAndPort = sourceMetaAddr.split(":")
     var (tags, edges, partitions) =
-      getTagsAndEdges(metaHostAndPort(0), metaHostAndPort(1).toInt, sourceSpace)
+      Await.result(getTagsAndEdges(metaHostAndPort(0), metaHostAndPort(1).toInt, sourceSpace), Duration.Inf)
 
     if (includeTag != null) {
       println(s"source space tag: ${includeTag}")
@@ -242,22 +245,22 @@ object Nebula2Nebula {
 
   def getTagsAndEdges(metaHost: String,
                       metaPort: Int,
-                      space: String): (List[String], List[String], Int) = {
+                      space: String)(implicit ec: ExecutionContext): Future[(List[String], List[String], Int)] = {
     val metaClient: MetaClient = new MetaClient(metaHost, metaPort)
     metaClient.connect()
-    val tags: ListBuffer[String]  = new ListBuffer[String]
-    val edges: ListBuffer[String] = new ListBuffer[String]
 
-    for (tag <- (metaClient.getTags(space)).asScala) {
-      tags.append(new String(tag.tag_name))
+    val tagsFt = Future(metaClient.getTags(space))
+    val edgesFt = Future(metaClient.getEdges(space))
+    val partitionsFt = Future(metaClient.getPartsAlloc(space)).map(_.size())
+    for {
+      tags <- tagsFt
+      edges <-edgesFt
+      partitions <- partitionsFt
+    } yield {
+      val tagNames = tags.asScala.map {tag => new String(tag.tag_name)}.toList.distinct
+      val edgeNames = edges.asScala.map {edge => new String(edge.edge_name)}.toList.distinct
+      (tagNames, edgeNames, partitions)
     }
-
-    for (edge <- (metaClient.getEdges(space).asScala)) {
-      edges.append(new String(edge.edge_name))
-    }
-
-    val partitions = metaClient.getPartsAlloc(space).size()
-    (tags.toList.distinct, edges.toList.distinct, partitions)
   }
 
   def syncTag(spark: SparkSession,

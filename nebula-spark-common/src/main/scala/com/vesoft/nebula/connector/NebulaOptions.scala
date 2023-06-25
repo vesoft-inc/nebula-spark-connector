@@ -192,7 +192,7 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
     for (hostPort <- metaAddress.split(",")) {
       // check host & port by getting HostAndPort
       val addr = HostAndPort.fromString(hostPort)
-      hostPorts.append((addr.getHostText, addr.getPort))
+      hostPorts.append((addr.getHost, addr.getPort))
     }
     hostPorts.toList
   }
@@ -204,7 +204,7 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
       .foreach(hostPort => {
         // check host & port by getting HostAndPort
         val addr = HostAndPort.fromString(hostPort)
-        hostPorts.append((addr.getHostText, addr.getPort))
+        hostPorts.append((addr.getHost, addr.getPort))
       })
     hostPorts.toList
   }

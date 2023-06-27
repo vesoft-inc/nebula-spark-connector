@@ -31,9 +31,6 @@ import scala.collection.mutable.ListBuffer
 object NebulaUtils {
   private val LOG = LoggerFactory.getLogger(this.getClass)
 
-  var nebulaOptions: NebulaOptions    = _
-  var parameters: Map[String, String] = Map()
-
   /**
     * convert nebula data type to spark sql data type
     */

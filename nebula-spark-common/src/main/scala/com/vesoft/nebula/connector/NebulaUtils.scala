@@ -58,14 +58,13 @@ object NebulaUtils {
     *
     * @return {@link DataType}
     */
-  def getColDataType(columnDefs: List[ColumnDef], columnName: String): DataType = {
-    for (columnDef <- columnDefs) {
-      if (columnName.equals(new String(columnDef.getName))) {
-        return convertDataType(columnDef.getType)
+  def getColDataType(columnDefs: List[ColumnDef], columnName: String): DataType =
+    columnDefs
+      .collectFirst {
+        case columnDef if columnName.equals(new String(columnDef.getName)) =>
+          convertDataType(columnDef.getType)
       }
-    }
-    throw new IllegalArgumentException(s"column $columnName does not exist in schema")
-  }
+      .getOrElse(throw new IllegalArgumentException(s"column $columnName does not exist in schema"))
 
   type NebulaValueGetter = (Any, InternalRow, Int) => Unit
 

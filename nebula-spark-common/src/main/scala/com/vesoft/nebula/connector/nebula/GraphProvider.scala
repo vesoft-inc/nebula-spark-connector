@@ -25,6 +25,8 @@ import scala.collection.mutable.ListBuffer
   * GraphProvider for Nebula Graph Service
   */
 class GraphProvider(addresses: List[Address],
+                    user: String,
+                    password: String,
                     timeout: Int,
                     enableSSL: Boolean = false,
                     sslSignType: String = null,
@@ -37,10 +39,7 @@ class GraphProvider(addresses: List[Address],
   @transient val nebulaPoolConfig = new NebulaPoolConfig
 
   @transient val pool: NebulaPool = new NebulaPool
-  val address                     = new ListBuffer[HostAddress]()
-  for (addr <- addresses) {
-    address.append(new HostAddress(addr._1, addr._2))
-  }
+  val address                     = addresses.map { case (host, port) => new HostAddress(host, port) }
   nebulaPoolConfig.setMaxConnSize(1)
   nebulaPoolConfig.setTimeout(timeout)
 
@@ -63,16 +62,13 @@ class GraphProvider(addresses: List[Address],
   val randAddr = scala.util.Random.shuffle(address)
   pool.init(randAddr.asJava, nebulaPoolConfig)
 
-  var session: Session = _
+  lazy val session: Session = pool.getSession(user, password, true)
 
   /**
     * release session
     */
-  def releaseGraphClient(): Unit = {
-    if (session != null) {
-      session.release()
-    }
-  }
+  def releaseGraphClient(): Unit =
+    session.release()
 
   override def close(): Unit = {
     releaseGraphClient()
@@ -87,10 +83,7 @@ class GraphProvider(addresses: List[Address],
     * @param space
     * @return if execute succeed
     */
-  def switchSpace(user: String, password: String, space: String): Boolean = {
-    if (session == null) {
-      session = pool.getSession(user, password, true)
-    }
+  def switchSpace(space: String): Boolean = {
     val switchStatment = s"use $space"
     LOG.info(s"switch space $space")
     val result = submit(switchStatment)
@@ -107,11 +100,6 @@ class GraphProvider(addresses: List[Address],
     * @param statement insert tag/edge statement
     * @return execute result
     */
-  def submit(statement: String): ResultSet = {
-    if (session == null) {
-      LOG.error("graph session is null")
-      throw new GraphConnectException("session is null")
-    }
+  def submit(statement: String): ResultSet =
     session.execute(statement)
-  }
 }

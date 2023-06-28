@@ -19,7 +19,6 @@ import com.vesoft.nebula.connector.ssl.{CASSLSignParams, SSLSignType, SelfSSLSig
 import org.apache.log4j.Logger
 
 import scala.collection.JavaConverters._
-import scala.collection.mutable.ListBuffer
 
 /**
   * GraphProvider for Nebula Graph Service

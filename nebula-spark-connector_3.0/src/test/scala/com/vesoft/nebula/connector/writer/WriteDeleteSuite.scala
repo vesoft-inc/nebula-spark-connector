@@ -44,8 +44,8 @@ class WriteDeleteSuite extends AnyFunSuite with BeforeAndAfterAll {
     SparkMock.writeVertex()
     SparkMock.writeEdge()
     SparkMock.deleteVertexWithEdge()
-    val addresses: List[Address] = List(new Address("127.0.0.1", "root", "nebula", 9669))
-    val graphProvider = new GraphProvider(addresses, 3000)
+    val addresses: List[Address] = List(new Address("127.0.0.1", 9669))
+    val graphProvider = new GraphProvider(addresses, "root", "nebula", 3000)
 
     graphProvider.switchSpace("test_write_string")
     // assert vertex is deleted
@@ -68,8 +68,8 @@ class WriteDeleteSuite extends AnyFunSuite with BeforeAndAfterAll {
 
   test("write edge into test_write_string space with delete mode") {
     SparkMock.deleteEdge()
-    val addresses: List[Address] = List(new Address("127.0.0.1", "root", "nebula", 9669))
-    val graphProvider = new GraphProvider(addresses, 3000)
+    val addresses: List[Address] = List(new Address("127.0.0.1", 9669))
+    val graphProvider = new GraphProvider(addresses, "root", "nebula", 3000)
 
     graphProvider.switchSpace("test_write_string")
     val resultSet: ResultSet =

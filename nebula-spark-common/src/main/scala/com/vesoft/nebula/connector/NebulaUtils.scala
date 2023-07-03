@@ -131,31 +131,15 @@ object NebulaUtils {
     *
     * @return escaped string
     */
-  def escapeUtil(str: String): String = {
-    var s = str
-    if (s.contains("\\")) {
-      s = s.replaceAll("\\\\", "\\\\\\\\")
-    }
-    if (s.contains("\t")) {
-      s = s.replaceAll("\t", "\\\\t")
-    }
-    if (s.contains("\n")) {
-      s = s.replaceAll("\n", "\\\\n")
-    }
-    if (s.contains("\"")) {
-      s = s.replaceAll("\"", "\\\\\"")
-    }
-    if (s.contains("\'")) {
-      s = s.replaceAll("\'", "\\\\'")
-    }
-    if (s.contains("\r")) {
-      s = s.replaceAll("\r", "\\\\r")
-    }
-    if (s.contains("\b")) {
-      s = s.replaceAll("\b", "\\\\b")
-    }
-    s
-  }
+  def escapeUtil(str: String): String =
+    str
+      .replaceAll("\\\\", "\\\\\\\\")
+      .replaceAll("\t", "\\\\t")
+      .replaceAll("\n", "\\\\n")
+      .replaceAll("\"", "\\\\\"")
+      .replaceAll("\'", "\\\\'")
+      .replaceAll("\r", "\\\\r")
+      .replaceAll("\b", "\\\\b")
 
   /**
     * return the dataset's schema. Schema includes configured cols in returnCols or includes all properties in nebula.

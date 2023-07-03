@@ -94,16 +94,15 @@ object NebulaUtils {
           row.setInt(pos, prop.asInstanceOf[Int])
       case _ =>
         (prop: Any, row: InternalRow, pos: Int) =>
-          if (prop.isInstanceOf[DateTimeWrapper]) {
-            row.update(pos,
-                       UTF8String.fromString(prop.asInstanceOf[DateTimeWrapper].getUTCDateTimeStr))
-          } else if (prop.isInstanceOf[TimeWrapper]) {
-            row.update(pos, UTF8String.fromString(prop.asInstanceOf[TimeWrapper].getUTCTimeStr))
-          } else if (prop.isInstanceOf[DurationWrapper]) {
-            row.update(pos,
-                       UTF8String.fromString(prop.asInstanceOf[DurationWrapper].getDurationString))
-          } else {
-            row.update(pos, UTF8String.fromString(String.valueOf(prop)))
+          prop match {
+            case wrapper: DateTimeWrapper =>
+              row.update(pos, UTF8String.fromString(wrapper.getUTCDateTimeStr))
+            case wrapper: TimeWrapper =>
+              row.update(pos, UTF8String.fromString(wrapper.getUTCTimeStr))
+            case wrapper: DurationWrapper =>
+              row.update(pos, UTF8String.fromString(wrapper.getDurationString))
+            case _ =>
+              row.update(pos, UTF8String.fromString(String.valueOf(prop)))
           }
     }
   }

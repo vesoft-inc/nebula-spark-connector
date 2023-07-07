@@ -37,6 +37,8 @@ abstract class NebulaWriter(nebulaOptions: NebulaOptions, schema: StructType) ex
   )
   val graphProvider = new GraphProvider(
     nebulaOptions.getGraphAddress,
+    nebulaOptions.user,
+    nebulaOptions.passwd,
     nebulaOptions.timeout,
     nebulaOptions.enableGraphSSL,
     nebulaOptions.sslSignType,
@@ -46,7 +48,7 @@ abstract class NebulaWriter(nebulaOptions: NebulaOptions, schema: StructType) ex
   val isVidStringType = metaProvider.getVidType(nebulaOptions.spaceName) == VidType.STRING
 
   def prepareSpace(): Unit = {
-    graphProvider.switchSpace(nebulaOptions.user, nebulaOptions.passwd, nebulaOptions.spaceName)
+    graphProvider.switchSpace(nebulaOptions.spaceName)
   }
 
   def submit(exec: String): Unit = {

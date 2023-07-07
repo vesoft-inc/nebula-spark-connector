@@ -40,6 +40,8 @@ class NebulaNgqlEdgeReader extends Iterator[InternalRow] {
     this.nebulaOptions = nebulaOptions
     this.graphProvider = new GraphProvider(
       nebulaOptions.getGraphAddress,
+      nebulaOptions.user,
+      nebulaOptions.passwd,
       nebulaOptions.timeout,
       nebulaOptions.enableGraphSSL,
       nebulaOptions.sslSignType,
@@ -47,7 +49,7 @@ class NebulaNgqlEdgeReader extends Iterator[InternalRow] {
       nebulaOptions.selfSignParam
     )
     // add exception when session build failed
-    graphProvider.switchSpace(nebulaOptions.user, nebulaOptions.passwd, nebulaOptions.spaceName)
+    graphProvider.switchSpace(nebulaOptions.spaceName)
     resultSet = graphProvider.submit(nebulaOptions.ngql)
     close()
     edgeIterator = query()

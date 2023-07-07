@@ -18,7 +18,7 @@ class GraphProviderTest extends AnyFunSuite with BeforeAndAfterAll {
 
   override def beforeAll(): Unit = {
     val addresses: List[Address] = List(new Address("127.0.0.1", 9669))
-    graphProvider = new GraphProvider(addresses, 3000)
+    graphProvider = new GraphProvider(addresses, "root", "nebula", 3000)
     val graphMock = new NebulaGraphMock
     graphMock.mockIntIdGraph()
     graphMock.mockStringIdGraph()
@@ -30,8 +30,8 @@ class GraphProviderTest extends AnyFunSuite with BeforeAndAfterAll {
   }
 
   test("switchSpace") {
-    assertThrows[RuntimeException](graphProvider.switchSpace("root", "nebula", "space_not_exist"))
-    assert(graphProvider.switchSpace("root", "nebula", "test_int"))
+    assertThrows[RuntimeException](graphProvider.switchSpace("space_not_exist"))
+    assert(graphProvider.switchSpace("test_int"))
   }
 
   test("submit") {

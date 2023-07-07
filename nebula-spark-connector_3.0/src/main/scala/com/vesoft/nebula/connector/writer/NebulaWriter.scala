@@ -31,6 +31,8 @@ class NebulaWriter(nebulaOptions: NebulaOptions) extends Serializable {
   )
   val graphProvider = new GraphProvider(
     nebulaOptions.getGraphAddress,
+    nebulaOptions.user,
+    nebulaOptions.passwd,
     nebulaOptions.timeout,
     nebulaOptions.enableGraphSSL,
     nebulaOptions.sslSignType,
@@ -40,7 +42,7 @@ class NebulaWriter(nebulaOptions: NebulaOptions) extends Serializable {
   val isVidStringType = metaProvider.getVidType(nebulaOptions.spaceName) == VidType.STRING
 
   def prepareSpace(): Unit = {
-    graphProvider.switchSpace(nebulaOptions.user, nebulaOptions.passwd, nebulaOptions.spaceName)
+    graphProvider.switchSpace(nebulaOptions.spaceName)
   }
 
   def submit(exec: String): Unit = {

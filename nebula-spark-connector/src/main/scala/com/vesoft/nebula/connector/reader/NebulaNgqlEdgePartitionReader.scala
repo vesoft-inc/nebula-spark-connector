@@ -39,6 +39,8 @@ class NebulaNgqlEdgePartitionReader extends InputPartitionReader[InternalRow] {
     this.nebulaOptions = nebulaOptions
     this.graphProvider = new GraphProvider(
       nebulaOptions.getGraphAddress,
+      nebulaOptions.user,
+      nebulaOptions.passwd,
       nebulaOptions.timeout,
       nebulaOptions.enableGraphSSL,
       nebulaOptions.sslSignType,
@@ -46,7 +48,7 @@ class NebulaNgqlEdgePartitionReader extends InputPartitionReader[InternalRow] {
       nebulaOptions.selfSignParam
     )
     // add exception when session build failed
-    graphProvider.switchSpace(nebulaOptions.user, nebulaOptions.passwd, nebulaOptions.spaceName)
+    graphProvider.switchSpace(nebulaOptions.spaceName)
     resultSet = graphProvider.submit(nebulaOptions.ngql)
     edgeIterator = query()
   }

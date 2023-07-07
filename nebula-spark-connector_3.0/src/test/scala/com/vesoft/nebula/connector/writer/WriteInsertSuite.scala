@@ -27,9 +27,9 @@ class WriteInsertSuite extends AnyFunSuite with BeforeAndAfterAll {
   test("write vertex into test_write_string space with insert mode") {
     SparkMock.writeVertex()
     val addresses: List[Address] = List(new Address("127.0.0.1", 9669))
-    val graphProvider            = new GraphProvider(addresses, 3000)
+    val graphProvider            = new GraphProvider(addresses, "root", "nebula", 3000)
 
-    graphProvider.switchSpace("root", "nebula", "test_write_string")
+    graphProvider.switchSpace("test_write_string")
     val createIndexResult: ResultSet = graphProvider.submit(
       "use test_write_string; "
         + "create tag index if not exists person_index on person_connector(col1(20));")
@@ -50,9 +50,9 @@ class WriteInsertSuite extends AnyFunSuite with BeforeAndAfterAll {
     SparkMock.writeEdge()
 
     val addresses: List[Address] = List(new Address("127.0.0.1", 9669))
-    val graphProvider            = new GraphProvider(addresses, 3000)
+    val graphProvider            = new GraphProvider(addresses, "root", "nebula", 3000)
 
-    graphProvider.switchSpace("root", "nebula", "test_write_string")
+    graphProvider.switchSpace("test_write_string")
     val createIndexResult: ResultSet = graphProvider.submit(
       "use test_write_string; "
         + "create edge index if not exists friend_index on friend_connector(col1(20));")

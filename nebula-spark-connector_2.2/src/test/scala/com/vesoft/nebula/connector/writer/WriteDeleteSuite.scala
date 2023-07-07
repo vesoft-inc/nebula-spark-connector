@@ -27,9 +27,9 @@ class WriteDeleteSuite extends AnyFunSuite with BeforeAndAfterAll {
   test("write vertex into test_write_string space with delete mode") {
     SparkMock.deleteVertex()
     val addresses: List[Address] = List(new Address("127.0.0.1", 9669))
-    val graphProvider = new GraphProvider(addresses, 3000)
+    val graphProvider = new GraphProvider(addresses, "root", "nebula", 3000)
 
-    graphProvider.switchSpace("root", "nebula", "test_write_string")
+    graphProvider.switchSpace("test_write_string")
     val resultSet: ResultSet =
       graphProvider.submit("use test_write_string;"
         + "match (v:person_connector) return v limit 100000;")
@@ -41,9 +41,9 @@ class WriteDeleteSuite extends AnyFunSuite with BeforeAndAfterAll {
   test("write edge into test_write_string space with delete mode") {
     SparkMock.deleteEdge()
     val addresses: List[Address] = List(new Address("127.0.0.1", 9669))
-    val graphProvider = new GraphProvider(addresses, 3000)
+    val graphProvider = new GraphProvider(addresses, "root", "nebula", 3000)
 
-    graphProvider.switchSpace("root", "nebula", "test_write_string")
+    graphProvider.switchSpace("test_write_string")
     val resultSet: ResultSet =
       graphProvider.submit("use test_write_string;"
         + "fetch prop on friend_connector \"1\"->\"2\"@10 yield edge as e;")

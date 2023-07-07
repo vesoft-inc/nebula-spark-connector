@@ -44,6 +44,12 @@
             <groupId>com.vesoft</groupId>
             <artifactId>client</artifactId>
             <version>${nebula.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <artifactId>commons-codec</artifactId>

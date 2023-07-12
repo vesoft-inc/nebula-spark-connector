@@ -74,6 +74,8 @@ class NebulaUtilsSuite extends AnyFunSuite {
   test("isNumic") {
     assert(NebulaUtils.isNumic("123"))
     assert(NebulaUtils.isNumic("-123"))
+    assert(!NebulaUtils.isNumic(""))
+    assert(!NebulaUtils.isNumic("-"))
     assert(!NebulaUtils.isNumic("1.0"))
     assert(!NebulaUtils.isNumic("a123"))
     assert(!NebulaUtils.isNumic("123b"))

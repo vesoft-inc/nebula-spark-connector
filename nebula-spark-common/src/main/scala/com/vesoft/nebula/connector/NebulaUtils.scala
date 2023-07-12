@@ -113,16 +113,8 @@ object NebulaUtils {
     *
     * @return true if str is numic
     */
-  def isNumic(str: String): Boolean = {
-    val newStr: String = if (str.startsWith("-")) {
-      str.substring(1)
-    } else { str }
-
-    for (char <- newStr.toCharArray) {
-      if (!Character.isDigit(char)) return false
-    }
-    true
-  }
+  def isNumic(str: String): Boolean =
+    str.matches("-?\\d+")
 
   /**
     * escape the string which contains escape str

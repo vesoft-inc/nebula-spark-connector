@@ -6,11 +6,9 @@
 package com.vesoft.nebula.connector
 
 import java.util.Properties
-
-import com.google.common.net.HostAndPort
 import com.vesoft.nebula.connector.ssl.{CASSLSignParams, SSLSignType, SelfSSLSignParams}
+import com.vesoft.nebula.connector.utils.AddressCheckUtil
 import org.apache.commons.lang.StringUtils
-import org.apache.spark.internal.Logging
 import org.apache.spark.sql.catalyst.util.CaseInsensitiveMap
 
 import scala.collection.mutable.ListBuffer
@@ -190,9 +188,9 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
   def getMetaAddress: List[Address] = {
     val hostPorts: ListBuffer[Address] = new ListBuffer[Address]
     for (hostPort <- metaAddress.split(",")) {
-      // check host & port by getting HostAndPort
-      val addr = HostAndPort.fromString(hostPort)
-      hostPorts.append((addr.getHost, addr.getPort))
+      // check host & port
+      val addr = AddressCheckUtil.getAddressFromString(hostPort)
+      hostPorts.append((addr._1, addr._2))
     }
     hostPorts.toList
   }
@@ -202,9 +200,9 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
     graphAddress
       .split(",")
       .foreach(hostPort => {
-        // check host & port by getting HostAndPort
-        val addr = HostAndPort.fromString(hostPort)
-        hostPorts.append((addr.getHost, addr.getPort))
+        // check host & port
+        val addr = AddressCheckUtil.getAddressFromString(hostPort)
+        hostPorts.append((addr._1, addr._2))
       })
     hostPorts.toList
   }

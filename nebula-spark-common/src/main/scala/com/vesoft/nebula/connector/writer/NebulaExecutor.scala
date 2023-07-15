@@ -223,19 +223,14 @@ object NebulaExecutor {
       vertices.propertyNames,
       vertices.values
         .map { vertex =>
-          if (vertices.policy.isEmpty) {
-            VERTEX_VALUE_TEMPLATE.format(vertex.vertexIDSlice, vertex.propertyValues)
-          } else {
-            vertices.policy.get match {
-              case KeyPolicy.HASH =>
-                VERTEX_VALUE_TEMPLATE_WITH_POLICY
-                  .format(KeyPolicy.HASH.toString, vertex.vertexIDSlice, vertex.propertyValues)
-              case KeyPolicy.UUID =>
-                VERTEX_VALUE_TEMPLATE_WITH_POLICY
-                  .format(KeyPolicy.UUID.toString, vertex.vertexIDSlice, vertex.propertyValues)
-              case _ =>
-                throw new IllegalArgumentException("Not Support")
-            }
+          vertices.policy match {
+            case None =>
+              VERTEX_VALUE_TEMPLATE.format(vertex.vertexIDSlice, vertex.propertyValues)
+            case Some(policy) if KeyPolicy.values.contains(policy)  =>
+              VERTEX_VALUE_TEMPLATE_WITH_POLICY
+                .format(policy.toString, vertex.vertexIDSlice, vertex.propertyValues)
+            case _ =>
+              throw new IllegalArgumentException("Not Support")
           }
         }
         .mkString(", ")
@@ -249,10 +244,8 @@ object NebulaExecutor {
     val values = edges.values
       .map { edge =>
         val source = edges.getSourcePolicy match {
-          case Some(KeyPolicy.HASH) =>
-            ENDPOINT_TEMPLATE.format(KeyPolicy.HASH.toString, edge.source)
-          case Some(KeyPolicy.UUID) =>
-            ENDPOINT_TEMPLATE.format(KeyPolicy.UUID.toString, edge.source)
+          case Some(policy) if KeyPolicy.values.contains(policy) =>
+            ENDPOINT_TEMPLATE.format(policy.toString, edge.source)
           case None =>
             edge.source
           case _ =>
@@ -261,10 +254,8 @@ object NebulaExecutor {
         }
 
         val target = edges.getTargetPolicy match {
-          case Some(KeyPolicy.HASH) =>
-            ENDPOINT_TEMPLATE.format(KeyPolicy.HASH.toString, edge.target)
-          case Some(KeyPolicy.UUID) =>
-            ENDPOINT_TEMPLATE.format(KeyPolicy.UUID.toString, edge.target)
+          case Some(policy) if KeyPolicy.values.contains(policy) =>
+            ENDPOINT_TEMPLATE.format(policy.toString, edge.target)
           case None =>
             edge.target
           case _ =>
@@ -272,11 +263,12 @@ object NebulaExecutor {
               s"target policy ${edges.getTargetPolicy.get} is not supported")
         }
 
-        if (edge.rank.isEmpty)
-          EDGE_VALUE_WITHOUT_RANKING_TEMPLATE
-            .format(source, target, edge.propertyValues)
-        else
-          EDGE_VALUE_TEMPLATE.format(source, target, edge.rank.get, edge.propertyValues)
+        edge.rank match {
+          case None =>
+            EDGE_VALUE_WITHOUT_RANKING_TEMPLATE.format(source, target, edge.propertyValues)
+          case Some(rank) =>
+            EDGE_VALUE_TEMPLATE.format(source, target, rank, edge.propertyValues)
+        }
       }
       .mkString(", ")
     (if (overwrite) BATCH_INSERT_TEMPLATE else BATCH_INSERT_NO_OVERWRITE_TEMPLATE)
@@ -294,10 +286,8 @@ object NebulaExecutor {
           DataTypeEnum.VERTEX.toString.toUpperCase,
           tagName,
           nebulaVertices.policy match {
-            case Some(KeyPolicy.HASH) =>
-              ENDPOINT_TEMPLATE.format(KeyPolicy.HASH.toString, vertex.vertexIDSlice)
-            case Some(KeyPolicy.UUID) =>
-              ENDPOINT_TEMPLATE.format(KeyPolicy.UUID.toString, vertex.vertexIDSlice)
+            case Some(policy) if KeyPolicy.values.contains(policy) =>
+              ENDPOINT_TEMPLATE.format(policy.toString, vertex.vertexIDSlice)
             case None =>
               vertex.vertexIDSlice
             case _ =>
@@ -330,10 +320,8 @@ object NebulaExecutor {
           DataTypeEnum.EDGE.toString.toUpperCase,
           edgeName,
           nebulaEdges.getSourcePolicy match {
-            case Some(KeyPolicy.HASH) =>
-              ENDPOINT_TEMPLATE.format(KeyPolicy.HASH.toString, edge.source)
-            case Some(KeyPolicy.UUID) =>
-              ENDPOINT_TEMPLATE.format(KeyPolicy.UUID.toString, edge.source)
+            case Some(policy) if KeyPolicy.values.contains(policy) =>
+              ENDPOINT_TEMPLATE.format(policy.toString, edge.source)
             case None =>
               edge.source
             case _ =>
@@ -341,10 +329,8 @@ object NebulaExecutor {
                 s"source policy ${nebulaEdges.getTargetPolicy.get} is not supported")
           },
           nebulaEdges.getTargetPolicy match {
-            case Some(KeyPolicy.HASH) =>
-              ENDPOINT_TEMPLATE.format(KeyPolicy.HASH.toString, edge.target)
-            case Some(KeyPolicy.UUID) =>
-              ENDPOINT_TEMPLATE.format(KeyPolicy.UUID.toString, edge.target)
+            case Some(policy) if KeyPolicy.values.contains(policy) =>
+              ENDPOINT_TEMPLATE.format(policy.toString, edge.target)
             case None =>
               edge.target
             case _ =>
@@ -379,12 +365,8 @@ object NebulaExecutor {
     vertices.values
       .map { value =>
         vertices.policy match {
-          case Some(KeyPolicy.HASH) =>
-            ENDPOINT_TEMPLATE.format(KeyPolicy.HASH.toString, value.vertexIDSlice)
-
-          case Some(KeyPolicy.UUID) =>
-            ENDPOINT_TEMPLATE.format(KeyPolicy.UUID.toString, value.vertexIDSlice)
-
+          case Some(policy) if KeyPolicy.values.contains(policy) =>
+            ENDPOINT_TEMPLATE.format(policy.toString, value.vertexIDSlice)
           case None =>
             value.vertexIDSlice
           case _ =>
@@ -405,26 +387,22 @@ object NebulaExecutor {
         .map { value =>
           EDGE_ENDPOINT_TEMPLATE.format(
             edges.getSourcePolicy match {
-              case Some(KeyPolicy.HASH) =>
-                ENDPOINT_TEMPLATE.format(KeyPolicy.HASH.toString, value.source)
-              case Some(KeyPolicy.UUID) =>
-                ENDPOINT_TEMPLATE.format(KeyPolicy.UUID.toString, value.source)
+              case Some(policy) if KeyPolicy.values.contains(policy) =>
+                ENDPOINT_TEMPLATE.format(policy.toString, value.source)
               case None => value.source
               case _ =>
                 throw new IllegalArgumentException(
                   s"source vertex policy ${edges.getSourcePolicy.get} is not supported")
             },
             edges.getTargetPolicy match {
-              case Some(KeyPolicy.HASH) =>
-                ENDPOINT_TEMPLATE.format(KeyPolicy.HASH.toString, value.target)
-              case Some(KeyPolicy.UUID) =>
-                ENDPOINT_TEMPLATE.format(KeyPolicy.UUID.toString, value.target)
+              case Some(policy) if KeyPolicy.values.contains(policy) =>
+                ENDPOINT_TEMPLATE.format(policy.toString, value.target)
               case None => value.target
               case _ =>
                 throw new IllegalArgumentException(
                   s"target vertex policy ${edges.getTargetPolicy.get} is not supported")
             },
-            if (value.rank.isEmpty) 0 else value.rank.get
+            value.rank.getOrElse(0L)
           )
         }
         .mkString(",")

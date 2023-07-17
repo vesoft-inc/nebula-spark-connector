@@ -128,8 +128,13 @@ object NebulaExecutor {
       case PropertyType.DATE     => "date(\"" + propValue + "\")"
       case PropertyType.DATETIME => "datetime(\"" + propValue + "\")"
       case PropertyType.TIME     => "time(\"" + propValue + "\")"
-      case PropertyType.TIMESTAMP if !NebulaUtils.isNumic(propValue.toString) =>
-        "timestamp(\"" + propValue + "\")"
+      case PropertyType.TIMESTAMP =>
+        if (NebulaUtils.isNumic(propValue.toString)) {
+          if (simpleName.equalsIgnoreCase("UTF8String")) propValue.toString
+          else propValue
+        } else {
+          "timestamp(\"" + propValue + "\")"
+        }
       case PropertyType.GEOGRAPHY => "ST_GeogFromText(\"" + propValue + "\")"
       case _ =>
         if (simpleName.equalsIgnoreCase("UTF8String")) propValue.toString

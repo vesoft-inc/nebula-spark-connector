@@ -11,8 +11,6 @@ import com.vesoft.nebula.connector._
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.types.StructType
 
-import scala.collection.mutable.ListBuffer
-
 object NebulaExecutor {
 
   /**
@@ -405,16 +403,7 @@ object NebulaExecutor {
     * @param nebulaFields nebula property name list
     * @return escaped nebula property name list
     */
-  def escapePropName(nebulaFields: List[String]): List[String] = {
-    val propNames: ListBuffer[String] = new ListBuffer[String]
-    for (key <- nebulaFields) {
-      val sb = new StringBuilder()
-      sb.append("`")
-      sb.append(key)
-      sb.append("`")
-      propNames.append(sb.toString())
-    }
-    propNames.toList
-  }
+  def escapePropName(nebulaFields: List[String]): List[String] =
+    nebulaFields.map(key => s"`$key`")
 
 }

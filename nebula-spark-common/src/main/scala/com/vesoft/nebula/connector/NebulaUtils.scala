@@ -151,8 +151,7 @@ object NebulaUtils {
     )
 
     import scala.collection.JavaConverters._
-    var schemaCols: Seq[ColumnDef] = Seq()
-    val isVertex                   = DataTypeEnum.VERTEX.toString.equalsIgnoreCase(nebulaOptions.dataType)
+    val isVertex = DataTypeEnum.VERTEX.toString.equalsIgnoreCase(nebulaOptions.dataType)
 
     // construct vertex or edge default prop
     if (isVertex) {
@@ -163,11 +162,9 @@ object NebulaUtils {
       fields.append(DataTypes.createStructField("_rank", DataTypes.LongType, false))
     }
 
-    var dataSchema: StructType = null
     // read no column
     if (noColumn) {
-      dataSchema = new StructType(fields.toArray)
-      return dataSchema
+      return new StructType(fields.toArray)
     }
     // get tag schema or edge schema
     val schema = if (isVertex) {
@@ -176,26 +173,25 @@ object NebulaUtils {
       metaProvider.getEdge(nebulaOptions.spaceName, nebulaOptions.label)
     }
 
-    schemaCols = schema.columns.asScala
+    val schemaCols: Seq[ColumnDef] = schema.columns.asScala
 
     // read all columns
     if (returnCols.isEmpty) {
-      schemaCols.foreach(columnDef => {
+      schemaCols.foreach { columnDef =>
         LOG.info(s"prop name ${new String(columnDef.getName)}, type ${columnDef.getType.getType} ")
         fields.append(
           DataTypes.createStructField(new String(columnDef.getName),
-                                      NebulaUtils.convertDataType(columnDef.getType),
+                                      convertDataType(columnDef.getType),
                                       true))
-      })
+      }
     } else {
       for (col: String <- returnCols) {
         fields.append(
           DataTypes
-            .createStructField(col, NebulaUtils.getColDataType(schemaCols.toList, col), true))
+            .createStructField(col, getColDataType(schemaCols.toList, col), true))
       }
     }
-    dataSchema = new StructType(fields.toArray)
-    dataSchema
+    new StructType(fields.toArray)
   }
 
 }

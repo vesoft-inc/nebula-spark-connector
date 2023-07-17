@@ -225,7 +225,7 @@ object NebulaExecutor {
           vertices.policy match {
             case None =>
               VERTEX_VALUE_TEMPLATE.format(vertex.vertexIDSlice, vertex.propertyValues)
-            case Some(policy) if KeyPolicy.values.contains(policy)  =>
+            case policy @ (Some(KeyPolicy.HASH) | Some(KeyPolicy.UUID)) =>
               VERTEX_VALUE_TEMPLATE_WITH_POLICY
                 .format(policy.toString, vertex.vertexIDSlice, vertex.propertyValues)
             case _ =>
@@ -243,7 +243,7 @@ object NebulaExecutor {
     val values = edges.values
       .map { edge =>
         val source = edges.getSourcePolicy match {
-          case Some(policy) if KeyPolicy.values.contains(policy) =>
+          case policy @ (Some(KeyPolicy.HASH) | Some(KeyPolicy.UUID)) =>
             ENDPOINT_TEMPLATE.format(policy.toString, edge.source)
           case None =>
             edge.source
@@ -253,7 +253,7 @@ object NebulaExecutor {
         }
 
         val target = edges.getTargetPolicy match {
-          case Some(policy) if KeyPolicy.values.contains(policy) =>
+          case policy @ (Some(KeyPolicy.HASH) | Some(KeyPolicy.UUID)) =>
             ENDPOINT_TEMPLATE.format(policy.toString, edge.target)
           case None =>
             edge.target
@@ -285,7 +285,7 @@ object NebulaExecutor {
           DataTypeEnum.VERTEX.toString.toUpperCase,
           tagName,
           nebulaVertices.policy match {
-            case Some(policy) if KeyPolicy.values.contains(policy) =>
+            case policy @ (Some(KeyPolicy.HASH) | Some(KeyPolicy.UUID)) =>
               ENDPOINT_TEMPLATE.format(policy.toString, vertex.vertexIDSlice)
             case None =>
               vertex.vertexIDSlice
@@ -319,7 +319,7 @@ object NebulaExecutor {
           DataTypeEnum.EDGE.toString.toUpperCase,
           edgeName,
           nebulaEdges.getSourcePolicy match {
-            case Some(policy) if KeyPolicy.values.contains(policy) =>
+            case policy @ (Some(KeyPolicy.HASH) | Some(KeyPolicy.UUID)) =>
               ENDPOINT_TEMPLATE.format(policy.toString, edge.source)
             case None =>
               edge.source
@@ -328,7 +328,7 @@ object NebulaExecutor {
                 s"source policy ${nebulaEdges.getTargetPolicy.get} is not supported")
           },
           nebulaEdges.getTargetPolicy match {
-            case Some(policy) if KeyPolicy.values.contains(policy) =>
+            case policy @ (Some(KeyPolicy.HASH) | Some(KeyPolicy.UUID)) =>
               ENDPOINT_TEMPLATE.format(policy.toString, edge.target)
             case None =>
               edge.target
@@ -364,7 +364,7 @@ object NebulaExecutor {
     vertices.values
       .map { value =>
         vertices.policy match {
-          case Some(policy) if KeyPolicy.values.contains(policy) =>
+          case policy @ (Some(KeyPolicy.HASH) | Some(KeyPolicy.UUID)) =>
             ENDPOINT_TEMPLATE.format(policy.toString, value.vertexIDSlice)
           case None =>
             value.vertexIDSlice
@@ -386,7 +386,7 @@ object NebulaExecutor {
         .map { value =>
           EDGE_ENDPOINT_TEMPLATE.format(
             edges.getSourcePolicy match {
-              case Some(policy) if KeyPolicy.values.contains(policy) =>
+              case policy @ (Some(KeyPolicy.HASH) | Some(KeyPolicy.UUID)) =>
                 ENDPOINT_TEMPLATE.format(policy.toString, value.source)
               case None => value.source
               case _ =>
@@ -394,7 +394,7 @@ object NebulaExecutor {
                   s"source vertex policy ${edges.getSourcePolicy.get} is not supported")
             },
             edges.getTargetPolicy match {
-              case Some(policy) if KeyPolicy.values.contains(policy) =>
+              case policy @ (Some(KeyPolicy.HASH) | Some(KeyPolicy.UUID)) =>
                 ENDPOINT_TEMPLATE.format(policy.toString, value.target)
               case None => value.target
               case _ =>

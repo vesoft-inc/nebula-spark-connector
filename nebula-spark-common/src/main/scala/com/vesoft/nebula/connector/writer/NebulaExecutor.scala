@@ -6,36 +6,10 @@
 package com.vesoft.nebula.connector.writer
 
 import com.vesoft.nebula.PropertyType
-import com.vesoft.nebula.connector.NebulaTemplate.{
-  BATCH_INSERT_NO_OVERWRITE_TEMPLATE,
-  BATCH_INSERT_TEMPLATE,
-  DELETE_EDGE_TEMPLATE,
-  DELETE_VERTEX_TEMPLATE,
-  DELETE_VERTEX_WITH_EDGE_TEMPLATE,
-  EDGE_ENDPOINT_TEMPLATE,
-  EDGE_VALUE_TEMPLATE,
-  EDGE_VALUE_WITHOUT_RANKING_TEMPLATE,
-  ENDPOINT_TEMPLATE,
-  UPDATE_EDGE_TEMPLATE,
-  UPDATE_VALUE_TEMPLATE,
-  UPDATE_VERTEX_TEMPLATE,
-  VERTEX_VALUE_TEMPLATE,
-  VERTEX_VALUE_TEMPLATE_WITH_POLICY
-}
-import com.vesoft.nebula.connector.{
-  DataTypeEnum,
-  EdgeRank,
-  KeyPolicy,
-  NebulaEdges,
-  NebulaUtils,
-  NebulaVertices,
-  PropertyNames,
-  PropertyValues
-}
+import com.vesoft.nebula.connector.NebulaTemplate._
+import com.vesoft.nebula.connector._
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.types.StructType
-
-import scala.collection.JavaConversions.seqAsJavaList
 
 object NebulaExecutor {
 
@@ -154,19 +128,12 @@ object NebulaExecutor {
       case PropertyType.DATE     => "date(\"" + propValue + "\")"
       case PropertyType.DATETIME => "datetime(\"" + propValue + "\")"
       case PropertyType.TIME     => "time(\"" + propValue + "\")"
-      case PropertyType.TIMESTAMP => {
-        if (NebulaUtils.isNumic(propValue.toString)) {
-          if (simpleName.equalsIgnoreCase("UTF8String")) propValue.toString
-          else propValue
-        } else {
-          "timestamp(\"" + propValue + "\")"
-        }
-      }
+      case PropertyType.TIMESTAMP if !NebulaUtils.isNumic(propValue.toString) =>
+        "timestamp(\"" + propValue + "\")"
       case PropertyType.GEOGRAPHY => "ST_GeogFromText(\"" + propValue + "\")"
-      case _ => {
+      case _ =>
         if (simpleName.equalsIgnoreCase("UTF8String")) propValue.toString
         else propValue
-      }
     }
   }
 
@@ -306,7 +273,7 @@ object NebulaExecutor {
           vertex.values
             .map { value =>
               val updateValue =
-                UPDATE_VALUE_TEMPLATE.format(nebulaVertices.propNames.get(index), value)
+                UPDATE_VALUE_TEMPLATE.format(nebulaVertices.propNames(index), value)
               index += 1
               updateValue
             }
@@ -354,7 +321,7 @@ object NebulaExecutor {
           edge.values
             .map { value =>
               val updateValue =
-                UPDATE_VALUE_TEMPLATE.format(nebulaEdges.propNames.get(index), value)
+                UPDATE_VALUE_TEMPLATE.format(nebulaEdges.propNames(index), value)
               index += 1
               updateValue
             }

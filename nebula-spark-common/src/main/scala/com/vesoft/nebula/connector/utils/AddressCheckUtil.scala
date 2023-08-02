@@ -33,7 +33,7 @@ object AddressCheckUtil {
       -1
     } else {
       require(portString.forall(_.isDigit), s"Port must be numeric: $addr")
-      val port = Integer.parseInt(portString)
+      val port = portString.toInt
       require(1 <= port && port <= 65535, s"Port number out of range: $addr")
       port
     }

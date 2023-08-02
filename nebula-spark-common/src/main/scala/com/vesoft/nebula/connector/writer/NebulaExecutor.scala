@@ -247,7 +247,6 @@ object NebulaExecutor {
   def toUpdateExecuteStatement(tagName: String, nebulaVertices: NebulaVertices): String = {
     nebulaVertices.values
       .map { vertex =>
-        var index = 0
         UPDATE_VERTEX_TEMPLATE.format(
           DataTypeEnum.VERTEX.toString.toUpperCase,
           tagName,
@@ -261,12 +260,8 @@ object NebulaExecutor {
                 s"vertex id policy ${nebulaVertices.policy.get} is not supported")
           },
           vertex.values
-            .map { value =>
-              val updateValue =
-                UPDATE_VALUE_TEMPLATE.format(nebulaVertices.propNames(index), value)
-              index += 1
-              updateValue
-            }
+            .zip(nebulaVertices.propNames)
+            .map { case (value, propName) => UPDATE_VALUE_TEMPLATE.format(propName, value) }
             .mkString(",")
         )
       }
@@ -276,12 +271,10 @@ object NebulaExecutor {
   /**
     * construct update statement for edge
     */
-  def toUpdateExecuteStatement(edgeName: String, nebulaEdges: NebulaEdges): String = {
-
+  def toUpdateExecuteStatement(edgeName: String, nebulaEdges: NebulaEdges): String =
     nebulaEdges.values
       .map { edge =>
-        var index = 0
-        val rank  = if (edge.rank.isEmpty) { 0 } else { edge.rank.get }
+        val rank = edge.rank.getOrElse(0)
         UPDATE_EDGE_TEMPLATE.format(
           DataTypeEnum.EDGE.toString.toUpperCase,
           edgeName,
@@ -305,17 +298,12 @@ object NebulaExecutor {
           },
           rank,
           edge.values
-            .map { value =>
-              val updateValue =
-                UPDATE_VALUE_TEMPLATE.format(nebulaEdges.propNames(index), value)
-              index += 1
-              updateValue
-            }
+            .zip(nebulaEdges.propNames)
+            .map { case (value, propName) => UPDATE_VALUE_TEMPLATE.format(propName, value) }
             .mkString(",")
         )
       }
       .mkString(";")
-  }
 
   /**
     * construct delete statement for vertex

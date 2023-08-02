@@ -260,6 +260,7 @@ object NebulaExecutor {
                 s"vertex id policy ${nebulaVertices.policy.get} is not supported")
           },
           vertex.values
+            .view
             .zip(nebulaVertices.propNames)
             .map { case (value, propName) => UPDATE_VALUE_TEMPLATE.format(propName, value) }
             .mkString(",")
@@ -298,6 +299,7 @@ object NebulaExecutor {
           },
           rank,
           edge.values
+            .view
             .zip(nebulaEdges.propNames)
             .map { case (value, propName) => UPDATE_VALUE_TEMPLATE.format(propName, value) }
             .mkString(",")

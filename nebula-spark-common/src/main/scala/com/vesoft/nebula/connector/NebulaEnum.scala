@@ -11,9 +11,8 @@ object DataTypeEnum extends Enumeration {
   val VERTEX = Value("vertex")
   val EDGE   = Value("edge")
 
-  def validDataType(dataType: String): Boolean = {
-    dataType.equalsIgnoreCase(VERTEX.toString) || dataType.equalsIgnoreCase(EDGE.toString)
-  }
+  def validDataType(dataType: String): Boolean =
+    values.exists(_.toString.equalsIgnoreCase(dataType))
 }
 
 object KeyPolicy extends Enumeration {

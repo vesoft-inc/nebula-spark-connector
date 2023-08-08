@@ -53,18 +53,17 @@ object AddressCheckUtil {
     }
     val host: String = addr.substring(1, closeBracketIndex)
     if (closeBracketIndex + 1 == addr.length) {
-      return (host, "")
+      (host, "")
+    } else if (addr.charAt(closeBracketIndex + 1) != ':') {
+      throw new IllegalArgumentException(s"only a colon may follow a close bracket: $addr")
     } else {
-      if (addr.charAt(closeBracketIndex + 1) != ':') {
-        throw new IllegalArgumentException(s"only a colon may follow a close bracket: $addr")
-      }
-      for (i <- closeBracketIndex + 2 until addr.length) {
-        if (!Character.isDigit(addr.charAt(i))) {
-          throw new IllegalArgumentException(s"Port must be numeric: $addr")
-        }
+      val port = addr.substring(closeBracketIndex + 2)
+      if (port.forall(_.isDigit)) {
+        (host, port)
+      } else {
+        throw new IllegalArgumentException(s"Port must be numeric: $addr")
       }
     }
-    (host, addr.substring(closeBracketIndex + 2))
   }
 
 }

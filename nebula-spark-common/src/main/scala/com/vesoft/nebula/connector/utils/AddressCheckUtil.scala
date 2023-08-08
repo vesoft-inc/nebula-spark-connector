@@ -13,37 +13,30 @@ object AddressCheckUtil {
     if (addr == null) {
       throw new IllegalArgumentException("wrong address format.")
     }
-    var host: String       = null
-    var portString: String = null
 
-    if (addr.startsWith("[")) {
-      val hostAndPort = getHostAndPortFromBracketedHost(addr)
-      host = hostAndPort._1
-      portString = hostAndPort._2
-    } else {
-      val colonPos = addr.indexOf(":")
-      if (colonPos >= 0 && addr.indexOf(":", colonPos + 1) == -1) {
-        host = addr.substring(0, colonPos)
-        portString = addr.substring(colonPos + 1)
+    val (host, portString) =
+      if (addr.startsWith("[")) {
+        getHostAndPortFromBracketedHost(addr)
+      } else if (addr.count(_ == ':') == 1) {
+        val array = addr.split(":", 2)
+        (array(0), array(1))
       } else {
-        host = addr
+        (addr, null)
       }
-    }
 
-    var port = -1;
-    if (!Strings.isNullOrEmpty(portString)) {
-      for (c <- portString.toCharArray) {
-        if (!Character.isDigit(c)) {
-          throw new IllegalArgumentException(s"Port must be numeric: $addr")
-        }
-      }
-      port = Integer.parseInt(portString)
-      if (port < 0 || port > 65535) {
-        throw new IllegalArgumentException(s"Port number out of range: $addr")
-      }
-    }
+    val port = getPort(portString, addr)
     (host, port)
   }
+
+  private def getPort(portString: String, addr: String): Int =
+    if (Strings.isNullOrEmpty(portString)) {
+      -1
+    } else {
+      require(portString.forall(_.isDigit), s"Port must be numeric: $addr")
+      val port = portString.toInt
+      require(1 <= port && port <= 65535, s"Port number out of range: $addr")
+      port
+    }
 
   def getHostAndPortFromBracketedHost(addr: String): (String, String) = {
     val colonIndex        = addr.indexOf(":")

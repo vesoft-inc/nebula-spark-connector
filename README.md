@@ -332,23 +332,21 @@ df = spark.read.format(
 
 There are the version correspondence between NebulaGraph Spark Connector and Nebula、Spark:
 
-| NebulaGraph Spark Connector Version            | NebulaGraph Version | Spark Version |
-|:-----------------------------------------:|:--------------:|:-------------:|
-|nebula-spark-connector-2.0.0.jar           |  2.0.0, 2.0.1  | 2.4.* |
-|nebula-spark-connector-2.0.1.jar           |  2.0.0, 2.0.1  | 2.4.* | 
-|nebula-spark-connector-2.1.0.jar           |  2.0.0, 2.0.1  | 2.4.* |
-|nebula-spark-connector-2.5.0.jar           |  2.5.0, 2.5.1  | 2.4.* |
-|nebula-spark-connector-2.5.1.jar           |  2.5.0, 2.5.1  | 2.4.* |
-|nebula-spark-connector-2.6.0.jar           |  2.6.0, 2.6.1  | 2.4.* |
-|nebula-spark-connector-2.6.1.jar           |  2.6.0, 2.6.1  | 2.4.* |
-|nebula-spark-connector-3.0.0.jar           |      3.x       | 2.4.* |
-|nebula-spark-connector-3.3.0.jar           |      3.x       | 2.4.* |
-|nebula-spark-connector_2.2-3.3.0.jar       |      3.x       | 2.2.* |
-|nebula-spark-connector-3.4.0.jar           |      3.x       | 2.4.* |
-|nebula-spark-connector_2.2-3.4.0.jar       |      3.x       | 2.2.* |
-|nebula-spark-connector-3.0-SNAPSHOT.jar    |     nightly    | 2.4.* |
-|nebula-spark-connector_2.2-3.0-SNAPSHOT.jar|     nightly    | 2.2.* |
-|nebula-spark-connector_3.0-3.0-SNAPSHOT.jar|     nightly    | 3.*   |
+|     NebulaGraph Spark Connector Version     | NebulaGraph Version | Spark Version |
+|:-------------------------------------------:|:--------------:|:-------------:|
+|      nebula-spark-connector-2.0.0.jar       |  2.0.0, 2.0.1  |     2.4.*     |
+|      nebula-spark-connector-2.0.1.jar       |  2.0.0, 2.0.1  |     2.4.*     | 
+|      nebula-spark-connector-2.1.0.jar       |  2.0.0, 2.0.1  |     2.4.*     |
+|      nebula-spark-connector-2.5.0.jar       |  2.5.0, 2.5.1  |     2.4.*     |
+|      nebula-spark-connector-2.5.1.jar       |  2.5.0, 2.5.1  |     2.4.*     |
+|      nebula-spark-connector-2.6.0.jar       |  2.6.0, 2.6.1  |     2.4.*     |
+|      nebula-spark-connector-2.6.1.jar       |  2.6.0, 2.6.1  |     2.4.*     |
+|      nebula-spark-connector-3.x.x.jar       |      3.x       |     2.4.*     |
+|    nebula-spark-connector_2.2-3.x.x.jar     |      3.x       |     2.2.*     |
+|    nebula-spark-connector_3.0-3.x.x.jar     |      3.x       |     3.*.*     |
+|   nebula-spark-connector-3.0-SNAPSHOT.jar   |     nightly    |     2.4.*     |
+| nebula-spark-connector_2.2-3.0-SNAPSHOT.jar |     nightly    |     2.2.*     |
+| nebula-spark-connector_3.0-3.0-SNAPSHOT.jar |     nightly    |      3.*      |
 
 ## Performance
 We use LDBC dataset to test nebula-spark-connector's performance, here's the result.

@@ -7,22 +7,11 @@ package com.vesoft.nebula.connector
 
 import com.vesoft.nebula.connector.exception.IllegalOptionException
 import com.vesoft.nebula.connector.reader.NebulaRelation
-import com.vesoft.nebula.connector.writer.{
-  NebulaCommitMessage,
-  NebulaEdgeWriter,
-  NebulaVertexWriter,
-  NebulaWriter,
-  NebulaWriterResultRelation
-}
+import com.vesoft.nebula.connector.writer.{NebulaCommitMessage, NebulaEdgeWriter, NebulaVertexWriter, NebulaWriter, NebulaWriterResultRelation}
 import org.apache.spark.TaskContext
-import org.apache.spark.sql.{DataFrame, Row, SQLContext, SaveMode}
+import org.apache.spark.sql.{DataFrame, Dataset, Row, SQLContext, SaveMode}
 import org.apache.spark.sql.catalyst.util.CaseInsensitiveMap
-import org.apache.spark.sql.sources.{
-  BaseRelation,
-  CreatableRelationProvider,
-  DataSourceRegister,
-  RelationProvider
-}
+import org.apache.spark.sql.sources.{BaseRelation, CreatableRelationProvider, DataSourceRegister, RelationProvider}
 import org.apache.spark.sql.types.StructType
 import org.slf4j.LoggerFactory
 
@@ -57,7 +46,7 @@ class NebulaDataSource
   override def createRelation(sqlContext: SQLContext,
                               mode: SaveMode,
                               parameters: Map[String, String],
-                              data: DataFrame): BaseRelation = {
+                              data: Dataset[Row]): BaseRelation = {
 
     val nebulaOptions = getNebulaOptions(parameters)
     if (mode == SaveMode.Ignore || mode == SaveMode.ErrorIfExists) {
@@ -68,7 +57,7 @@ class NebulaDataSource
     LOG.info(s"options ${parameters}")
 
     val schema = data.schema
-    data.foreachPartition(iterator => {
+    data.foreachPartition((iterator:Iterator[Row]) => {
       savePartition(nebulaOptions, schema, iterator)
     })
 

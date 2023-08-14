@@ -19,6 +19,8 @@
         <spark3.0.version>3.0.0</spark3.0.version>
         <scala.version>2.12.10</scala.version>
         <scalatest.version>3.2.3</scalatest.version>
+        <codec.version>1.13</codec.version>
+        <nebula.version>3.6.0</nebula.version>
     </properties>
 
     <dependencies>
@@ -46,12 +48,22 @@
             <version>${spark3.0.version}</version>
             <scope>provided</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.vesoft</groupId>-->
+<!--            <artifactId>nebula-spark-common</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--        </dependency>-->
+        <!-- scalatest -->
         <dependency>
             <groupId>com.vesoft</groupId>
-            <artifactId>nebula-spark-common</artifactId>
-            <version>${project.version}</version>
+            <artifactId>client</artifactId>
+            <version>${nebula.version}</version>
         </dependency>
-        <!-- scalatest -->
+        <dependency>
+            <artifactId>commons-codec</artifactId>
+            <groupId>commons-codec</groupId>
+            <version>${codec.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest-funsuite_2.12</artifactId>

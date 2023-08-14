@@ -16,6 +16,8 @@
         <spark2.2.version>2.2.0</spark2.2.version>
         <compiler.source.version>1.8</compiler.source.version>
         <compiler.target.version>1.8</compiler.target.version>
+        <codec.version>1.13</codec.version>
+        <nebula.version>3.6.0</nebula.version>
     </properties>
 
     <dependencies>
@@ -43,11 +45,22 @@
             <version>${spark2.2.version}</version>
             <scope>provided</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.vesoft</groupId>-->
+<!--            <artifactId>nebula-spark-common</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.vesoft</groupId>
-            <artifactId>nebula-spark-common</artifactId>
-            <version>${project.version}</version>
+            <artifactId>client</artifactId>
+            <version>${nebula.version}</version>
         </dependency>
+        <dependency>
+            <artifactId>commons-codec</artifactId>
+            <groupId>commons-codec</groupId>
+            <version>${codec.version}</version>
+        </dependency>
+
         <!-- scalatest -->
         <dependency>
             <groupId>org.scalatest</groupId>

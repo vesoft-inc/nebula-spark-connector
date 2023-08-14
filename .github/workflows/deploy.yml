@@ -49,6 +49,7 @@ jobs:
           gpg_passphrase: ${{ secrets.JAVA_GPG_PASSPHRASE }}
           nexus_username: ${{ secrets.OSSRH_USERNAME }}
           nexus_password: ${{ secrets.OSSRH_TOKEN }}
+          directory: nebula-spark-connector_2.2
 
       - name: enter spark3.0
         run: |
@@ -62,3 +63,4 @@ jobs:
           gpg_passphrase: ${{ secrets.JAVA_GPG_PASSPHRASE }}
           nexus_username: ${{ secrets.OSSRH_USERNAME }}
           nexus_password: ${{ secrets.OSSRH_TOKEN }}
+          directory: nebula-spark-connector_2.2

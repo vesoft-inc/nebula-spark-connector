@@ -45,6 +45,7 @@ Nebula Spark Connector 支持 Spark 2.2， 2.4 和 3.x.
   写入模式，相关说明参考[Update Vertex](https://docs.nebula-graph.com.cn/2.0.1/3.ngql-guide/12.vertex-statements/2.update-vertex/)
 * Nebula Spark Connector 2.5.0 增加了 DELETE
   写入模式，相关说明参考[Delete Vertex](https://docs.nebula-graph.com.cn/2.5.1/3.ngql-guide/12.vertex-statements/4.delete-vertex/)
+* 支持Spark 3.x 的 Nebula Spark Connector 不支持通过 NGQL 的查询方式从 NebulaGraph 中获取边数据。
 
 ## 使用说明
 

@@ -17,5 +17,5 @@ mvn clean package -Dmaven.test.skip=true -Pspark2.4
 for spark3.x
 ```agsl
 cd example
-mvn clean package -Dmaven.test.skip=true -Pspark2.2
+mvn clean package -Dmaven.test.skip=true -Pspark3.0
 ```

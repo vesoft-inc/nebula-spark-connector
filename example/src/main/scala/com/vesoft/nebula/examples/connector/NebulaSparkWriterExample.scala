@@ -53,7 +53,7 @@ object NebulaSparkWriterExample {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
-        .withConenctionRetry(2)
+        .withConnectionRetry(2)
         .build()
 
     // connection config with ca ssl
@@ -62,7 +62,7 @@ object NebulaSparkWriterExample {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
-        .withConenctionRetry(2)
+        .withConnectionRetry(2)
         .withEnableMetaSSL(true)
         .withEnableGraphSSL(true)
         .withSSLSignType(SSLSignType.CA)
@@ -77,7 +77,7 @@ object NebulaSparkWriterExample {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
-        .withConenctionRetry(2)
+        .withConnectionRetry(2)
         .withEnableMetaSSL(true)
         .withEnableGraphSSL(true)
         .withSSLSignType(SSLSignType.SELF)
@@ -97,13 +97,7 @@ object NebulaSparkWriterExample {
     val df = spark.read.json("vertex")
     df.show()
 
-    val config =
-      NebulaConnectionConfig
-        .builder()
-        .withMetaAddress("127.0.0.1:9559")
-        .withGraphAddress("127.0.0.1:9669")
-        .withConenctionRetry(2)
-        .build()
+    val config = getNebulaConnectionConfig()
     val nebulaWriteVertexConfig: WriteNebulaVertexConfig = WriteNebulaVertexConfig
       .builder()
       .withSpace("test")

@@ -41,7 +41,7 @@ object SparkMock {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
-        .withConenctionRetry(2)
+        .withConnectionRetry(2)
         .build()
     val nebulaWriteVertexConfig: WriteNebulaVertexConfig = WriteNebulaVertexConfig
       .builder()
@@ -79,7 +79,7 @@ object SparkMock {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
-        .withConenctionRetry(2)
+        .withConnectionRetry(2)
         .build()
     val nebulaWriteVertexConfig: WriteNebulaVertexConfig = WriteNebulaVertexConfig
       .builder()
@@ -118,7 +118,7 @@ object SparkMock {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
-        .withConenctionRetry(2)
+        .withConnectionRetry(2)
         .build()
     val nebulaWriteEdgeConfig: WriteNebulaEdgeConfig = WriteNebulaEdgeConfig
       .builder()
@@ -158,7 +158,7 @@ object SparkMock {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
-        .withConenctionRetry(2)
+        .withConnectionRetry(2)
         .build()
     val nebulaWriteEdgeConfig: WriteNebulaEdgeConfig = WriteNebulaEdgeConfig
       .builder()
@@ -199,7 +199,7 @@ object SparkMock {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
-        .withConenctionRetry(2)
+        .withConnectionRetry(2)
         .build()
     val nebulaWriteVertexConfig: WriteNebulaVertexConfig = WriteNebulaVertexConfig
       .builder()

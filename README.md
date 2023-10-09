@@ -191,6 +191,7 @@ df = spark.read.format(
     "label", "player").option(
     "returnCols", "name,age").option(
     "metaAddress", "metad0:9559").option(
+    "operateType", "read").option(
     "partitionNumber", 1).load()
 ```
 

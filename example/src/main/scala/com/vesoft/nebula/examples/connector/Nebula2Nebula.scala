@@ -151,7 +151,7 @@ object Nebula2Nebula {
       NebulaConnectionConfig
         .builder()
         .withMetaAddress(sourceMetaAddr)
-        .withConenctionRetry(2)
+        .withConnectionRetry(2)
         .withTimeout(timeout)
         .build()
 
@@ -161,7 +161,7 @@ object Nebula2Nebula {
         .withMetaAddress(targetMetaAddr)
         .withGraphAddress(targetGraphAddr)
         .withTimeout(timeout)
-        .withConenctionRetry(2)
+        .withConnectionRetry(2)
         .build()
 
     val metaHostAndPort = sourceMetaAddr.split(":")

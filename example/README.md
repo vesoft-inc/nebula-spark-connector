@@ -57,4 +57,7 @@ usage: >>>> options
  -targetFileFormat,--targetFileFormat <arg>   target file format to save Nebula data, support csv, parquet, json
  -targetFilePath,--targetFilePath <arg>       target file path to save Nebula data
  -targetFileSystem,--targetFileSystem <arg>   target file system to save Nebula data, support hdfs,oss,s3
+ -header,--header <arg>                       if write header for csv format, default true
+ -delimiter,--delimiter <arg>                 csv delimiter, default is ','
+ -count,--count <arg>                         if count each tag/edge's count when export, default is false
 ```

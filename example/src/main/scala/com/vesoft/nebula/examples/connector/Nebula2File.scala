@@ -261,8 +261,9 @@ object Nebula2File {
                  targetFilePath,
                  header,
                  delimiter)
-      LOG.info(s" >>>>>> finished export edge: $edge, cost:${System.currentTimeMillis() - start}")
+      LOG.info(s" >>>>>> finished export edge: $edge, cost:${System.currentTimeMillis() - start}ms")
     })
+    LOG.info(s" >>>>>> export job finished, cost: ${System.currentTimeMillis() - startTime}ms")
   }
 
   def getTagsAndEdges(metaHost: String,

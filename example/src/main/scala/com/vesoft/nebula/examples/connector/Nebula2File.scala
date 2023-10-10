@@ -173,7 +173,7 @@ object Nebula2File {
       NebulaConnectionConfig
         .builder()
         .withMetaAddress(sourceMetaAddr)
-        .withConenctionRetry(2)
+        .withConnectionRetry(2)
         .withTimeout(10 * 1000)
         .build()
 

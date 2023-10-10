@@ -27,6 +27,7 @@ import scala.collection.mutable.ListBuffer
 
 object Nebula2File {
   private val LOG = LoggerFactory.getLogger(this.getClass)
+  var countData   = false
   def main(args: Array[String]): Unit = {
 
     // config the parameters
@@ -64,6 +65,11 @@ object Nebula2File {
                  "targetFileFormat",
                  true,
                  "target file format to save Nebula data, support csv, parquet, json, default csv")
+
+    val csvHeaderOption =
+      new Option("header", "header", true, "if write header for csv format, default true")
+    val csvDelimiterOption =
+      new Option("delimiter", "delimiter", true, "csv delimiter, default is ','")
     val targetFilePathOption =
       new Option("targetFilePath", "targetFilePath", true, "target file path to save Nebula data")
     targetFilePathOption.setRequired(true)
@@ -76,6 +82,12 @@ object Nebula2File {
     val includeTagOption =
       new Option("includeTag", "includeTag", true, "only migrate the specific tag")
 
+    // if count each tag/edge's data when export
+    val countOption = new Option("count",
+                                 "count",
+                                 true,
+                                 "if count each tag/edge's count when export, default is false")
+
     val options = new Options
     options.addOption(sourceMetaOption)
     options.addOption(sourceSpaceOption)
@@ -83,6 +95,8 @@ object Nebula2File {
     options.addOption(noFieldsOption)
     options.addOption(targetFileSystemOption)
     options.addOption(targetFileFormatOption)
+    options.addOption(csvHeaderOption)
+    options.addOption(csvDelimiterOption)
     options.addOption(targetFilePathOption)
     options.addOption(excludeTagsOption)
     options.addOption(excludeEdgesOption)
@@ -90,6 +104,7 @@ object Nebula2File {
     options.addOption(targetFileSysAccessKeyOption)
     options.addOption(targetFileSysSecretKeyOption)
     options.addOption(targetFileSysEndpointOption)
+    options.addOption(countOption)
 
     var cli: CommandLine             = null
     val cliParser: CommandLineParser = new PosixParser()
@@ -106,7 +121,7 @@ object Nebula2File {
 
     val sourceMetaAddr: String = cli.getOptionValue("sourceMeta")
     val sourceSpace: String    = cli.getOptionValue("sourceSpace")
-    val limit: Int             = if (cli.hasOption("limit")) 1000 else cli.getOptionValue("limit").toInt
+    val limit: Int             = if (cli.hasOption("limit")) cli.getOptionValue("limit").toInt else 1000
     val noFields: Boolean =
       if (cli.hasOption("noFields")) cli.getOptionValue("noFields").toBoolean else false
     val targetFileSystem: String =
@@ -126,9 +141,13 @@ object Nebula2File {
     val fileSys    = FileSystemCategory.withName(targetFileSystem.trim.toUpperCase)
     val fileFormat = FileFormatCategory.withName(targetFileFormat.trim.toUpperCase)
 
+    val header    = if (cli.hasOption("csvHeader")) cli.getOptionValue("csvHeader").toBoolean else true
+    val delimiter = if (cli.hasOption("csvDelimiter")) cli.getOptionValue("csvDelimiter") else ","
+
     val accessKey = if (cli.hasOption("accessKey")) cli.getOptionValue("accessKey") else null
     val secretKey = if (cli.hasOption("secretKey")) cli.getOptionValue("secretKey") else null
     val endpoint  = if (cli.hasOption("endpoint")) cli.getOptionValue("endpoint") else null
+    countData = if (cli.hasOption("count")) cli.getOptionValue("count").toBoolean else false
 
     LOG.info(s"""options:
                 |source meta address: $sourceMetaAddr
@@ -144,6 +163,9 @@ object Nebula2File {
                 |target access key for oss or s3: $accessKey
                 |target secret key for oss or s3:$secretKey
                 |target endpoint for oss or s3: $endpoint
+                |target csv header: $header
+                |target csv delimiter: $delimiter
+                |if count data while export: $countData
                 |""".stripMargin)
 
     // common config
@@ -162,10 +184,14 @@ object Nebula2File {
 
     // get spark with specific file system, hdfs or s3 or oss
     val spark = getSpark(fileSys, accessKey, secretKey, endpoint)
+    spark.conf.set("mapreduce.fileoutputcommitter.marksuccessfuljobs", "false")
+
+    val startTime = System.currentTimeMillis()
 
     // test with one specific tag to export
     if (includeTag != null) {
-      LOG.info(s"source space tag: ${includeTag}")
+      LOG.info(s" >>>>>> source space tag: ${includeTag}")
+      val start = System.currentTimeMillis()
       exportTag(spark,
                 sourceConnectConfig,
                 sourceSpace,
@@ -174,35 +200,40 @@ object Nebula2File {
                 includeTag,
                 noFields,
                 fileFormat,
-                targetFilePath)
+                targetFilePath,
+                header,
+                delimiter)
+      LOG.info(
+        s" >>>>>> finished export tag $includeTag, cost: ${System.currentTimeMillis() - start}ms")
       spark.stop()
       System.exit(0)
     }
 
     // get tags need to be export
     val exportTags = new ListBuffer[String]
-    LOG.info(s"source space tags: ${tags}")
-    LOG.info(s"exclude tags: ${excludeTags}")
+    LOG.info(s" >>>>>> source space tags: ${tags}")
+    LOG.info(s" >>>>>> exclude tags: ${excludeTags}")
     for (i <- tags.indices) {
       if (!excludeTags.contains(tags(i))) {
         exportTags.append(tags(i))
       }
     }
-    LOG.info(s"tags need to export: $exportTags")
+    LOG.info(s" >>>>>> tags need to export: $exportTags")
 
     // get edges need to be export
     val exportEdges = new ListBuffer[String]
-    LOG.info(s"source space edges: ${edges}")
-    LOG.info(s"exclude edges: ${excludeEdges}")
+    LOG.info(s" >>>>>> source space edges: ${edges}")
+    LOG.info(s" >>>>>> exclude edges: ${excludeEdges}")
     for (i <- edges.indices) {
       if (!excludeEdges.contains(edges(i))) {
         exportEdges.append(edges(i))
       }
     }
-    LOG.info(s"edges need to export: ${exportEdges}")
+    LOG.info(s" >>>>>> edges need to export: ${exportEdges}")
 
     // start to export
     exportTags.par.foreach(tag => {
+      val start = System.currentTimeMillis()
       exportTag(spark,
                 sourceConnectConfig,
                 sourceSpace,
@@ -211,11 +242,14 @@ object Nebula2File {
                 tag,
                 noFields,
                 fileFormat,
-                targetFilePath)
-      LOG.info(s"finished export tag: $tag")
+                targetFilePath,
+                header,
+                delimiter)
+      LOG.info(s" >>>>>> finished export tag: $tag, cost: ${System.currentTimeMillis() - start}ms")
     })
 
     exportEdges.par.foreach(edge => {
+      val start = System.currentTimeMillis()
       exportEdge(spark,
                  sourceConnectConfig,
                  sourceSpace,
@@ -224,8 +258,10 @@ object Nebula2File {
                  edge,
                  noFields,
                  fileFormat,
-                 targetFilePath)
-      LOG.info(s"finished export edge: $edge")
+                 targetFilePath,
+                 header,
+                 delimiter)
+      LOG.info(s" >>>>>> finished export edge: $edge, cost:${System.currentTimeMillis() - start}")
     })
   }
 
@@ -257,8 +293,10 @@ object Nebula2File {
                 tag: String,
                 noFields: Boolean,
                 fileFormat: FileFormatCategory.Value,
-                filePath: String): Unit = {
-    println(s" >>>>>> start to sync tag ${tag}")
+                filePath: String,
+                header: Boolean,
+                delimiter: String): Unit = {
+    LOG.info(s" >>>>>> start to sync tag ${tag}")
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
       .withSpace(sourceSpace)
@@ -270,9 +308,18 @@ object Nebula2File {
       .build()
     val vertex = spark.read.nebula(sourceConfig, nebulaReadVertexConfig).loadVerticesToDF()
 
+    if (countData) {
+      LOG.info(s" >>>>>> tag $tag count: ${vertex.count()}")
+    }
     val path = s"$filePath/$tag"
     fileFormat match {
-      case FileFormatCategory.CSV     => vertex.write.mode(SaveMode.Overwrite).csv(path)
+      case FileFormatCategory.CSV =>
+        vertex.write
+          .mode(SaveMode.Overwrite)
+          .mode(SaveMode.Overwrite)
+          .option("header", header)
+          .option("delimiter", delimiter)
+          .csv(path)
       case FileFormatCategory.JSON    => vertex.write.mode(SaveMode.Overwrite).json(path)
       case FileFormatCategory.PARQUET => vertex.write.mode(SaveMode.Overwrite).parquet(path)
     }
@@ -287,8 +334,10 @@ object Nebula2File {
                  edge: String,
                  noFields: Boolean,
                  fileFormat: FileFormatCategory.Value,
-                 filePath: String): Unit = {
-    println(s" >>>>>> start to sync edge ${edge}")
+                 filePath: String,
+                 header: Boolean,
+                 delimiter: String): Unit = {
+    LOG.info(s" >>>>>> start to sync edge ${edge}")
     val nebulaReadEdgeConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
       .withSpace(sourceSpace)
@@ -300,9 +349,18 @@ object Nebula2File {
       .build()
     val edgeDf = spark.read.nebula(sourceConfig, nebulaReadEdgeConfig).loadEdgesToDF()
 
+    if (countData) {
+      LOG.info(s" >>>>>> edge $edge count: ${edgeDf.count()}")
+    }
+
     val path = s"$filePath/$edge"
     fileFormat match {
-      case FileFormatCategory.CSV     => edgeDf.write.mode(SaveMode.Overwrite).csv(path)
+      case FileFormatCategory.CSV =>
+        edgeDf.write
+          .mode(SaveMode.Overwrite)
+          .option("header", header)
+          .option("delimiter", delimiter)
+          .csv(path)
       case FileFormatCategory.JSON    => edgeDf.write.mode(SaveMode.Overwrite).json(path)
       case FileFormatCategory.PARQUET => edgeDf.write.mode(SaveMode.Overwrite).parquet(path)
     }

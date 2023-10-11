@@ -298,6 +298,7 @@ object Nebula2File {
                 header: Boolean,
                 delimiter: String): Unit = {
     LOG.info(s" >>>>>> start to sync tag ${tag}")
+    spark.sparkContext.setJobGroup(s"$tag", s"export tag:$tag")
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
       .withSpace(sourceSpace)
@@ -339,6 +340,7 @@ object Nebula2File {
                  header: Boolean,
                  delimiter: String): Unit = {
     LOG.info(s" >>>>>> start to sync edge ${edge}")
+    spark.sparkContext.setJobGroup(s"$edge", s"export edge:$edge")
     val nebulaReadEdgeConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
       .withSpace(sourceSpace)

@@ -334,6 +334,7 @@ df = spark.read.format(
     "metaAddress", "metad0:9559").option(
     "partitionNumber", 1).load()
 ```
+> If you are using nebula-spark-connector 3.6.0 version, you need to import nebula-spark-common 3.6.0 too, or package the nebula-spark-connector-with-dependencies jar by yourself and import it into your Spark config.
 
 ## Compatibility matrix
 

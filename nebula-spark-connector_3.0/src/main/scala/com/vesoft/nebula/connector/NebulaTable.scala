@@ -7,7 +7,6 @@ package com.vesoft.nebula.connector
 
 import java.util
 import java.util.Map.Entry
-
 import com.vesoft.nebula.connector.reader.SimpleScanBuilder
 import com.vesoft.nebula.connector.writer.NebulaWriterBuilder
 import org.apache.spark.sql.SaveMode
@@ -20,6 +19,7 @@ import org.apache.spark.sql.util.CaseInsensitiveStringMap
 import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 class NebulaTable(schema: StructType, nebulaOptions: NebulaOptions)
     extends Table
@@ -33,7 +33,14 @@ class NebulaTable(schema: StructType, nebulaOptions: NebulaOptions)
     */
   override def newScanBuilder(caseInsensitiveStringMap: CaseInsensitiveStringMap): ScanBuilder = {
     LOG.info("create scan builder")
-    LOG.info(s"options ${caseInsensitiveStringMap.asCaseSensitiveMap()}")
+    val options    = new mutable.HashMap[String, String]()
+    val parameters = caseInsensitiveStringMap.asCaseSensitiveMap().asScala
+    for (k: String <- parameters.keySet) {
+      if (!k.equalsIgnoreCase("passwd")) {
+        options += (k -> parameters(k))
+      }
+    }
+    LOG.info(s"options ${options}")
 
     new SimpleScanBuilder(nebulaOptions, schema)
   }
@@ -43,7 +50,14 @@ class NebulaTable(schema: StructType, nebulaOptions: NebulaOptions)
     */
   override def newWriteBuilder(logicalWriteInfo: LogicalWriteInfo): WriteBuilder = {
     LOG.info("create writer")
-    LOG.info(s"options ${logicalWriteInfo.options().asCaseSensitiveMap()}")
+    val options    = new mutable.HashMap[String, String]()
+    val parameters = logicalWriteInfo.options().asCaseSensitiveMap().asScala
+    for (k: String <- parameters.keySet) {
+      if (!k.equalsIgnoreCase("passwd")) {
+        options += (k -> parameters(k))
+      }
+    }
+    LOG.info(s"options ${options}")
     new NebulaWriterBuilder(logicalWriteInfo.schema(), SaveMode.Append, nebulaOptions)
   }
 

@@ -46,7 +46,9 @@ class NebulaDataSource
     val dataType      = nebulaOptions.dataType
 
     LOG.info("create reader")
-    LOG.info(s"options ${options.asMap().remove("passwd")}")
+    val parameters = options.asMap()
+    parameters.remove("passwd")
+    LOG.info(s"options ${parameters}")
 
     if (DataTypeEnum.VERTEX == DataTypeEnum.withName(dataType)) {
       new NebulaDataSourceVertexReader(nebulaOptions)
@@ -72,7 +74,9 @@ class NebulaDataSource
     }
 
     LOG.info("create writer")
-    LOG.info(s"options ${options.asMap().remove("passwd")}")
+    val parameters = options.asMap()
+    parameters.remove("passwd")
+    LOG.info(s"options ${parameters}")
 
     if (DataTypeEnum.VERTEX == DataTypeEnum.withName(dataType)) {
       val vertexFiled = nebulaOptions.vertexField

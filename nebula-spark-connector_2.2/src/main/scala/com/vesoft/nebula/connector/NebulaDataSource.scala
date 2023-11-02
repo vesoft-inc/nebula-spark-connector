@@ -25,6 +25,7 @@ import org.apache.spark.sql.sources.{
 }
 import org.apache.spark.sql.types.StructType
 import org.slf4j.LoggerFactory
+import scala.collection.mutable
 
 class NebulaDataSource
     extends RelationProvider
@@ -46,7 +47,13 @@ class NebulaDataSource
     val nebulaOptions = getNebulaOptions(parameters)
 
     LOG.info("create relation")
-    LOG.info(s"options ${parameters}")
+    val optionMap = new mutable.HashMap[String, String]()
+    for (k: String <- parameters.keySet) {
+      if (!k.equalsIgnoreCase("passwd")) {
+        optionMap += (k -> parameters(k))
+      }
+    }
+    LOG.info(s"options ${optionMap}")
 
     NebulaRelation(sqlContext, nebulaOptions)
   }
@@ -65,7 +72,13 @@ class NebulaDataSource
     }
 
     LOG.info("create writer")
-    LOG.info(s"options ${parameters}")
+    val optionMap = new mutable.HashMap[String, String]()
+    for (k: String <- parameters.keySet) {
+      if (!k.equalsIgnoreCase("passwd")) {
+        optionMap += (k -> parameters(k))
+      }
+    }
+    LOG.info(s"options ${optionMap}")
 
     val schema = data.schema
     data.foreachPartition(iterator => {

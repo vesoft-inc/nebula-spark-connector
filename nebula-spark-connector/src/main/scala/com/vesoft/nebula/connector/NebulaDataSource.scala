@@ -7,13 +7,8 @@ package com.vesoft.nebula.connector
 
 import java.util.Map.Entry
 import java.util.Optional
-
 import com.vesoft.nebula.connector.exception.IllegalOptionException
-import com.vesoft.nebula.connector.reader.{
-  NebulaDataSourceEdgeReader,
-  NebulaDataSourceNgqlEdgeReader,
-  NebulaDataSourceVertexReader
-}
+import com.vesoft.nebula.connector.reader.{NebulaDataSourceEdgeReader, NebulaDataSourceNgqlEdgeReader, NebulaDataSourceVertexReader}
 import com.vesoft.nebula.connector.writer.{NebulaDataSourceEdgeWriter, NebulaDataSourceVertexWriter}
 import org.apache.spark.sql.SaveMode
 import org.apache.spark.sql.catalyst.util.CaseInsensitiveMap
@@ -46,7 +41,7 @@ class NebulaDataSource
     val dataType      = nebulaOptions.dataType
 
     LOG.info("create reader")
-    LOG.info(s"options ${options.asMap()}")
+    LOG.info(s"options ${options.asMap().remove("passwd")}")
 
     if (DataTypeEnum.VERTEX == DataTypeEnum.withName(dataType)) {
       new NebulaDataSourceVertexReader(nebulaOptions)
@@ -72,7 +67,8 @@ class NebulaDataSource
     }
 
     LOG.info("create writer")
-    LOG.info(s"options ${options.asMap()}")
+    val optionMap = options.asMap()
+    LOG.info(s"options ${optionMap.remove("passwd")}")
 
     if (DataTypeEnum.VERTEX == DataTypeEnum.withName(dataType)) {
       val vertexFiled = nebulaOptions.vertexField

@@ -81,8 +81,8 @@ class NebulaNgqlEdgePartitionReader extends InputPartitionReader[InternalRow] {
               .map(e => convertToEdge(e.asRelationship(), properties))
           )
         } else if (valueType != Value.NVAL && valueType != 0) {
-          LOG.error(s"Exception convert edge type: ${valueType}, only edge and path should be returned")
-          throw new RuntimeException("Bad nGQL return type convert value type failed");
+          LOG.error(s"Unexpected edge type encountered: ${valueType}. Only edge or path should be returned.")
+          throw new RuntimeException("Invalid nGQL return type. Value type conversion failed.");
         }
       }
     }

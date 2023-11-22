@@ -77,8 +77,8 @@ class NebulaNgqlEdgePartitionReader extends InputPartitionReader[InternalRow] {
           val list: java.util.List[Relationship] = value.asPath().getRelationships()
           edges.appendAll(
             list.toStream
-              .filter(e => checkLabel(e.asRelationship()))
-              .map(e => convertToEdge(e.asRelationship(), properties))
+              .filter(e => checkLabel(e))
+              .map(e => convertToEdge(e, properties))
           )
         } else if (valueType != Value.NVAL && valueType != 0) {
           LOG.error(s"Unexpected edge type encountered: ${valueType}. Only edge or path should be returned.")

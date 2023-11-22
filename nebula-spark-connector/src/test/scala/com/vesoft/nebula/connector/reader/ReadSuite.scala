@@ -337,4 +337,39 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
     })(Encoders.STRING)
   }
 
+  test("read edge from nGQL: MATCH ()-[e:friend]->() RETURN e LIMIT 1000")
+  {
+    val config =
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
+        .withConenctionRetry(2)
+        .build()
+    val nebulaReadConfig: ReadNebulaConfig = ReadNebulaConfig
+      .builder()
+      .withSpace("test_int")
+      .withLabel("friend")
+      .withNoColumn(false)
+      .withLabel("friend")
+      .withReturnCols(List("col1"))
+      .withNgql("match ()-[e:friend]-() return e LIMIT 1000")
+      .build()
+    val edge = sparkSession.read.nebula(config, nebulaReadConfig).loadEdgesToDfByNgql()
+    edge.printSchema()
+    edge.show(truncate = false)
+    assert(edge.count() == 12)
+    assert(edge.schema.fields.length == 4)
+    edge.map(row => {
+      row.getAs[Long]("_srcId") match {
+        case 1L => {
+          assert(row.getAs[Long]("_dstId") == 2)
+          assert(row.getAs[Long]("_rank") == 0)
+          assert(row.getAs[String]("col1").equals("friend1"))
+        }
+      }
+      ""
+    })(Encoders.STRING)
+  }
+
 }

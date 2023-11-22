@@ -70,7 +70,7 @@ class NebulaNgqlEdgePartitionReader extends InputPartitionReader[InternalRow] {
           val list: mutable.Buffer[ValueWrapper] = value.asList()
           edges.appendAll(
             list.toStream
-              .filter(e => checkLabel(e.asRelationship()))
+              .filter(e => e.isEdge() && checkLabel(e.asRelationship()))
               .map(e => convertToEdge(e.asRelationship(), properties))
           )
         } else if (valueType == Value.PVAL){

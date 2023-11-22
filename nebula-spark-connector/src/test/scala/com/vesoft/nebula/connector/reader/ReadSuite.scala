@@ -344,7 +344,6 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
-        .withConenctionRetry(2)
         .build()
     val nebulaReadConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
@@ -372,14 +371,13 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
   }
 
 
-  test("read edge from nGQL: GET SUBGRAPH 3 STEPS FROM 2 YIELD VERTICES AS nodes, EDGES AS relationships")
+  test("read edge from nGQL: GET SUBGRAPH 3 STEPS FROM 2 YIELD EDGES AS relationships")
   {
     val config =
       NebulaConnectionConfig
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
-        .withConenctionRetry(2)
         .build()
     val nebulaReadConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
@@ -387,21 +385,20 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .withNoColumn(false)
       .withLabel("friend")
       .withReturnCols(List("col1"))
-      .withNgql("GET SUBGRAPH 3 STEPS FROM 2 YIELD VERTICES AS nodes, EDGES AS relationships")
+      .withNgql("GET SUBGRAPH 3 STEPS FROM 2 YIELD EDGES AS relationships")
       .build()
     val edge = sparkSession.read.nebula(config, nebulaReadConfig).loadEdgesToDfByNgql()
     edge.printSchema()
     edge.show(truncate = false)
   }
 
-  test("read edge from nGQL: FIND ALL PATH FROM 2 TO 1 OVER friend YIELD path AS p;")
+  test("read edge from nGQL: FIND ALL PATH FROM 2 TO 1 OVER friend YIELD path AS p")
   {
     val config =
       NebulaConnectionConfig
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
-        .withConenctionRetry(2)
         .build()
     val nebulaReadConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
@@ -409,7 +406,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .withNoColumn(false)
       .withLabel("friend")
       .withReturnCols(List("col1"))
-      .withNgql("FIND ALL PATH FROM 2 TO 1 OVER friend YIELD path AS p;")
+      .withNgql("FIND ALL PATH FROM 2 TO 1 OVER friend YIELD path AS p")
       .build()
     val edge = sparkSession.read.nebula(config, nebulaReadConfig).loadEdgesToDfByNgql()
     edge.printSchema()

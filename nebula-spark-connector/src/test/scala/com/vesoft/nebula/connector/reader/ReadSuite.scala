@@ -344,6 +344,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
+        .withConnectionRetry(2)
         .build()
     val nebulaReadConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
@@ -378,6 +379,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
+        .withConnectionRetry(2)
         .build()
     val nebulaReadConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
@@ -399,6 +401,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
+        .withConnectionRetry(2)
         .build()
     val nebulaReadConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()

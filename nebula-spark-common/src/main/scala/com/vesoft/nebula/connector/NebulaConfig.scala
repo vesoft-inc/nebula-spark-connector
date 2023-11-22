@@ -83,7 +83,6 @@ object NebulaConnectionConfig {
     /**
       * set connectionRetry, connectionRetry is optional
       */
-
     @deprecated("use withConnectionRetry instead", "3.7.0")
     def withConenctionRetry(connectionRetry: Int): ConfigBuilder = {
       this.connectionRetry = connectionRetry

@@ -44,7 +44,7 @@ object NebulaSparkReaderExample {
       NebulaConnectionConfig
         .builder()
         .withMetaAddress("127.0.0.1:9559")
-        .withConenctionRetry(2)
+        .withConnectionRetry(2)
         .build()
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
@@ -67,7 +67,7 @@ object NebulaSparkReaderExample {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withTimeout(6000)
-        .withConenctionRetry(2)
+        .withConnectionRetry(2)
         .build()
     val nebulaReadEdgeConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
@@ -91,7 +91,7 @@ object NebulaSparkReaderExample {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withTimeout(6000)
-        .withConenctionRetry(2)
+        .withConnectionRetry(2)
         .build()
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
@@ -115,7 +115,7 @@ object NebulaSparkReaderExample {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withTimeout(6000)
-        .withConenctionRetry(2)
+        .withConnectionRetry(2)
         .build()
     val nebulaReadEdgeConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
@@ -146,7 +146,7 @@ object NebulaSparkReaderExample {
         .withCaSSLSignParam("example/src/main/resources/ssl/casigned.pem",
                             "example/src/main/resources/ssl/casigned.crt",
                             "example/src/main/resources/ssl/casigned.key")
-        .withConenctionRetry(2)
+        .withConnectionRetry(2)
         .build()
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
@@ -171,7 +171,7 @@ object NebulaSparkReaderExample {
         .builder()
         .withMetaAddress("127.0.0.1:9559")
         .withGraphAddress("127.0.0.1:9669")
-        .withConenctionRetry(2)
+        .withConnectionRetry(2)
         .build()
     val nebulaReadConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()

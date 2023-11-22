@@ -143,7 +143,7 @@ Nebula Spark Connector 支持 Spark 2.2， 2.4 和 3.x.
     val config = NebulaConnectionConfig
       .builder()
       .withMetaAddress("127.0.0.1:9559")
-      .withConenctionRetry(2)
+      .withConnectionRetry(2)
       .build()
     val nebulaReadVertexConfig = ReadNebulaConfig
       .builder()
@@ -163,7 +163,7 @@ Nebula Spark Connector 支持 Spark 2.2， 2.4 和 3.x.
     val config = NebulaConnectionConfig
       .builder()
       .withMetaAddress("127.0.0.1:9559")
-      .withConenctionRetry(2)
+      .withConnectionRetry(2)
       .build()
     val nebulaReadVertexConfig = ReadNebulaConfig
       .builder()

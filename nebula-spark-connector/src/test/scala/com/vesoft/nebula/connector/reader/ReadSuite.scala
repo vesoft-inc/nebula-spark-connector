@@ -351,9 +351,8 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .withSpace("test_int")
       .withLabel("friend")
       .withNoColumn(false)
-      .withLabel("friend")
       .withReturnCols(List("col1"))
-      .withNgql("match ()-[e:friend]-() return e LIMIT 1000")
+      .withNgql("MATCH ()-[e:friend]-() RETURN e LIMIT 1000")
       .build()
     val edge = sparkSession.read.nebula(config, nebulaReadConfig).loadEdgesToDfByNgql()
     edge.printSchema()
@@ -370,6 +369,51 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       }
       ""
     })(Encoders.STRING)
+  }
+
+
+  test("read edge from nGQL: GET SUBGRAPH 3 STEPS FROM 2 YIELD VERTICES AS nodes, EDGES AS relationships")
+  {
+    val config =
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
+        .withConenctionRetry(2)
+        .build()
+    val nebulaReadConfig: ReadNebulaConfig = ReadNebulaConfig
+      .builder()
+      .withSpace("test_int")
+      .withNoColumn(false)
+      .withLabel("friend")
+      .withReturnCols(List("col1"))
+      .withNgql("GET SUBGRAPH 3 STEPS FROM 2 YIELD VERTICES AS nodes, EDGES AS relationships")
+      .build()
+    val edge = sparkSession.read.nebula(config, nebulaReadConfig).loadEdgesToDfByNgql()
+    edge.printSchema()
+    edge.show(truncate = false)
+  }
+
+  test("read edge from nGQL: FIND ALL PATH FROM 2 TO 1 OVER friend YIELD path AS p;")
+  {
+    val config =
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
+        .withConenctionRetry(2)
+        .build()
+    val nebulaReadConfig: ReadNebulaConfig = ReadNebulaConfig
+      .builder()
+      .withSpace("test_int")
+      .withNoColumn(false)
+      .withLabel("friend")
+      .withReturnCols(List("col1"))
+      .withNgql("FIND ALL PATH FROM 2 TO 1 OVER friend YIELD path AS p;")
+      .build()
+    val edge = sparkSession.read.nebula(config, nebulaReadConfig).loadEdgesToDfByNgql()
+    edge.printSchema()
+    edge.show(truncate = false)
   }
 
 }

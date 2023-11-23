@@ -372,7 +372,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
   }
 
 
-  test("read edge from nGQL: GET SUBGRAPH 3 STEPS FROM 2 YIELD EDGES AS relationships")
+  test("read edge from nGQL: GET SUBGRAPH WITH PROP 3 STEPS FROM 2 YIELD EDGES AS relationships")
   {
     val config =
       NebulaConnectionConfig
@@ -387,14 +387,15 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .withNoColumn(false)
       .withLabel("friend")
       .withReturnCols(List("col1"))
-      .withNgql("GET SUBGRAPH 3 STEPS FROM 2 YIELD EDGES AS relationships")
+      .withNgql("GET SUBGRAPH WITH PROP 3 STEPS FROM 2 YIELD EDGES AS relationships")
       .build()
     val edge = sparkSession.read.nebula(config, nebulaReadConfig).loadEdgesToDfByNgql()
     edge.printSchema()
     edge.show(truncate = false)
+    assert(edge.count() == 6)
   }
 
-  test("read edge from nGQL: FIND ALL PATH FROM 4 TO 1 OVER friend YIELD path AS p")
+  test("read edge from nGQL: FIND ALL PATH WITH PROP FROM 2 TO 4 OVER friend YIELD path AS p")
   {
     val config =
       NebulaConnectionConfig
@@ -409,11 +410,12 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .withNoColumn(false)
       .withLabel("friend")
       .withReturnCols(List("col1"))
-      .withNgql("FIND ALL PATH FROM 2 TO 1 OVER friend YIELD path AS p")
+      .withNgql("FIND ALL PATH WITH PROP FROM 2 TO 4 OVER friend YIELD path AS p")
       .build()
     val edge = sparkSession.read.nebula(config, nebulaReadConfig).loadEdgesToDfByNgql()
     edge.printSchema()
     edge.show(truncate = false)
+    assert(edge.count() == 2)
   }
 
 }

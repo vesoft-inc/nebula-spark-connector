@@ -352,7 +352,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .withLabel("friend")
       .withNoColumn(false)
       .withReturnCols(List("col1"))
-      .withNgql("MATCH ()-[e:friend]-() RETURN e LIMIT 1000")
+      .withNgql("MATCH ()-[e:friend]->() RETURN e LIMIT 1000")
       .build()
     val edge = sparkSession.read.nebula(config, nebulaReadConfig).loadEdgesToDfByNgql()
     edge.printSchema()
@@ -394,7 +394,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
     edge.show(truncate = false)
   }
 
-  test("read edge from nGQL: FIND ALL PATH FROM 2 TO 1 OVER friend YIELD path AS p")
+  test("read edge from nGQL: FIND ALL PATH FROM 4 TO 1 OVER friend YIELD path AS p")
   {
     val config =
       NebulaConnectionConfig

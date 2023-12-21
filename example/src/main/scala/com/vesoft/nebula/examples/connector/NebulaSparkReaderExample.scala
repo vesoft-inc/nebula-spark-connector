@@ -181,7 +181,10 @@ object NebulaSparkReaderExample {
       //.withNoColumn(true)
       .withReturnCols(List("degree"))
       // please make sure your ngql statement result is edge, connector does not check the statement.
-      .withNgql("match (v)-[e:friend]-(v2) return e")
+      // other examples of supported nGQL:
+      // - GET SUBGRAPH WITH PROP 3 STEPS FROM 2 YIELD EDGES AS relationships;
+      // - FIND ALL PATH WITH PROP FROM 2 TO 4 OVER friend YIELD path AS p;
+      .withNgql("match (v)-[e:friend]->(v2) return e")
       .build()
     val edge = spark.read.nebula(config, nebulaReadConfig).loadEdgesToDfByNgql()
     edge.printSchema()

@@ -337,4 +337,85 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
     })(Encoders.STRING)
   }
 
+  test("read edge from nGQL: MATCH ()-[e:friend]->() RETURN e LIMIT 1000")
+  {
+    val config =
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
+        .withConnectionRetry(2)
+        .build()
+    val nebulaReadConfig: ReadNebulaConfig = ReadNebulaConfig
+      .builder()
+      .withSpace("test_int")
+      .withLabel("friend")
+      .withNoColumn(false)
+      .withReturnCols(List("col1"))
+      .withNgql("MATCH ()-[e:friend]->() RETURN e LIMIT 1000")
+      .build()
+    val edge = sparkSession.read.nebula(config, nebulaReadConfig).loadEdgesToDfByNgql()
+    edge.printSchema()
+    edge.show(truncate = false)
+    assert(edge.count() == 12)
+    assert(edge.schema.fields.length == 4)
+    edge.map(row => {
+      row.getAs[Long]("_srcId") match {
+        case 1L => {
+          assert(row.getAs[Long]("_dstId") == 2)
+          assert(row.getAs[Long]("_rank") == 0)
+          assert(row.getAs[String]("col1").equals("friend1"))
+        }
+      }
+      ""
+    })(Encoders.STRING)
+  }
+
+
+  test("read edge from nGQL: GET SUBGRAPH WITH PROP 3 STEPS FROM 2 YIELD EDGES AS relationships")
+  {
+    val config =
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
+        .withConnectionRetry(2)
+        .build()
+    val nebulaReadConfig: ReadNebulaConfig = ReadNebulaConfig
+      .builder()
+      .withSpace("test_int")
+      .withNoColumn(false)
+      .withLabel("friend")
+      .withReturnCols(List("col1"))
+      .withNgql("GET SUBGRAPH WITH PROP 3 STEPS FROM 2 YIELD EDGES AS relationships")
+      .build()
+    val edge = sparkSession.read.nebula(config, nebulaReadConfig).loadEdgesToDfByNgql()
+    edge.printSchema()
+    edge.show(truncate = false)
+    assert(edge.count() == 6)
+  }
+
+  test("read edge from nGQL: FIND ALL PATH WITH PROP FROM 2 TO 4 OVER friend YIELD path AS p")
+  {
+    val config =
+      NebulaConnectionConfig
+        .builder()
+        .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
+        .withConnectionRetry(2)
+        .build()
+    val nebulaReadConfig: ReadNebulaConfig = ReadNebulaConfig
+      .builder()
+      .withSpace("test_int")
+      .withNoColumn(false)
+      .withLabel("friend")
+      .withReturnCols(List("col1"))
+      .withNgql("FIND ALL PATH WITH PROP FROM 2 TO 4 OVER friend YIELD path AS p")
+      .build()
+    val edge = sparkSession.read.nebula(config, nebulaReadConfig).loadEdgesToDfByNgql()
+    edge.printSchema()
+    edge.show(truncate = false)
+    assert(edge.count() == 2)
+  }
+
 }

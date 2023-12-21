@@ -70,12 +70,19 @@ class NebulaNgqlEdgePartitionReader extends InputPartitionReader[InternalRow] {
           val list: mutable.Buffer[ValueWrapper] = value.asList()
           edges.appendAll(
             list.toStream
-              .filter(e => checkLabel(e.asRelationship()))
+              .filter(e => e != null && e.isEdge() && checkLabel(e.asRelationship()))
               .map(e => convertToEdge(e.asRelationship(), properties))
           )
-        } else {
-          LOG.error(s"Exception convert edge type ${valueType} ")
-          throw new RuntimeException(" convert value type failed");
+        } else if (valueType == Value.PVAL){
+          val list: java.util.List[Relationship] = value.asPath().getRelationships()
+          edges.appendAll(
+            list.toStream
+              .filter(e => checkLabel(e))
+              .map(e => convertToEdge(e, properties))
+          )
+        } else if (valueType != Value.NVAL && valueType != 0) {
+          LOG.error(s"Unexpected edge type encountered: ${valueType}. Only edge or path should be returned.")
+          throw new RuntimeException("Invalid nGQL return type. Value type conversion failed.");
         }
       }
     }

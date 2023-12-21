@@ -123,6 +123,7 @@ package object connector {
       val dfReader = reader
         .format(classOf[NebulaDataSource].getName)
         .option(NebulaOptions.TYPE, DataTypeEnum.EDGE.toString)
+        .option(NebulaOptions.OPERATE_TYPE, OperaType.READ.toString)
         .option(NebulaOptions.SPACE_NAME, readConfig.getSpace)
         .option(NebulaOptions.LABEL, readConfig.getLabel)
         .option(NebulaOptions.RETURN_COLS, readConfig.getReturnCols.mkString(","))

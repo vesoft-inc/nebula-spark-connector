@@ -29,6 +29,14 @@ class GraphProviderTest extends AnyFunSuite with BeforeAndAfterAll {
     graphProvider.close()
   }
 
+  test("setVersion") {
+    val addresses: List[Address] = List(new Address("127.0.0.1", 9669))
+    graphProvider =
+      new GraphProvider(addresses, "root", "nebula", 3000, false, null, null, null, "test")
+
+    assert(graphProvider.switchSpace("test_int"))
+  }
+
   test("switchSpace") {
     assertThrows[RuntimeException](graphProvider.switchSpace("space_not_exist"))
     assert(graphProvider.switchSpace("test_int"))

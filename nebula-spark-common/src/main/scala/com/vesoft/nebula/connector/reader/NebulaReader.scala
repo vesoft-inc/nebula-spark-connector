@@ -64,7 +64,8 @@ trait NebulaReader {
       nebulaOptions.enableMetaSSL,
       nebulaOptions.sslSignType,
       nebulaOptions.caSignParam,
-      nebulaOptions.selfSignParam
+      nebulaOptions.selfSignParam,
+      nebulaOptions.version
     )
     val address: ListBuffer[HostAddress] = new ListBuffer[HostAddress]
 
@@ -99,6 +100,7 @@ trait NebulaReader {
       this.storageClient = new StorageClient(address.asJava, nebulaOptions.timeout)
     }
 
+    this.storageClient.setVersion(nebulaOptions.version)
     if (!storageClient.connect()) {
       throw new GraphConnectException("storage connect failed.")
     }
@@ -181,16 +183,16 @@ trait NebulaReader {
                                                                   true,
                                                                   true)
               } else {
-                vertexResponseIterator = storageClient.scanVertex(
-                  nebulaOptions.spaceName,
-                  scanPartIterator.next(),
-                  nebulaOptions.label,
-                  nebulaOptions.getReturnCols.asJava,
-                  nebulaOptions.limit,
-                  0,
-                  Long.MaxValue,
-                  true,
-                  true)
+                vertexResponseIterator =
+                  storageClient.scanVertex(nebulaOptions.spaceName,
+                                           scanPartIterator.next(),
+                                           nebulaOptions.label,
+                                           nebulaOptions.getReturnCols.asJava,
+                                           nebulaOptions.limit,
+                                           0,
+                                           Long.MaxValue,
+                                           true,
+                                           true)
               }
             } catch {
               case e: Exception =>
@@ -220,55 +222,55 @@ trait NebulaReader {
     */
   protected def hasNextEdgeRow: Boolean =
     (dataIterator != null || edgeResponseIterator != null || scanPartIterator.hasNext) && {
-    var continue: Boolean = false
-    var break: Boolean    = false
-    while ((dataIterator == null || !dataIterator.hasNext) && !break) {
-      resultValues.clear()
-      continue = false
-      if (edgeResponseIterator == null || !edgeResponseIterator.hasNext) {
-        if (scanPartIterator.hasNext) {
-          try {
-            if (nebulaOptions.noColumn) {
-              edgeResponseIterator = storageClient.scanEdge(nebulaOptions.spaceName,
-                                                            scanPartIterator.next(),
-                                                            nebulaOptions.label,
-                                                            nebulaOptions.limit,
-                                                            0L,
-                                                            Long.MaxValue,
-                                                            true,
-                                                            true)
-            } else {
-              edgeResponseIterator = storageClient.scanEdge(nebulaOptions.spaceName,
-                                                            scanPartIterator.next(),
-                                                            nebulaOptions.label,
-                                                            nebulaOptions.getReturnCols.asJava,
-                                                            nebulaOptions.limit,
-                                                            0,
-                                                            Long.MaxValue,
-                                                            true,
-                                                            true)
+      var continue: Boolean = false
+      var break: Boolean    = false
+      while ((dataIterator == null || !dataIterator.hasNext) && !break) {
+        resultValues.clear()
+        continue = false
+        if (edgeResponseIterator == null || !edgeResponseIterator.hasNext) {
+          if (scanPartIterator.hasNext) {
+            try {
+              if (nebulaOptions.noColumn) {
+                edgeResponseIterator = storageClient.scanEdge(nebulaOptions.spaceName,
+                                                              scanPartIterator.next(),
+                                                              nebulaOptions.label,
+                                                              nebulaOptions.limit,
+                                                              0L,
+                                                              Long.MaxValue,
+                                                              true,
+                                                              true)
+              } else {
+                edgeResponseIterator = storageClient.scanEdge(nebulaOptions.spaceName,
+                                                              scanPartIterator.next(),
+                                                              nebulaOptions.label,
+                                                              nebulaOptions.getReturnCols.asJava,
+                                                              nebulaOptions.limit,
+                                                              0,
+                                                              Long.MaxValue,
+                                                              true,
+                                                              true)
+              }
+            } catch {
+              case e: Exception =>
+                LOG.error(s"Exception scanning vertex ${nebulaOptions.label}", e)
+                storageClient.close()
+                throw new Exception(e.getMessage, e)
             }
-          } catch {
-            case e: Exception =>
-              LOG.error(s"Exception scanning vertex ${nebulaOptions.label}", e)
-              storageClient.close()
-              throw new Exception(e.getMessage, e)
+            // jump to the next loop
+            continue = true
           }
-          // jump to the next loop
-          continue = true
-        }
-        // break while loop
-        break = !continue
-      } else {
-        val next: ScanEdgeResult = edgeResponseIterator.next
-        if (!next.isEmpty) {
-          dataIterator = next.getEdgeTableRows.iterator().asScala
+          // break while loop
+          break = !continue
+        } else {
+          val next: ScanEdgeResult = edgeResponseIterator.next
+          if (!next.isEmpty) {
+            dataIterator = next.getEdgeTableRows.iterator().asScala
+          }
         }
       }
-    }
 
-    dataIterator != null && dataIterator.hasNext
-  }
+      dataIterator != null && dataIterator.hasNext
+    }
 
   /**
     * close the reader

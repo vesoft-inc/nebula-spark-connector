@@ -27,7 +27,8 @@ class NebulaWriter(nebulaOptions: NebulaOptions) extends Serializable {
     nebulaOptions.enableMetaSSL,
     nebulaOptions.sslSignType,
     nebulaOptions.caSignParam,
-    nebulaOptions.selfSignParam
+    nebulaOptions.selfSignParam,
+  nebulaOptions.version
   )
   val graphProvider = new GraphProvider(
     nebulaOptions.getGraphAddress,
@@ -37,7 +38,8 @@ class NebulaWriter(nebulaOptions: NebulaOptions) extends Serializable {
     nebulaOptions.enableGraphSSL,
     nebulaOptions.sslSignType,
     nebulaOptions.caSignParam,
-    nebulaOptions.selfSignParam
+    nebulaOptions.selfSignParam,
+    nebulaOptions.version
   )
   val isVidStringType = metaProvider.getVidType(nebulaOptions.spaceName) == VidType.STRING
 

@@ -146,7 +146,6 @@ package object connector {
         .option(NebulaOptions.EXECUTION_RETRY, connectionConfig.getExecRetry)
         .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
         .option(NebulaOptions.ENABLE_STORAGE_SSL, connectionConfig.getEnableStorageSSL)
-        .option(NebulaOptions.VERSION, connectionConfig.getVersion)
 
       if (connectionConfig.getVersion != null) {
         dfReader.option(NebulaOptions.VERSION, connectionConfig.getVersion)

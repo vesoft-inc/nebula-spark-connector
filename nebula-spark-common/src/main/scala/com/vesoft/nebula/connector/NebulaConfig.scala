@@ -20,7 +20,8 @@ class NebulaConnectionConfig(metaAddress: String,
                              enableStorageSSL: Boolean,
                              signType: SSLSignType.Value,
                              caSignParam: CASSLSignParams,
-                             selfSignParam: SelfSSLSignParams)
+                             selfSignParam: SelfSSLSignParams,
+                             version: String)
     extends Serializable {
   def getMetaAddress      = metaAddress
   def getGraphAddress     = graphAddress
@@ -37,6 +38,8 @@ class NebulaConnectionConfig(metaAddress: String,
   def getSelfSignParam: String = {
     selfSignParam.crtFilePath + "," + selfSignParam.keyFilePath + "," + selfSignParam.password
   }
+
+  def getVersion: String = version
 }
 
 object NebulaConnectionConfig {
@@ -55,6 +58,7 @@ object NebulaConnectionConfig {
     protected var sslSignType: SSLSignType.Value   = _
     protected var caSignParam: CASSLSignParams     = null
     protected var selfSignParam: SelfSSLSignParams = null
+    protected var version: String                  = null
 
     /**
       * set nebula meta server address, multi addresses is split by English comma
@@ -155,6 +159,14 @@ object NebulaConnectionConfig {
     }
 
     /**
+      * set client version
+      */
+    def withVersion(version: String): ConfigBuilder = {
+      this.version = version
+      this
+    }
+
+    /**
       * check if the connection config is valid
       */
     def check(): Unit = {
@@ -194,17 +206,20 @@ object NebulaConnectionConfig {
       */
     def build(): NebulaConnectionConfig = {
       check()
-      new NebulaConnectionConfig(metaAddress,
-                                 graphAddress,
-                                 timeout,
-                                 connectionRetry,
-                                 executeRetry,
-                                 enableMetaSSL,
-                                 enableGraphSSL,
-                                 enableStorageSSL,
-                                 sslSignType,
-                                 caSignParam,
-                                 selfSignParam)
+      new NebulaConnectionConfig(
+        metaAddress,
+        graphAddress,
+        timeout,
+        connectionRetry,
+        executeRetry,
+        enableMetaSSL,
+        enableGraphSSL,
+        enableStorageSSL,
+        sslSignType,
+        caSignParam,
+        selfSignParam,
+        version
+      )
     }
   }
 

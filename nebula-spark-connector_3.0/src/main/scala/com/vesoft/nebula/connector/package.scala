@@ -61,6 +61,10 @@ package object connector {
         .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
         .option(NebulaOptions.ENABLE_STORAGE_SSL, connectionConfig.getEnableStorageSSL)
 
+      if (connectionConfig.getVersion != null) {
+        dfReader.option(NebulaOptions.VERSION, connectionConfig.getVersion)
+      }
+
       if (connectionConfig.getEnableStorageSSL || connectionConfig.getEnableMetaSSL) {
         dfReader.option(NebulaOptions.SSL_SIGN_TYPE, connectionConfig.getSignType)
         SSLSignType.withName(connectionConfig.getSignType) match {
@@ -98,6 +102,10 @@ package object connector {
         .option(NebulaOptions.EXECUTION_RETRY, connectionConfig.getExecRetry)
         .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
         .option(NebulaOptions.ENABLE_STORAGE_SSL, connectionConfig.getEnableStorageSSL)
+
+      if (connectionConfig.getVersion != null) {
+        dfReader.option(NebulaOptions.VERSION, connectionConfig.getVersion)
+      }
 
       if (connectionConfig.getEnableStorageSSL || connectionConfig.getEnableMetaSSL) {
         dfReader.option(NebulaOptions.SSL_SIGN_TYPE, connectionConfig.getSignType)
@@ -218,6 +226,10 @@ package object connector {
         .option(NebulaOptions.ENABLE_GRAPH_SSL, connectionConfig.getEnableGraphSSL)
         .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
 
+      if (connectionConfig.getVersion != null) {
+        dfWriter.option(NebulaOptions.VERSION, connectionConfig.getVersion)
+      }
+
       if (connectionConfig.getEnableGraphSSL || connectionConfig.getEnableMetaSSL) {
         dfWriter.option(NebulaOptions.SSL_SIGN_TYPE, connectionConfig.getSignType)
         SSLSignType.withName(connectionConfig.getSignType) match {
@@ -266,6 +278,10 @@ package object connector {
         .option(NebulaOptions.EXECUTION_RETRY, connectionConfig.getExecRetry)
         .option(NebulaOptions.ENABLE_GRAPH_SSL, connectionConfig.getEnableGraphSSL)
         .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
+
+      if (connectionConfig.getVersion != null) {
+        dfWriter.option(NebulaOptions.VERSION, connectionConfig.getVersion)
+      }
 
       if (connectionConfig.getEnableGraphSSL || connectionConfig.getEnableMetaSSL) {
         dfWriter.option(NebulaOptions.SSL_SIGN_TYPE, connectionConfig.getSignType)

@@ -80,6 +80,8 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
     }
   }
 
+  val version: String = parameters.getOrElse(VERSION, null)
+
   require(parameters.isDefinedAt(TYPE), s"Option '$TYPE' is required")
   val dataType: String = parameters(TYPE)
   require(
@@ -231,6 +233,8 @@ object NebulaOptions {
   val SSL_SIGN_TYPE: String      = "sslSignType"
   val CA_SIGN_PARAM: String      = "caSignParam"
   val SELF_SIGN_PARAM: String    = "selfSignParam"
+
+  val VERSION: String = "version"
 
   val OPERATE_TYPE: String = "operateType"
 

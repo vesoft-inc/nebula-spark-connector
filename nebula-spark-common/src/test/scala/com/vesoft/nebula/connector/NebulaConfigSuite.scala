@@ -153,6 +153,8 @@ class NebulaConfigSuite extends AnyFunSuite with BeforeAndAfterAll {
       .withLabel("tagName")
       .withNoColumn(true)
       .withReturnCols(List("col"))
+      .withUser("root")
+      .withPasswd("nebula")
       .build()
   }
 

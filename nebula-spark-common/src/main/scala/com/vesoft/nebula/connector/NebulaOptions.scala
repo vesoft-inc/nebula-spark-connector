@@ -141,10 +141,11 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
   var deleteEdge: Boolean        = _
   var overwrite: Boolean         = _
 
+  graphAddress = parameters(GRAPH_ADDRESS)
+
   if (operaType == OperaType.WRITE) {
     require(parameters.isDefinedAt(GRAPH_ADDRESS),
             s"option $GRAPH_ADDRESS is required and can not be blank")
-    graphAddress = parameters(GRAPH_ADDRESS)
 
     if (parameters.isDefinedAt(VID_POLICY)) {
       vidPolicy = parameters(VID_POLICY)

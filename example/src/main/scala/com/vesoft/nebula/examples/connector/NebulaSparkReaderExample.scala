@@ -44,7 +44,9 @@ object NebulaSparkReaderExample {
       NebulaConnectionConfig
         .builder()
         .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
         .withConnectionRetry(2)
+        .withVersion("3.0.0")
         .build()
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
@@ -54,6 +56,8 @@ object NebulaSparkReaderExample {
       .withReturnCols(List())
       .withLimit(10)
       .withPartitionNum(10)
+      .withUser("root")
+      .withPasswd("nebula")
       .build()
     val vertex = spark.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
     vertex.printSchema()
@@ -66,8 +70,10 @@ object NebulaSparkReaderExample {
       NebulaConnectionConfig
         .builder()
         .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
         .withTimeout(6000)
         .withConnectionRetry(2)
+        .withVersion("3.0.0")
         .build()
     val nebulaReadEdgeConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
@@ -77,6 +83,8 @@ object NebulaSparkReaderExample {
       .withReturnCols(List())
       .withLimit(10)
       .withPartitionNum(10)
+      .withUser("root")
+      .withPasswd("nebula")
       .build()
     val edge = spark.read.nebula(config, nebulaReadEdgeConfig).loadEdgesToDF()
     edge.printSchema()
@@ -90,8 +98,10 @@ object NebulaSparkReaderExample {
       NebulaConnectionConfig
         .builder()
         .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
         .withTimeout(6000)
         .withConnectionRetry(2)
+        .withVersion("3.0.0")
         .build()
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
@@ -101,6 +111,8 @@ object NebulaSparkReaderExample {
       .withReturnCols(List("birthday"))
       .withLimit(10)
       .withPartitionNum(10)
+      .withUser("root")
+      .withPasswd("nebula")
       .build()
 
     val vertexRDD = spark.read.nebula(config, nebulaReadVertexConfig).loadVerticesToGraphx()
@@ -114,8 +126,10 @@ object NebulaSparkReaderExample {
       NebulaConnectionConfig
         .builder()
         .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
         .withTimeout(6000)
         .withConnectionRetry(2)
+        .withVersion("3.0.0")
         .build()
     val nebulaReadEdgeConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
@@ -125,6 +139,8 @@ object NebulaSparkReaderExample {
       .withReturnCols(List("timep"))
       .withLimit(10)
       .withPartitionNum(10)
+      .withUser("root")
+      .withPasswd("nebula")
       .build()
     val edgeRDD = spark.read.nebula(config, nebulaReadEdgeConfig).loadEdgesToGraphx()
     LOG.info("edge rdd first record:" + edgeRDD.first())
@@ -140,6 +156,7 @@ object NebulaSparkReaderExample {
       NebulaConnectionConfig
         .builder()
         .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
         .withEnableMetaSSL(true)
         .withEnableStorageSSL(true)
         .withSSLSignType(SSLSignType.CA)
@@ -147,6 +164,7 @@ object NebulaSparkReaderExample {
                             "example/src/main/resources/ssl/casigned.crt",
                             "example/src/main/resources/ssl/casigned.key")
         .withConnectionRetry(2)
+        .withVersion("3.0.0")
         .build()
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
@@ -156,6 +174,8 @@ object NebulaSparkReaderExample {
       .withReturnCols(List("birthday"))
       .withLimit(10)
       .withPartitionNum(10)
+      .withUser("root")
+      .withPasswd("nebula")
       .build()
     val vertex = spark.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
     vertex.printSchema()

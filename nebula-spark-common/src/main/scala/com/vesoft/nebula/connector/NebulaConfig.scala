@@ -22,19 +22,29 @@ class NebulaConnectionConfig(metaAddress: String,
                              caSignParam: CASSLSignParams,
                              selfSignParam: SelfSSLSignParams,
                              version: String)
-    extends Serializable {
-  def getMetaAddress      = metaAddress
-  def getGraphAddress     = graphAddress
-  def getTimeout          = timeout
-  def getConnectionRetry  = connectionRetry
-  def getExecRetry        = executeRetry
-  def getEnableMetaSSL    = enableMetaSSL
-  def getEnableGraphSSL   = enableGraphSSL
+  extends Serializable {
+  def getMetaAddress = metaAddress
+
+  def getGraphAddress = graphAddress
+
+  def getTimeout = timeout
+
+  def getConnectionRetry = connectionRetry
+
+  def getExecRetry = executeRetry
+
+  def getEnableMetaSSL = enableMetaSSL
+
+  def getEnableGraphSSL = enableGraphSSL
+
   def getEnableStorageSSL = enableStorageSSL
-  def getSignType         = signType.toString
+
+  def getSignType = signType.toString
+
   def getCaSignParam: String = {
     caSignParam.caCrtFilePath + "," + caSignParam.crtFilePath + "," + caSignParam.keyFilePath
   }
+
   def getSelfSignParam: String = {
     selfSignParam.crtFilePath + "," + selfSignParam.keyFilePath + "," + selfSignParam.password
   }
@@ -46,47 +56,47 @@ object NebulaConnectionConfig {
   class ConfigBuilder {
     private val LOG = LoggerFactory.getLogger(this.getClass)
 
-    protected var metaAddress: String  = _
+    protected var metaAddress: String = _
     protected var graphAddress: String = _
-    protected var timeout: Int         = 6000
+    protected var timeout: Int = 6000
     protected var connectionRetry: Int = 1
-    protected var executeRetry: Int    = 1
+    protected var executeRetry: Int = 1
 
-    protected var enableMetaSSL: Boolean           = false
-    protected var enableGraphSSL: Boolean          = false
-    protected var enableStorageSSL: Boolean        = false
-    protected var sslSignType: SSLSignType.Value   = _
-    protected var caSignParam: CASSLSignParams     = null
+    protected var enableMetaSSL: Boolean = false
+    protected var enableGraphSSL: Boolean = false
+    protected var enableStorageSSL: Boolean = false
+    protected var sslSignType: SSLSignType.Value = _
+    protected var caSignParam: CASSLSignParams = null
     protected var selfSignParam: SelfSSLSignParams = null
-    protected var version: String                  = null
+    protected var version: String = null
 
     /**
-      * set nebula meta server address, multi addresses is split by English comma
-      */
+     * set nebula meta server address, multi addresses is split by English comma
+     */
     def withMetaAddress(metaAddress: String): ConfigBuilder = {
       this.metaAddress = metaAddress
       this
     }
 
     /**
-      * set nebula graph server address, multi addresses is split by English comma
-      */
+     * set nebula graph server address, multi addresses is split by English comma
+     */
     def withGraphAddress(graphAddress: String): ConfigBuilder = {
       this.graphAddress = graphAddress
       this
     }
 
     /**
-      * set timeout, timeout is optional
-      */
+     * set timeout, timeout is optional
+     */
     def withTimeout(timeout: Int): ConfigBuilder = {
       this.timeout = timeout
       this
     }
 
     /**
-      * set connectionRetry, connectionRetry is optional
-      */
+     * set connectionRetry, connectionRetry is optional
+     */
     @deprecated("use withConnectionRetry instead", "3.7.0")
     def withConenctionRetry(connectionRetry: Int): ConfigBuilder = {
       this.connectionRetry = connectionRetry
@@ -99,48 +109,48 @@ object NebulaConnectionConfig {
     }
 
     /**
-      * set executeRetry, executeRetry is optional
-      */
+     * set executeRetry, executeRetry is optional
+     */
     def withExecuteRetry(executeRetry: Int): ConfigBuilder = {
       this.executeRetry = executeRetry
       this
     }
 
     /**
-      * set enableMetaSSL, enableMetaSSL is optional
-      */
+     * set enableMetaSSL, enableMetaSSL is optional
+     */
     def withEnableMetaSSL(enableMetaSSL: Boolean): ConfigBuilder = {
       this.enableMetaSSL = enableMetaSSL
       this
     }
 
     /**
-      * set enableMetaSSL, enableMetaSSL is optional
-      */
+     * set enableMetaSSL, enableMetaSSL is optional
+     */
     def withEnableGraphSSL(enableGraphSSL: Boolean): ConfigBuilder = {
       this.enableGraphSSL = enableGraphSSL
       this
     }
 
     /**
-      * set enableStorageSSL, enableStorageSSL is optional
-      */
+     * set enableStorageSSL, enableStorageSSL is optional
+     */
     def withEnableStorageSSL(enableStorageSSL: Boolean): ConfigBuilder = {
       this.enableStorageSSL = enableStorageSSL
       this
     }
 
     /**
-      * set ssl sign type {@link SSLSignType}
-      */
+     * set ssl sign type {@link SSLSignType}
+     */
     def withSSLSignType(signType: SSLSignType.Value): ConfigBuilder = {
       this.sslSignType = signType
       this
     }
 
     /**
-      * set ca sign param for ssl
-      */
+     * set ca sign param for ssl
+     */
     def withCaSSLSignParam(caCrtFilePath: String,
                            crtFilePath: String,
                            keyFilePath: String): ConfigBuilder = {
@@ -149,8 +159,8 @@ object NebulaConnectionConfig {
     }
 
     /**
-      * set self sign param for ssl
-      */
+     * set self sign param for ssl
+     */
     def withSelfSSLSignParam(crtFilePath: String,
                              keyFilePath: String,
                              password: String): ConfigBuilder = {
@@ -159,16 +169,16 @@ object NebulaConnectionConfig {
     }
 
     /**
-      * set client version
-      */
+     * set client version
+     */
     def withVersion(version: String): ConfigBuilder = {
       this.version = version
       this
     }
 
     /**
-      * check if the connection config is valid
-      */
+     * check if the connection config is valid
+     */
     def check(): Unit = {
       assert(metaAddress != null && !metaAddress.isEmpty, "config address is empty.")
       assert(timeout > 0, "timeout must be larger than 0")
@@ -202,8 +212,8 @@ object NebulaConnectionConfig {
     }
 
     /**
-      * build NebulaConnectionConfig
-      */
+     * build NebulaConnectionConfig
+     */
     def build(): NebulaConnectionConfig = {
       check()
       new NebulaConnectionConfig(
@@ -230,32 +240,37 @@ object NebulaConnectionConfig {
 }
 
 /**
-  * Base config needed when write dataframe into nebula graph
-  */
+ * Base config needed when write dataframe into nebula graph
+ */
 private[connector] class WriteNebulaConfig(space: String,
                                            user: String,
                                            passwd: String,
                                            batch: Int,
                                            writeMode: String,
                                            overwrite: Boolean)
-    extends Serializable {
-  def getSpace     = space
-  def getBatch     = batch
-  def getUser      = user
-  def getPasswd    = passwd
+  extends Serializable {
+  def getSpace = space
+
+  def getBatch = batch
+
+  def getUser = user
+
+  def getPasswd = passwd
+
   def getWriteMode = writeMode
-  def isOverwrite  = overwrite
+
+  def isOverwrite = overwrite
 }
 
 /**
-  * subclass of WriteNebulaConfig to config vertex when write dataframe into nebula graph
-  *
-  * @param space: nebula space name
-  * @param tagName: tag name
-  * @param vidField: field in dataframe to indicate vertexId
-  * @param vidPolicy: not required, use hash to map your vertexId
-  * @param batch: amount of one batch when write into nebula graph
-  */
+ * subclass of WriteNebulaConfig to config vertex when write dataframe into nebula graph
+ *
+ * @param space     : nebula space name
+ * @param tagName   : tag name
+ * @param vidField  : field in dataframe to indicate vertexId
+ * @param vidPolicy : not required, use hash to map your vertexId
+ * @param batch     : amount of one batch when write into nebula graph
+ */
 class WriteNebulaVertexConfig(space: String,
                               tagName: String,
                               vidField: String,
@@ -267,30 +282,34 @@ class WriteNebulaVertexConfig(space: String,
                               writeMode: String,
                               deleteEdge: Boolean,
                               overwrite: Boolean)
-    extends WriteNebulaConfig(space, user, passwd, batch, writeMode, overwrite) {
-  def getTagName    = tagName
-  def getVidField   = vidField
-  def getVidPolicy  = if (vidPolicy == null) "" else vidPolicy
-  def getVidAsProp  = vidAsProp
+  extends WriteNebulaConfig(space, user, passwd, batch, writeMode, overwrite) {
+  def getTagName = tagName
+
+  def getVidField = vidField
+
+  def getVidPolicy = if (vidPolicy == null) "" else vidPolicy
+
+  def getVidAsProp = vidAsProp
+
   def getDeleteEdge = deleteEdge
 }
 
 /**
-  * object WriteNebulaVertexConfig
-  * */
+ * object WriteNebulaVertexConfig
+ * */
 object WriteNebulaVertexConfig {
 
   private val LOG: Logger = LoggerFactory.getLogger(this.getClass)
 
   class WriteVertexConfigBuilder {
 
-    var space: String     = _
-    var tagName: String   = _
+    var space: String = _
+    var tagName: String = _
     var vidPolicy: String = _
-    var vidField: String  = _
-    var batch: Int        = 512
-    var user: String      = "root"
-    var passwd: String    = "nebula"
+    var vidField: String = _
+    var batch: Int = 512
+    var user: String = "root"
+    var passwd: String = "nebula"
     var writeMode: String = "insert"
 
     /** whether set vid as property */
@@ -303,110 +322,110 @@ object WriteNebulaVertexConfig {
     var overwrite: Boolean = true
 
     /**
-      * set space name
-      */
+     * set space name
+     */
     def withSpace(space: String): WriteVertexConfigBuilder = {
       this.space = space
       this
     }
 
     /**
-      * set tag name
-      */
+     * set tag name
+     */
     def withTag(tagName: String): WriteVertexConfigBuilder = {
       this.tagName = tagName
       this
     }
 
     /**
-      * set which field in dataframe as nebula tag's id
-      */
+     * set which field in dataframe as nebula tag's id
+     */
     def withVidField(vidField: String): WriteVertexConfigBuilder = {
       this.vidField = vidField
       this
     }
 
     /**
-      * set vid policy, its optional
-      * only "hash" and "uuid" is validate
-      */
+     * set vid policy, its optional
+     * only "hash" and "uuid" is validate
+     */
     def withVidPolicy(vidPolicy: String): WriteVertexConfigBuilder = {
       this.vidPolicy = vidPolicy
       this
     }
 
     /**
-      * set data amount for one batch, default is 512
-      */
+     * set data amount for one batch, default is 512
+     */
     def withBatch(batch: Int): WriteVertexConfigBuilder = {
       this.batch = batch
       this
     }
 
     /**
-      * set whether vid as prop, default is false
-      */
+     * set whether vid as prop, default is false
+     */
     def withVidAsProp(vidAsProp: Boolean): WriteVertexConfigBuilder = {
       this.vidAsProp = vidAsProp
       this
     }
 
     /**
-      * set user name for nebula graph
-      */
+     * set user name for nebula graph
+     */
     def withUser(user: String): WriteVertexConfigBuilder = {
       this.user = user
       this
     }
 
     /**
-      * set password for nebula graph's user
-      */
+     * set password for nebula graph's user
+     */
     def withPasswd(passwd: String): WriteVertexConfigBuilder = {
       this.passwd = passwd
       this
     }
 
     /**
-      * set nebula write mode for nebula tag, INSERT or UPDATE
-      */
+     * set nebula write mode for nebula tag, INSERT or UPDATE
+     */
     def withWriteMode(writeMode: WriteMode.Value): WriteVertexConfigBuilder = {
       this.writeMode = writeMode.toString
       this
     }
 
     /**
-      * set whether delete related edges when delete vertex
-      */
+     * set whether delete related edges when delete vertex
+     */
     def withDeleteEdge(deleteEdge: Boolean): WriteVertexConfigBuilder = {
       this.deleteEdge = deleteEdge
       this
     }
 
     /**
-      * set whether overwrite the exists vertex
-      */
+     * set whether overwrite the exists vertex
+     */
     def withOverwrite(overwrite: Boolean): WriteVertexConfigBuilder = {
       this.overwrite = overwrite
       this;
     }
 
     /**
-      * check and get WriteNebulaVertexConfig
-      */
+     * check and get WriteNebulaVertexConfig
+     */
     def build(): WriteNebulaVertexConfig = {
       check()
       new WriteNebulaVertexConfig(space,
-                                  tagName,
-                                  vidField,
-                                  vidPolicy,
-                                  batch,
-                                  vidAsProp,
-                                  user,
-                                  passwd,
-                                  writeMode,
-                                  deleteEdge,
-                                  overwrite)
+        tagName,
+        vidField,
+        vidPolicy,
+        batch,
+        vidAsProp,
+        user,
+        passwd,
+        writeMode,
+        deleteEdge,
+        overwrite)
     }
 
     private def check(): Unit = {
@@ -448,17 +467,17 @@ object WriteNebulaVertexConfig {
 }
 
 /**
-  * subclass of WriteNebulaConfig to config edge when write dataframe into nebula graph
-  *
-  * @param space: nebula space name
-  * @param edgeName: edge name
-  * @param srcFiled: field in dataframe to indicate src vertex id
-  * @param srcPolicy: not required, use hash to map your src vertex id
-  * @param dstField: field in dataframe to indicate dst vertex id
-  * @param dstPolicy: not required, use hash to map your dst vertex id
-  * @param rankField: not required, field in dataframe to indicate edge rank
-  * @param batch: amount of one batch when write into nebula graph
-  */
+ * subclass of WriteNebulaConfig to config edge when write dataframe into nebula graph
+ *
+ * @param space     : nebula space name
+ * @param edgeName  : edge name
+ * @param srcFiled  : field in dataframe to indicate src vertex id
+ * @param srcPolicy : not required, use hash to map your src vertex id
+ * @param dstField  : field in dataframe to indicate dst vertex id
+ * @param dstPolicy : not required, use hash to map your dst vertex id
+ * @param rankField : not required, field in dataframe to indicate edge rank
+ * @param batch     : amount of one batch when write into nebula graph
+ */
 class WriteNebulaEdgeConfig(space: String,
                             edgeName: String,
                             srcFiled: String,
@@ -474,43 +493,50 @@ class WriteNebulaEdgeConfig(space: String,
                             passwd: String,
                             writeMode: String,
                             overwrite: Boolean)
-    extends WriteNebulaConfig(space, user, passwd, batch, writeMode, overwrite) {
-  def getEdgeName  = edgeName
-  def getSrcFiled  = srcFiled
+  extends WriteNebulaConfig(space, user, passwd, batch, writeMode, overwrite) {
+  def getEdgeName = edgeName
+
+  def getSrcFiled = srcFiled
+
   def getSrcPolicy = if (srcPolicy == null) "" else srcPolicy
-  def getDstField  = dstField
+
+  def getDstField = dstField
+
   def getDstPolicy = if (dstPolicy == null) "" else dstPolicy
+
   def getRankField = if (rankField == null) "" else rankField
 
-  def getSrcAsProp  = srcAsProp
-  def getDstAsProp  = dstAsProp
+  def getSrcAsProp = srcAsProp
+
+  def getDstAsProp = dstAsProp
+
   def getRankAsProp = rankAsProp
 
 }
 
 /**
-  * object WriteNebulaEdgeConfig
-  */
+ * object WriteNebulaEdgeConfig
+ */
 object WriteNebulaEdgeConfig {
 
   private val LOG: Logger = LoggerFactory.getLogger(WriteNebulaEdgeConfig.getClass)
 
   /**
-    * a builder to create {@link WriteNebulaEdgeConfig}
-    */
+   * a builder to create {@link WriteNebulaEdgeConfig}
+   */
   class WriteEdgeConfigBuilder {
 
-    var space: String    = _
+    var space: String = _
     var edgeName: String = _
 
     var srcIdField: String = _
-    var srcPolicy: String  = _
+    var srcPolicy: String = _
     var dstIdField: String = _
-    var dstPolicy: String  = _
-    var rankField: String  = _
-    var batch: Int         = 512
-    var user: String       = "root"
-    var passwd: String     = "nebula"
+    var dstPolicy: String = _
+    var rankField: String = _
+    var batch: Int = 512
+    var user: String = "root"
+    var passwd: String = "nebula"
 
     /** whether srcId as property */
     var srcAsProp: Boolean = false
@@ -528,146 +554,146 @@ object WriteNebulaEdgeConfig {
     var overwrite: Boolean = true
 
     /**
-      * set space name
-      */
+     * set space name
+     */
     def withSpace(space: String): WriteEdgeConfigBuilder = {
       this.space = space
       this
     }
 
     /**
-      * set edge type name
-      */
+     * set edge type name
+     */
     def withEdge(edgeName: String): WriteEdgeConfigBuilder = {
       this.edgeName = edgeName
       this
     }
 
     /**
-      * set rank field in dataframe
-      * it rankField is not set, then edge has default 0 rank value
-      * */
+     * set rank field in dataframe
+     * it rankField is not set, then edge has default 0 rank value
+     * */
     def withRankField(rankField: String): WriteEdgeConfigBuilder = {
       this.rankField = rankField
       this
     }
 
     /**
-      * set which field in dataframe as nebula edge's src id
-      */
+     * set which field in dataframe as nebula edge's src id
+     */
     def withSrcIdField(srcIdField: String): WriteEdgeConfigBuilder = {
       this.srcIdField = srcIdField
       this
     }
 
     /**
-      * set policy for edge src id, its optional
-      */
+     * set policy for edge src id, its optional
+     */
     def withSrcPolicy(srcPolicy: String): WriteEdgeConfigBuilder = {
       this.srcPolicy = srcPolicy
       this
     }
 
     /**
-      * set which field in dataframe as nebula edge's dst id
-      */
+     * set which field in dataframe as nebula edge's dst id
+     */
     def withDstIdField(dstIdField: String): WriteEdgeConfigBuilder = {
       this.dstIdField = dstIdField
       this
     }
 
     /**
-      * set policy for edge dst id, its optional
-      */
+     * set policy for edge dst id, its optional
+     */
     def withDstPolicy(dstPolicy: String): WriteEdgeConfigBuilder = {
       this.dstPolicy = dstPolicy
       this
     }
 
     /**
-      * set data amount for one batch, default is 512
-      */
+     * set data amount for one batch, default is 512
+     */
     def withBatch(batch: Int): WriteEdgeConfigBuilder = {
       this.batch = batch
       this
     }
 
     /**
-      * set whether src id as property
-      */
+     * set whether src id as property
+     */
     def withSrcAsProperty(srcAsProp: Boolean): WriteEdgeConfigBuilder = {
       this.srcAsProp = srcAsProp
       this
     }
 
     /**
-      * set whether dst id as property
-      */
+     * set whether dst id as property
+     */
     def withDstAsProperty(dstAsProp: Boolean): WriteEdgeConfigBuilder = {
       this.dstAsProp = dstAsProp
       this
     }
 
     /**
-      * set whether rank as property
-      */
+     * set whether rank as property
+     */
     def withRankAsProperty(rankAsProp: Boolean): WriteEdgeConfigBuilder = {
       this.rankAsProp = rankAsProp
       this
     }
 
     /**
-      * set user name for nebula graph
-      */
+     * set user name for nebula graph
+     */
     def withUser(user: String): WriteEdgeConfigBuilder = {
       this.user = user
       this
     }
 
     /**
-      * set password for nebula graph's user
-      */
+     * set password for nebula graph's user
+     */
     def withPasswd(passwd: String): WriteEdgeConfigBuilder = {
       this.passwd = passwd
       this
     }
 
     /**
-      * set write mode for nebula edge, INSERT or UPDATE
-      */
+     * set write mode for nebula edge, INSERT or UPDATE
+     */
     def withWriteMode(writeMode: WriteMode.Value): WriteEdgeConfigBuilder = {
       this.writeMode = writeMode.toString
       this
     }
 
     /**
-      * set whether overwrite the exists edge
-      */
+     * set whether overwrite the exists edge
+     */
     def withOverwrite(overwrite: Boolean): WriteEdgeConfigBuilder = {
       this.overwrite = overwrite
       this
     }
 
     /**
-      * check configs and get WriteNebulaEdgeConfig
-      */
+     * check configs and get WriteNebulaEdgeConfig
+     */
     def build(): WriteNebulaEdgeConfig = {
       check()
       new WriteNebulaEdgeConfig(space,
-                                edgeName,
-                                srcIdField,
-                                srcPolicy,
-                                dstIdField,
-                                dstPolicy,
-                                rankField,
-                                batch,
-                                srcAsProp,
-                                dstAsProp,
-                                rankAsProp,
-                                user,
-                                passwd,
-                                writeMode,
-                                overwrite)
+        edgeName,
+        srcIdField,
+        srcPolicy,
+        dstIdField,
+        dstPolicy,
+        rankField,
+        batch,
+        srcAsProp,
+        dstAsProp,
+        rankAsProp,
+        user,
+        passwd,
+        writeMode,
+        overwrite)
     }
 
     private def check(): Unit = {
@@ -713,27 +739,32 @@ object WriteNebulaEdgeConfig {
 }
 
 /**
-  * config needed when read from nebula graph
-  *    for read vertex or edge:
-  *    you must need to set these configs: addresses/space/label
-  *    you can set noColumn to true to read no vertex col, and you can set returnCols to read the specific cols, if the returnCols is empty, then read all the columns.
-  *    you can set partitionNum to define spark partition nums to read nebula graph.
-  */
+ * config needed when read from nebula graph
+ * for read vertex or edge:
+ * you must need to set these configs: addresses/space/label
+ * you can set noColumn to true to read no vertex col, and you can set returnCols to read the specific cols, if the returnCols is empty, then read all the columns.
+ * you can set partitionNum to define spark partition nums to read nebula graph.
+ */
 class ReadNebulaConfig extends Serializable {
-  var getSpace: String            = _
-  var getLabel: String            = _
+  var getSpace: String = _
+  var getLabel: String = _
   var getReturnCols: List[String] = _
-  var getNoColumn: Boolean        = _
-  var getPartitionNum: Int        = _
-  var getLimit: Int               = _
-  var getNgql: String             = _
+  var getNoColumn: Boolean = _
+  var getPartitionNum: Int = _
+  var getLimit: Int = _
+  var getNgql: String = _
+  var getUser: String = _
+  var getPasswd: String = _
+
   // todo add filter
   def this(space: String,
            label: String,
            returnCols: List[String],
            noColumn: Boolean,
            partitionNum: Int,
-           limit: Int) = {
+           limit: Int,
+           user: String,
+           passwd: String) = {
     this()
     this.getSpace = space
     this.getLabel = label
@@ -741,6 +772,8 @@ class ReadNebulaConfig extends Serializable {
     this.getNoColumn = noColumn
     this.getPartitionNum = partitionNum
     this.getLimit = limit
+    this.getUser = user
+    this.getPasswd = passwd
   }
 
   def this(space: String,
@@ -748,7 +781,9 @@ class ReadNebulaConfig extends Serializable {
            returnCols: List[String],
            noColumn: Boolean,
            ngql: String,
-           limit: Int) = {
+           limit: Int,
+           user: String,
+           passwd: String) = {
     this()
     this.getNgql = ngql
     this.getSpace = space
@@ -761,24 +796,27 @@ class ReadNebulaConfig extends Serializable {
 }
 
 /**
-  * object ReadNebulaConfig
-  */
+ * object ReadNebulaConfig
+ */
 object ReadNebulaConfig {
   private val LOG: Logger = LoggerFactory.getLogger(this.getClass)
 
   class ReadConfigBuilder {
-    var space: String                  = _
-    var label: String                  = _
+    var space: String = _
+    var label: String = _
     var returnCols: ListBuffer[String] = new ListBuffer[String]
-    var noColumn: Boolean              = false
-    var partitionNum: Int              = 100
-    var limit: Int                     = 1000
-    var ngql: String                   = _
+    var noColumn: Boolean = false
+    var partitionNum: Int = 100
+    var limit: Int = 1000
+    var ngql: String = _
+    var user: String = _
+    var passwd: String = _
 
     def withSpace(space: String): ReadConfigBuilder = {
       this.space = space
       this
     }
+
     def withLabel(label: String): ReadConfigBuilder = {
       this.label = label
       this
@@ -792,24 +830,24 @@ object ReadNebulaConfig {
     }
 
     /**
-      * if noColumn is set to true, then returnCols is no need and it will be invalidate even if configured
-      */
+     * if noColumn is set to true, then returnCols is no need and it will be invalidate even if configured
+     */
     def withNoColumn(noColumn: Boolean): ReadConfigBuilder = {
       this.noColumn = noColumn
       this
     }
 
     /**
-      * set partition num for spark, default is 100
-      */
+     * set partition num for spark, default is 100
+     */
     def withPartitionNum(partitionNum: Int): ReadConfigBuilder = {
       this.partitionNum = partitionNum
       this
     }
 
     /**
-      * set limit for scan nebula graph, default is 1000
-      */
+     * set limit for scan nebula graph, default is 1000
+     */
     def withLimit(limit: Int): ReadConfigBuilder = {
       this.limit = limit
       this
@@ -820,21 +858,33 @@ object ReadNebulaConfig {
       this
     }
 
+    def withUser(user: String): ReadConfigBuilder = {
+      this.user = user
+      this
+    }
+
+    def withPasswd(passwd: String): ReadConfigBuilder = {
+      this.passwd = passwd
+      this
+    }
+
     def build(): ReadNebulaConfig = {
       check()
       if (ngql != null && !ngql.isEmpty) {
-        new ReadNebulaConfig(space, label, returnCols.toList, noColumn, ngql, limit)
+        new ReadNebulaConfig(space, label, returnCols.toList, noColumn, ngql, limit, user, passwd)
       } else {
-        new ReadNebulaConfig(space, label, returnCols.toList, noColumn, partitionNum, limit)
+        new ReadNebulaConfig(space, label, returnCols.toList, noColumn, partitionNum, limit, user, passwd)
       }
     }
 
     private def check(): Unit = {
       assert(space != null && !space.isEmpty, s"config space is empty.")
       assert(label != null && !label.isEmpty, s"config label is empty.")
+      assert(user != null && !user.isEmpty, s"config user is empty.")
+      assert(passwd != null && !passwd.isEmpty, s"config passwd is empty.")
       assert(limit > 0, s"config limit must be positive, your limit is $limit")
       assert(partitionNum > 0,
-             s"config partitionNum must be positive, your partitionNum is $partitionNum")
+        s"config partitionNum must be positive, your partitionNum is $partitionNum")
       if (noColumn && returnCols.nonEmpty) {
         LOG.warn(
           s"noColumn is true, returnCols will be invalidate "

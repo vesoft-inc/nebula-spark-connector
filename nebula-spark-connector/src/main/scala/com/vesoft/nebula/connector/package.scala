@@ -23,11 +23,11 @@ import scala.collection.mutable.ListBuffer
 package object connector {
 
   /**
-    * spark reader for nebula graph
-    */
+   * spark reader for nebula graph
+   */
   implicit class NebulaDataFrameReader(reader: DataFrameReader) {
     var connectionConfig: NebulaConnectionConfig = _
-    var readConfig: ReadNebulaConfig             = _
+    var readConfig: ReadNebulaConfig = _
 
     def nebula(connectionConfig: NebulaConnectionConfig,
                readConfig: ReadNebulaConfig): NebulaDataFrameReader = {
@@ -38,12 +38,13 @@ package object connector {
     }
 
     /**
-      * Reading com.vesoft.nebula.tools.connector.vertices from Nebula Graph
-      * @return DataFrame
-      */
+     * Reading com.vesoft.nebula.tools.connector.vertices from Nebula Graph
+     *
+     * @return DataFrame
+     */
     def loadVerticesToDF(): DataFrame = {
       assert(connectionConfig != null && readConfig != null,
-             "nebula config is not set, please call nebula() before loadVerticesToDF")
+        "nebula config is not set, please call nebula() before loadVerticesToDF")
       val dfReader = reader
         .format(classOf[NebulaDataSource].getName)
         .option(NebulaOptions.TYPE, DataTypeEnum.VERTEX.toString)
@@ -60,6 +61,9 @@ package object connector {
         .option(NebulaOptions.EXECUTION_RETRY, connectionConfig.getExecRetry)
         .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
         .option(NebulaOptions.ENABLE_STORAGE_SSL, connectionConfig.getEnableStorageSSL)
+        .option(NebulaOptions.GRAPH_ADDRESS, connectionConfig.getGraphAddress)
+        .option(NebulaOptions.USER_NAME, readConfig.getUser)
+        .option(NebulaOptions.PASSWD, readConfig.getPasswd)
 
       if (connectionConfig.getVersion != null) {
         dfReader.option(NebulaOptions.VERSION, connectionConfig.getVersion)
@@ -79,12 +83,13 @@ package object connector {
     }
 
     /**
-      * Reading edges from Nebula Graph
-      * @return DataFrame
-      */
+     * Reading edges from Nebula Graph
+     *
+     * @return DataFrame
+     */
     def loadEdgesToDF(): DataFrame = {
       assert(connectionConfig != null && readConfig != null,
-             "nebula config is not set, please call nebula() before loadEdgesToDF")
+        "nebula config is not set, please call nebula() before loadEdgesToDF")
 
       val dfReader = reader
         .format(classOf[NebulaDataSource].getName)
@@ -102,6 +107,9 @@ package object connector {
         .option(NebulaOptions.EXECUTION_RETRY, connectionConfig.getExecRetry)
         .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
         .option(NebulaOptions.ENABLE_STORAGE_SSL, connectionConfig.getEnableStorageSSL)
+        .option(NebulaOptions.GRAPH_ADDRESS, connectionConfig.getGraphAddress)
+        .option(NebulaOptions.USER_NAME, readConfig.getUser)
+        .option(NebulaOptions.PASSWD, readConfig.getPasswd)
 
       if (connectionConfig.getVersion != null) {
         dfReader.option(NebulaOptions.VERSION, connectionConfig.getVersion)
@@ -121,12 +129,13 @@ package object connector {
     }
 
     /**
-      * Reading edges from Nebula Graph by ngql
-      * @return DataFrame
-      */
+     * Reading edges from Nebula Graph by ngql
+     *
+     * @return DataFrame
+     */
     def loadEdgesToDfByNgql(): DataFrame = {
       assert(connectionConfig != null && readConfig != null,
-             "nebula config is not set, please call nebula() before loadEdgesToDfByNgql")
+        "nebula config is not set, please call nebula() before loadEdgesToDfByNgql")
 
       val dfReader = reader
         .format(classOf[NebulaDataSource].getName)
@@ -146,6 +155,8 @@ package object connector {
         .option(NebulaOptions.EXECUTION_RETRY, connectionConfig.getExecRetry)
         .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
         .option(NebulaOptions.ENABLE_STORAGE_SSL, connectionConfig.getEnableStorageSSL)
+        .option(NebulaOptions.USER_NAME, readConfig.getUser)
+        .option(NebulaOptions.PASSWD, readConfig.getPasswd)
 
       if (connectionConfig.getVersion != null) {
         dfReader.option(NebulaOptions.VERSION, connectionConfig.getVersion)
@@ -165,9 +176,9 @@ package object connector {
     }
 
     /**
-      * read nebula vertex edge to graphx's vertex
-      * use hash() for String type vertex id.
-      */
+     * read nebula vertex edge to graphx's vertex
+     * use hash() for String type vertex id.
+     */
     def loadVerticesToGraphx(): RDD[NebulaGraphxVertex] = {
       val vertexDataset = loadVerticesToDF()
       implicit val encoder: Encoder[NebulaGraphxVertex] =
@@ -175,8 +186,8 @@ package object connector {
 
       vertexDataset
         .map(row => {
-          val vertexId               = row.get(0)
-          val vid: Long              = vertexId.toString.toLong
+          val vertexId = row.get(0)
+          val vid: Long = vertexId.toString.toLong
           val props: ListBuffer[Any] = ListBuffer()
           for (i <- row.schema.fields.indices) {
             if (i != 0) {
@@ -189,9 +200,9 @@ package object connector {
     }
 
     /**
-      * read nebula edge edge to graphx's edge
-      * use hash() for String type srcId and dstId.
-      */
+     * read nebula edge edge to graphx's edge
+     * use hash() for String type srcId and dstId.
+     */
     def loadEdgesToGraphx(): RDD[NebulaGraphxEdge] = {
       val edgeDataset = loadEdgesToDF()
       implicit val encoder: Encoder[NebulaGraphxEdge] =
@@ -205,10 +216,10 @@ package object connector {
               props.append(row.get(i))
             }
           }
-          val srcId    = row.get(0)
-          val dstId    = row.get(1)
-          val edgeSrc  = srcId.toString.toLong
-          val edgeDst  = dstId.toString.toLong
+          val srcId = row.get(0)
+          val dstId = row.get(1)
+          val edgeSrc = srcId.toString.toLong
+          val edgeDst = dstId.toString.toLong
           val edgeProp = (row.get(2).toString.toLong, props.toList)
           org.apache.spark.graphx
             .Edge(edgeSrc, edgeDst, edgeProp)
@@ -219,18 +230,19 @@ package object connector {
   }
 
   /**
-    * spark writer for nebula graph
-    */
+   * spark writer for nebula graph
+   */
   implicit class NebulaDataFrameWriter(writer: DataFrameWriter[Row]) {
 
     var connectionConfig: NebulaConnectionConfig = _
-    var writeNebulaConfig: WriteNebulaConfig     = _
+    var writeNebulaConfig: WriteNebulaConfig = _
 
     /**
-      * config nebula connection
-      * @param connectionConfig connection parameters
-      * @param writeNebulaConfig write parameters for vertex or edge
-      */
+     * config nebula connection
+     *
+     * @param connectionConfig  connection parameters
+     * @param writeNebulaConfig write parameters for vertex or edge
+     */
     def nebula(connectionConfig: NebulaConnectionConfig,
                writeNebulaConfig: WriteNebulaConfig): NebulaDataFrameWriter = {
       SparkValidate.validate("2.4.*")
@@ -240,11 +252,11 @@ package object connector {
     }
 
     /**
-      * write dataframe into nebula vertex
-      */
+     * write dataframe into nebula vertex
+     */
     def writeVertices(): Unit = {
       assert(connectionConfig != null && writeNebulaConfig != null,
-             "nebula config is not set, please call nebula() before writeVertices")
+        "nebula config is not set, please call nebula() before writeVertices")
       val writeConfig = writeNebulaConfig.asInstanceOf[WriteNebulaVertexConfig]
       val dfWriter = writer
         .format(classOf[NebulaDataSource].getName)
@@ -288,12 +300,12 @@ package object connector {
     }
 
     /**
-      * write dataframe into nebula edge
-      */
+     * write dataframe into nebula edge
+     */
     def writeEdges(): Unit = {
 
       assert(connectionConfig != null && writeNebulaConfig != null,
-             "nebula config is not set, please call nebula() before writeEdges")
+        "nebula config is not set, please call nebula() before writeEdges")
       val writeConfig = writeNebulaConfig.asInstanceOf[WriteNebulaEdgeConfig]
       val dfWriter = writer
         .format(classOf[NebulaDataSource].getName)

@@ -52,7 +52,7 @@ class NebulaConnectionConfig(metaAddress: String,
   def getVersion: String = version
 
 
-  override def toString = s"NebulaConnectionConfig(getMetaAddress=$getMetaAddress, getGraphAddress=$getGraphAddress, getTimeout=$getTimeout, getConnectionRetry=$getConnectionRetry, getExecRetry=$getExecRetry, getEnableMetaSSL=$getEnableMetaSSL, getEnableGraphSSL=$getEnableGraphSSL, getEnableStorageSSL=$getEnableStorageSSL, getSignType=$getSignType, getCaSignParam=$getCaSignParam, getSelfSignParam=$getSelfSignParam, getVersion=$getVersion)"
+  override def toString = s"NebulaConnectionConfig(getMetaAddress=$getMetaAddress, getGraphAddress=$getGraphAddress, getTimeout=$getTimeout, getConnectionRetry=$getConnectionRetry, getExecRetry=$getExecRetry, getVersion=$getVersion)"
 }
 
 object NebulaConnectionConfig {

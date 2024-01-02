@@ -50,6 +50,9 @@ class NebulaConnectionConfig(metaAddress: String,
   }
 
   def getVersion: String = version
+
+
+  override def toString = s"NebulaConnectionConfig(getMetaAddress=$getMetaAddress, getGraphAddress=$getGraphAddress, getTimeout=$getTimeout, getConnectionRetry=$getConnectionRetry, getExecRetry=$getExecRetry, getEnableMetaSSL=$getEnableMetaSSL, getEnableGraphSSL=$getEnableGraphSSL, getEnableStorageSSL=$getEnableStorageSSL, getSignType=$getSignType, getCaSignParam=$getCaSignParam, getSelfSignParam=$getSelfSignParam, getVersion=$getVersion)"
 }
 
 object NebulaConnectionConfig {
@@ -216,7 +219,8 @@ object NebulaConnectionConfig {
      */
     def build(): NebulaConnectionConfig = {
       check()
-      new NebulaConnectionConfig(
+
+      val config = new NebulaConnectionConfig(
         metaAddress,
         graphAddress,
         timeout,
@@ -230,6 +234,8 @@ object NebulaConnectionConfig {
         selfSignParam,
         version
       )
+      LOG.error(">>>>>>>>> NebulaConnConfig:{}", config)
+      config
     }
   }
 
@@ -415,7 +421,7 @@ object WriteNebulaVertexConfig {
      */
     def build(): WriteNebulaVertexConfig = {
       check()
-      new WriteNebulaVertexConfig(space,
+      val config = new WriteNebulaVertexConfig(space,
         tagName,
         vidField,
         vidPolicy,
@@ -426,6 +432,7 @@ object WriteNebulaVertexConfig {
         writeMode,
         deleteEdge,
         overwrite)
+        config
     }
 
     private def check(): Unit = {
@@ -792,7 +799,10 @@ class ReadNebulaConfig extends Serializable {
     this.getNoColumn = noColumn
     this.getLimit = limit
     this.getPartitionNum = 1
+
   }
+
+  override def toString = s"ReadNebulaConfig(getSpace=$getSpace, getLabel=$getLabel, getReturnCols=$getReturnCols, getNoColumn=$getNoColumn, getPartitionNum=$getPartitionNum, getLimit=$getLimit, getNgql=$getNgql, getUser=$getUser, getPasswd=$getPasswd)"
 }
 
 /**
@@ -870,11 +880,13 @@ object ReadNebulaConfig {
 
     def build(): ReadNebulaConfig = {
       check()
-      if (ngql != null && !ngql.isEmpty) {
+      val config = if (ngql != null && !ngql.isEmpty) {
         new ReadNebulaConfig(space, label, returnCols.toList, noColumn, ngql, limit, user, passwd)
       } else {
         new ReadNebulaConfig(space, label, returnCols.toList, noColumn, partitionNum, limit, user, passwd)
       }
+      LOG.error(">>>>>>> ReadNebulaConfig:{}",config.toString)
+      config
     }
 
     private def check(): Unit = {

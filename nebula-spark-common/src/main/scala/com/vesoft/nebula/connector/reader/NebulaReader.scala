@@ -100,6 +100,7 @@ trait NebulaReader {
       this.storageClient = new StorageClient(address.asJava, nebulaOptions.timeout)
     }
 
+    LOG.error("storaged client config:version={},graph={},user={},passwd={}", nebulaOptions.version, nebulaOptions.graphAddress, nebulaOptions.user, nebulaOptions.passwd)
     this.storageClient.setVersion(nebulaOptions.version)
     this.storageClient.setGraphAddress(nebulaOptions.graphAddress)
     this.storageClient.setUser(nebulaOptions.user)

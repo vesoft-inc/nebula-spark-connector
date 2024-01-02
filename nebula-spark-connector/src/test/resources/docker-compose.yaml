@@ -250,6 +250,7 @@ services:
       - --heartbeat_interval_secs=2
       - --enable_client_white_list=true
       - --client_white_list=3.0.0:test
+      - --max_sessions_per_ip_per_user=10000
     depends_on:
       - metad0
       - metad1
@@ -289,6 +290,7 @@ services:
       - --heartbeat_interval_secs=2
       - --enable_client_white_list=true
       - --client_white_list=3.0.0:test
+      - --max_sessions_per_ip_per_user=10000
     depends_on:
       - metad0
       - metad1
@@ -328,6 +330,7 @@ services:
       - --heartbeat_interval_secs=2
       - --enable_client_white_list=true
       - --client_white_list=3.0.0:test
+      - --max_sessions_per_ip_per_user=10000
     depends_on:
       - metad0
       - metad1

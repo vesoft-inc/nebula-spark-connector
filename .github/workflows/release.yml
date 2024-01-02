@@ -46,13 +46,3 @@ jobs:
         nexus_username: ${{ secrets.OSSRH_USERNAME }}
         nexus_password: ${{ secrets.OSSRH_TOKEN }}
         maven_args: -pl nebula-spark-connector -am -Pscala-2.11 -Pspark-2.4
-
-    - name: Deploy release for spark2.2 to Maven
-      uses: samuelmeuli/action-maven-publish@v1
-      with:
-        gpg_private_key: ${{ secrets.JAVA_GPG_PRIVATE_KEY }}
-        gpg_passphrase: ${{ secrets.JAVA_GPG_PASSPHRASE }}
-        nexus_username: ${{ secrets.OSSRH_USERNAME }}
-        nexus_password: ${{ secrets.OSSRH_TOKEN }}
-        maven_args: -pl nebula-spark-connector_2.2 -am -Pscala-2.11 -Pspark-2.2
-

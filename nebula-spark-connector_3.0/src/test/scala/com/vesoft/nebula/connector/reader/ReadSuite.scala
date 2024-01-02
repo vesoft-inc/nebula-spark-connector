@@ -43,6 +43,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       NebulaConnectionConfig
         .builder()
         .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
         .withConnectionRetry(2)
         .build()
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
@@ -52,6 +53,8 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .withNoColumn(true)
       .withLimit(10)
       .withPartitionNum(10)
+      .withUser("root")
+      .withPasswd("nebula")
       .build()
     val vertex = sparkSession.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
     vertex.printSchema()
@@ -65,6 +68,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       NebulaConnectionConfig
         .builder()
         .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
         .withConnectionRetry(2)
         .build()
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
@@ -75,6 +79,8 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .withReturnCols(List("col1"))
       .withLimit(10)
       .withPartitionNum(10)
+      .withUser("root")
+      .withPasswd("nebula")
       .build()
     val vertex = sparkSession.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
     vertex.printSchema()
@@ -101,6 +107,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       NebulaConnectionConfig
         .builder()
         .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
         .withConnectionRetry(2)
         .build()
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
@@ -111,6 +118,8 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .withReturnCols(List())
       .withLimit(10)
       .withPartitionNum(10)
+      .withUser("root")
+      .withPasswd("nebula")
       .build()
     val vertex = sparkSession.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
     vertex.printSchema()
@@ -160,6 +169,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       NebulaConnectionConfig
         .builder()
         .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
         .withConnectionRetry(2)
         .build()
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
@@ -170,6 +180,8 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .withReturnCols(List("geo"))
       .withLimit(10)
       .withPartitionNum(10)
+      .withUser("root")
+      .withPasswd("nebula")
       .build()
     val vertex = sparkSession.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
     vertex.printSchema()
@@ -198,6 +210,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       NebulaConnectionConfig
         .builder()
         .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
         .withConnectionRetry(2)
         .build()
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
@@ -208,6 +221,8 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .withReturnCols(List("col"))
       .withLimit(10)
       .withPartitionNum(10)
+      .withUser("root")
+      .withPasswd("nebula")
       .build()
     val vertex = sparkSession.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
     vertex.printSchema()
@@ -231,6 +246,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       NebulaConnectionConfig
         .builder()
         .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
         .withConnectionRetry(2)
         .build()
     val nebulaReadEdgeConfig: ReadNebulaConfig = ReadNebulaConfig
@@ -240,6 +256,8 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .withNoColumn(true)
       .withLimit(10)
       .withPartitionNum(10)
+      .withUser("root")
+      .withPasswd("nebula")
       .build()
     val edge = sparkSession.read.nebula(config, nebulaReadEdgeConfig).loadEdgesToDF()
     edge.printSchema()
@@ -263,6 +281,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       NebulaConnectionConfig
         .builder()
         .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
         .withConnectionRetry(2)
         .build()
     val nebulaReadEdgeConfig: ReadNebulaConfig = ReadNebulaConfig
@@ -273,6 +292,8 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .withReturnCols(List("col1"))
       .withLimit(10)
       .withPartitionNum(10)
+      .withUser("root")
+      .withPasswd("nebula")
       .build()
     val edge = sparkSession.read.nebula(config, nebulaReadEdgeConfig).loadEdgesToDF()
     edge.printSchema()
@@ -296,6 +317,7 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       NebulaConnectionConfig
         .builder()
         .withMetaAddress("127.0.0.1:9559")
+        .withGraphAddress("127.0.0.1:9669")
         .withConnectionRetry(2)
         .build()
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
@@ -306,6 +328,8 @@ class ReadSuite extends AnyFunSuite with BeforeAndAfterAll {
       .withReturnCols(List())
       .withLimit(10)
       .withPartitionNum(10)
+      .withUser("root")
+      .withPasswd("nebula")
       .build()
     val edge = sparkSession.read.nebula(config, nebulaReadVertexConfig).loadEdgesToDF()
     edge.printSchema()

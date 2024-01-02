@@ -799,6 +799,8 @@ class ReadNebulaConfig extends Serializable {
     this.getNoColumn = noColumn
     this.getLimit = limit
     this.getPartitionNum = 1
+    this.getUser = user
+    this.getPasswd = passwd
 
   }
 

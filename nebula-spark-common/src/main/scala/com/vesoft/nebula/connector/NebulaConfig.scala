@@ -39,7 +39,7 @@ class NebulaConnectionConfig(metaAddress: String,
 
   def getEnableStorageSSL = enableStorageSSL
 
-  def getSignType = signType.toString
+  def getSignType = if(signType == null) null else signType.toString
 
   def getCaSignParam: String = {
     caSignParam.caCrtFilePath + "," + caSignParam.crtFilePath + "," + caSignParam.keyFilePath

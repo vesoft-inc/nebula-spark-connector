@@ -60,6 +60,9 @@ package object connector {
         .option(NebulaOptions.EXECUTION_RETRY, connectionConfig.getExecRetry)
         .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
         .option(NebulaOptions.ENABLE_STORAGE_SSL, connectionConfig.getEnableStorageSSL)
+        .option(NebulaOptions.GRAPH_ADDRESS, connectionConfig.getGraphAddress)
+        .option(NebulaOptions.USER_NAME, readConfig.getUser)
+        .option(NebulaOptions.PASSWD, readConfig.getPasswd)
 
       if (connectionConfig.getVersion != null) {
         dfReader.option(NebulaOptions.VERSION, connectionConfig.getVersion)
@@ -102,6 +105,9 @@ package object connector {
         .option(NebulaOptions.EXECUTION_RETRY, connectionConfig.getExecRetry)
         .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
         .option(NebulaOptions.ENABLE_STORAGE_SSL, connectionConfig.getEnableStorageSSL)
+        .option(NebulaOptions.GRAPH_ADDRESS, connectionConfig.getGraphAddress)
+        .option(NebulaOptions.USER_NAME, readConfig.getUser)
+        .option(NebulaOptions.PASSWD, readConfig.getPasswd)
 
       if (connectionConfig.getVersion != null) {
         dfReader.option(NebulaOptions.VERSION, connectionConfig.getVersion)

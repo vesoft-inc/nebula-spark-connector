@@ -29,7 +29,7 @@ class GraphProviderTest extends AnyFunSuite with BeforeAndAfterAll {
     graphProvider.close()
   }
 
-  test("setVersion") {
+  test("setHandshakeKey") {
     val addresses: List[Address] = List(new Address("127.0.0.1", 9669))
     graphProvider =
       new GraphProvider(addresses, "root", "nebula", 3000, false, null, null, null, "test")

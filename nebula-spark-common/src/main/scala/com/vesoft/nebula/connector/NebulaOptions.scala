@@ -80,7 +80,7 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
     }
   }
 
-  val version: String = parameters.getOrElse(VERSION, null)
+  val handshakeKey: String = parameters.getOrElse(HANDSHAKE_KEY, null)
 
   require(parameters.isDefinedAt(TYPE), s"Option '$TYPE' is required")
   val dataType: String = parameters(TYPE)
@@ -234,7 +234,7 @@ object NebulaOptions {
   val CA_SIGN_PARAM: String      = "caSignParam"
   val SELF_SIGN_PARAM: String    = "selfSignParam"
 
-  val VERSION: String = "version"
+  val HANDSHAKE_KEY: String = "handshakeKey"
 
   val OPERATE_TYPE: String = "operateType"
 

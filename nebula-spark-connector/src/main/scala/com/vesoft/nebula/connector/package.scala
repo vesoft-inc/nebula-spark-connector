@@ -61,8 +61,8 @@ package object connector {
         .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
         .option(NebulaOptions.ENABLE_STORAGE_SSL, connectionConfig.getEnableStorageSSL)
 
-      if (connectionConfig.getVersion != null) {
-        dfReader.option(NebulaOptions.VERSION, connectionConfig.getVersion)
+      if (connectionConfig.getHandshakeKey != null) {
+        dfReader.option(NebulaOptions.HANDSHAKE_KEY, connectionConfig.getHandshakeKey)
       }
 
       if (connectionConfig.getEnableStorageSSL || connectionConfig.getEnableMetaSSL) {
@@ -103,8 +103,8 @@ package object connector {
         .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
         .option(NebulaOptions.ENABLE_STORAGE_SSL, connectionConfig.getEnableStorageSSL)
 
-      if (connectionConfig.getVersion != null) {
-        dfReader.option(NebulaOptions.VERSION, connectionConfig.getVersion)
+      if (connectionConfig.getHandshakeKey != null) {
+        dfReader.option(NebulaOptions.HANDSHAKE_KEY, connectionConfig.getHandshakeKey)
       }
 
       if (connectionConfig.getEnableStorageSSL || connectionConfig.getEnableMetaSSL) {
@@ -147,8 +147,8 @@ package object connector {
         .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
         .option(NebulaOptions.ENABLE_STORAGE_SSL, connectionConfig.getEnableStorageSSL)
 
-      if (connectionConfig.getVersion != null) {
-        dfReader.option(NebulaOptions.VERSION, connectionConfig.getVersion)
+      if (connectionConfig.getHandshakeKey != null) {
+        dfReader.option(NebulaOptions.HANDSHAKE_KEY, connectionConfig.getHandshakeKey)
       }
 
       if (connectionConfig.getEnableStorageSSL || connectionConfig.getEnableMetaSSL) {
@@ -270,8 +270,8 @@ package object connector {
         .option(NebulaOptions.ENABLE_GRAPH_SSL, connectionConfig.getEnableGraphSSL)
         .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
 
-      if (connectionConfig.getVersion != null) {
-        dfWriter.option(NebulaOptions.VERSION, connectionConfig.getVersion)
+      if (connectionConfig.getHandshakeKey != null) {
+        dfWriter.option(NebulaOptions.HANDSHAKE_KEY, connectionConfig.getHandshakeKey)
       }
 
       if (connectionConfig.getEnableGraphSSL || connectionConfig.getEnableMetaSSL) {
@@ -323,8 +323,8 @@ package object connector {
         .option(NebulaOptions.ENABLE_GRAPH_SSL, connectionConfig.getEnableGraphSSL)
         .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
 
-      if (connectionConfig.getVersion != null) {
-        dfWriter.option(NebulaOptions.VERSION, connectionConfig.getVersion)
+      if (connectionConfig.getHandshakeKey != null) {
+        dfWriter.option(NebulaOptions.HANDSHAKE_KEY, connectionConfig.getHandshakeKey)
       }
 
       if (connectionConfig.getEnableGraphSSL || connectionConfig.getEnableMetaSSL) {

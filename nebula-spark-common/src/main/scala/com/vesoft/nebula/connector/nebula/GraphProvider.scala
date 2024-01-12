@@ -30,8 +30,7 @@ class GraphProvider(addresses: List[Address],
                     enableSSL: Boolean = false,
                     sslSignType: String = null,
                     caSignParam: CASSLSignParams = null,
-                    selfSignParam: SelfSSLSignParams = null,
-                    handshakeKey:String = null)
+                    selfSignParam: SelfSSLSignParams = null)
     extends AutoCloseable
     with Serializable {
   @transient private[this] lazy val LOG = Logger.getLogger(this.getClass)
@@ -42,7 +41,6 @@ class GraphProvider(addresses: List[Address],
   val address                     = addresses.map { case (host, port) => new HostAddress(host, port) }
   nebulaPoolConfig.setMaxConnSize(1)
   nebulaPoolConfig.setTimeout(timeout)
-  nebulaPoolConfig.setHandshakeKey(handshakeKey)
 
   if (enableSSL) {
     nebulaPoolConfig.setEnableSsl(enableSSL)

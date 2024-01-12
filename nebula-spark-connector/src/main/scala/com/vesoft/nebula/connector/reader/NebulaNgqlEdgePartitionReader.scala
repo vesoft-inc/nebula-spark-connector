@@ -45,8 +45,7 @@ class NebulaNgqlEdgePartitionReader extends InputPartitionReader[InternalRow] {
       nebulaOptions.enableGraphSSL,
       nebulaOptions.sslSignType,
       nebulaOptions.caSignParam,
-      nebulaOptions.selfSignParam,
-      nebulaOptions.handshakeKey
+      nebulaOptions.selfSignParam
     )
     // add exception when session build failed
     graphProvider.switchSpace(nebulaOptions.spaceName)

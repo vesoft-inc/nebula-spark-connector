@@ -147,8 +147,7 @@ object NebulaUtils {
       nebulaOptions.enableMetaSSL,
       nebulaOptions.sslSignType,
       nebulaOptions.caSignParam,
-      nebulaOptions.selfSignParam,
-      nebulaOptions.handshakeKey
+      nebulaOptions.selfSignParam
     )
 
     import scala.collection.JavaConverters._

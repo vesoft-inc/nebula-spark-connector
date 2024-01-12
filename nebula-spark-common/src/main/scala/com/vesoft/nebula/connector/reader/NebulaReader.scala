@@ -64,8 +64,7 @@ trait NebulaReader {
       nebulaOptions.enableMetaSSL,
       nebulaOptions.sslSignType,
       nebulaOptions.caSignParam,
-      nebulaOptions.selfSignParam,
-      nebulaOptions.handshakeKey
+      nebulaOptions.selfSignParam
     )
     val address: ListBuffer[HostAddress] = new ListBuffer[HostAddress]
 
@@ -100,7 +99,6 @@ trait NebulaReader {
       this.storageClient = new StorageClient(address.asJava, nebulaOptions.timeout)
     }
 
-    this.storageClient.setHandshakeKey(nebulaOptions.handshakeKey)
     if (!storageClient.connect()) {
       throw new GraphConnectException("storage connect failed.")
     }

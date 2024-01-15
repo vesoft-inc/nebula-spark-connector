@@ -20,8 +20,7 @@ class NebulaConnectionConfig(metaAddress: String,
                              enableStorageSSL: Boolean,
                              signType: SSLSignType.Value,
                              caSignParam: CASSLSignParams,
-                             selfSignParam: SelfSSLSignParams,
-                             handshakeKey: String)
+                             selfSignParam: SelfSSLSignParams)
     extends Serializable {
   def getMetaAddress      = metaAddress
   def getGraphAddress     = graphAddress
@@ -39,7 +38,6 @@ class NebulaConnectionConfig(metaAddress: String,
     selfSignParam.crtFilePath + "," + selfSignParam.keyFilePath + "," + selfSignParam.password
   }
 
-  def getHandshakeKey: String = handshakeKey
 }
 
 object NebulaConnectionConfig {
@@ -58,7 +56,6 @@ object NebulaConnectionConfig {
     protected var sslSignType: SSLSignType.Value   = _
     protected var caSignParam: CASSLSignParams     = null
     protected var selfSignParam: SelfSSLSignParams = null
-    protected var handshakeKey: String                  = null
 
     /**
       * set nebula meta server address, multi addresses is split by English comma
@@ -159,14 +156,6 @@ object NebulaConnectionConfig {
     }
 
     /**
-      * set client handshakeKey
-      */
-    def withHandshakeKey(handshakeKey: String): ConfigBuilder = {
-      this.handshakeKey = handshakeKey
-      this
-    }
-
-    /**
       * check if the connection config is valid
       */
     def check(): Unit = {
@@ -217,8 +206,7 @@ object NebulaConnectionConfig {
         enableStorageSSL,
         sslSignType,
         caSignParam,
-        selfSignParam,
-        handshakeKey
+        selfSignParam
       )
     }
   }

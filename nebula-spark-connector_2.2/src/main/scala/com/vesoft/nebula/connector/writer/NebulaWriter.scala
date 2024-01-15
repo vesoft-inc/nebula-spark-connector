@@ -33,8 +33,7 @@ abstract class NebulaWriter(nebulaOptions: NebulaOptions, schema: StructType) ex
     nebulaOptions.enableMetaSSL,
     nebulaOptions.sslSignType,
     nebulaOptions.caSignParam,
-    nebulaOptions.selfSignParam,
-    nebulaOptions.handshakeKey
+    nebulaOptions.selfSignParam
   )
   val graphProvider = new GraphProvider(
     nebulaOptions.getGraphAddress,
@@ -44,8 +43,7 @@ abstract class NebulaWriter(nebulaOptions: NebulaOptions, schema: StructType) ex
     nebulaOptions.enableGraphSSL,
     nebulaOptions.sslSignType,
     nebulaOptions.caSignParam,
-    nebulaOptions.selfSignParam,
-    nebulaOptions.handshakeKey
+    nebulaOptions.selfSignParam
   )
   val isVidStringType = metaProvider.getVidType(nebulaOptions.spaceName) == VidType.STRING
 

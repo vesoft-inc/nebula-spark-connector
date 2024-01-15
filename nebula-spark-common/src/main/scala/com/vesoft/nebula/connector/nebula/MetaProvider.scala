@@ -27,8 +27,7 @@ class MetaProvider(addresses: List[Address],
                    enableSSL: Boolean,
                    sslSignType: String = null,
                    caSignParam: CASSLSignParams,
-                   selfSignParam: SelfSSLSignParams,
-                   handshakeKey:String)
+                   selfSignParam: SelfSSLSignParams)
     extends AutoCloseable
     with Serializable {
 
@@ -51,7 +50,6 @@ class MetaProvider(addresses: List[Address],
   } else {
     client = new MetaClient(metaAddress, timeout, connectionRetry, executionRetry)
   }
-  client.setHandshakeKey(handshakeKey)
   client.connect()
 
   /**

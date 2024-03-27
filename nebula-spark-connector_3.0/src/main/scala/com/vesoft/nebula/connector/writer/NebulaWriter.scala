@@ -51,7 +51,11 @@ class NebulaWriter(nebulaOptions: NebulaOptions) extends Serializable {
       val result = graphProvider.submit(exec)
       if (!result.isSucceeded) {
         failedExecs.append(exec)
-        LOG.error(s"failed to write ${exec} for " + result.getErrorMessage)
+        if (nebulaOptions.disableWriteLog) {
+          LOG.error(s"write failed: " + result.getErrorMessage)
+        } else {
+          LOG.error(s"write failed: ${result.getErrorMessage} failed statement: \n ${exec}")
+        }
       } else {
         LOG.info(s"batch write succeed")
         LOG.debug(s"batch write succeed: ${exec}")

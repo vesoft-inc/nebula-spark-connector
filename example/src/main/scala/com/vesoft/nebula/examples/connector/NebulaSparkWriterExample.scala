@@ -106,6 +106,7 @@ object NebulaSparkWriterExample {
       .withWriteMode(WriteMode.DELETE)
       .withVidAsProp(false)
       .withBatch(1000)
+      .withDisableWriteLog(true)
       .build()
     df.write.nebula(config, nebulaWriteVertexConfig).writeVertices()
   }
@@ -133,6 +134,7 @@ object NebulaSparkWriterExample {
       .withDstAsProperty(false)
       .withRankAsProperty(false)
       .withBatch(1000)
+      .withDisableWriteLog(true)
       .build()
     df.write.nebula(config, nebulaWriteEdgeConfig).writeEdges()
   }

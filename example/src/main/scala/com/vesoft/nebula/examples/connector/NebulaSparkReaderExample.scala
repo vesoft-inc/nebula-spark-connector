@@ -48,6 +48,8 @@ object NebulaSparkReaderExample {
         .build()
     val nebulaReadVertexConfig: ReadNebulaConfig = ReadNebulaConfig
       .builder()
+      .withUser("root") // optional config
+      .withPasswd("nebula") // optional config
       .withSpace("test")
       .withLabel("person")
       .withNoColumn(false)

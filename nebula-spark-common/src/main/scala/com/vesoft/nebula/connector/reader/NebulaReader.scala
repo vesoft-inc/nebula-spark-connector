@@ -98,6 +98,8 @@ trait NebulaReader {
     } else {
       this.storageClient = new StorageClient(address.asJava, nebulaOptions.timeout)
     }
+    storageClient.setUser(nebulaOptions.user)
+    storageClient.setPassword(nebulaOptions.passwd)
 
     if (!storageClient.connect()) {
       throw new GraphConnectException("storage connect failed.")

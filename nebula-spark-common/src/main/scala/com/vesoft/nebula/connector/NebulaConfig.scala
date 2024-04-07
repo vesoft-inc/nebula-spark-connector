@@ -769,6 +769,8 @@ class ReadNebulaConfig extends Serializable {
   var getPartitionNum: Int = _
   var getLimit: Int = _
   var getNgql: String = _
+  var getUser: String = _
+  var getPasswd: String = _
 
   // todo add filter
   def this(space: String,
@@ -776,7 +778,9 @@ class ReadNebulaConfig extends Serializable {
            returnCols: List[String],
            noColumn: Boolean,
            partitionNum: Int,
-           limit: Int) = {
+           limit: Int,
+           user: String,
+           passwd: String) = {
     this()
     this.getSpace = space
     this.getLabel = label
@@ -784,6 +788,8 @@ class ReadNebulaConfig extends Serializable {
     this.getNoColumn = noColumn
     this.getPartitionNum = partitionNum
     this.getLimit = limit
+    this.getUser = user
+    this.getPasswd = passwd
   }
 
   def this(space: String,
@@ -791,7 +797,9 @@ class ReadNebulaConfig extends Serializable {
            returnCols: List[String],
            noColumn: Boolean,
            ngql: String,
-           limit: Int) = {
+           limit: Int,
+           user: String,
+           passwd: String) = {
     this()
     this.getNgql = ngql
     this.getSpace = space
@@ -800,6 +808,8 @@ class ReadNebulaConfig extends Serializable {
     this.getNoColumn = noColumn
     this.getLimit = limit
     this.getPartitionNum = 1
+    this.getUser = user
+    this.getPasswd = passwd
   }
 }
 
@@ -817,6 +827,8 @@ object ReadNebulaConfig {
     var partitionNum: Int = 100
     var limit: Int = 1000
     var ngql: String = _
+    var user: String = _
+    var passwd: String = _
 
     def withSpace(space: String): ReadConfigBuilder = {
       this.space = space
@@ -864,12 +876,22 @@ object ReadNebulaConfig {
       this
     }
 
+    def withUser(user: String): ReadConfigBuilder = {
+      this.user = user
+      this
+    }
+
+    def withPasswd(passwd: String): ReadConfigBuilder = {
+      this.passwd = passwd
+      this
+    }
+
     def build(): ReadNebulaConfig = {
       check()
-      if (ngql != null && !ngql.isEmpty) {
-        new ReadNebulaConfig(space, label, returnCols.toList, noColumn, ngql, limit)
+      if (ngql != null && ngql.nonEmpty) {
+        new ReadNebulaConfig(space, label, returnCols.toList, noColumn, ngql, limit, user, passwd)
       } else {
-        new ReadNebulaConfig(space, label, returnCols.toList, noColumn, partitionNum, limit)
+        new ReadNebulaConfig(space, label, returnCols.toList, noColumn, partitionNum, limit, user, passwd)
       }
     }
 

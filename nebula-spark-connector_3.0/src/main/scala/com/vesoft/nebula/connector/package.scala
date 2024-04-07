@@ -61,6 +61,12 @@ package object connector {
         .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
         .option(NebulaOptions.ENABLE_STORAGE_SSL, connectionConfig.getEnableStorageSSL)
 
+      if (readConfig.getUser != null && readConfig.getPasswd != null) {
+        dfReader
+          .option(NebulaOptions.USER_NAME, readConfig.getUser)
+          .option(NebulaOptions.PASSWD, readConfig.getPasswd)
+      }
+
       if (connectionConfig.getEnableStorageSSL || connectionConfig.getEnableMetaSSL) {
         dfReader.option(NebulaOptions.SSL_SIGN_TYPE, connectionConfig.getSignType)
         SSLSignType.withName(connectionConfig.getSignType) match {
@@ -98,6 +104,12 @@ package object connector {
         .option(NebulaOptions.EXECUTION_RETRY, connectionConfig.getExecRetry)
         .option(NebulaOptions.ENABLE_META_SSL, connectionConfig.getEnableMetaSSL)
         .option(NebulaOptions.ENABLE_STORAGE_SSL, connectionConfig.getEnableStorageSSL)
+
+      if (readConfig.getUser != null && readConfig.getPasswd != null) {
+        dfReader
+          .option(NebulaOptions.USER_NAME, readConfig.getUser)
+          .option(NebulaOptions.PASSWD, readConfig.getPasswd)
+      }
 
       if (connectionConfig.getEnableStorageSSL || connectionConfig.getEnableMetaSSL) {
         dfReader.option(NebulaOptions.SSL_SIGN_TYPE, connectionConfig.getSignType)

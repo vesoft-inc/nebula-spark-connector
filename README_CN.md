@@ -79,6 +79,8 @@ Nebula Spark Connector 支持 Spark 2.2， 2.4 和 3.x.
   </dependency>
   ```
 
+在做写入时, 请确保作为属性的DataFrame的列名是和NebulaGraph中的属性名是一致的，如果不一致，请先使用 `DataFrame.withColumnRenamed` 进行DataFrame列名的重命名。
+
 将 DataFrame 作为点 `INSERT` 写入 Nebula Graph :
 
   ```

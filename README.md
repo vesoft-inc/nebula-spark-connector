@@ -70,7 +70,9 @@ NebulaGraph Spark Connector support spark 2.2, 2.4 and 3.0.
      <version>2.1.1</version>
   </dependency>
   ```
-  
+
+  When writing, please ensure that the column name of the DataFrame as an attribute is consistent with the attribute name in NebulaGraph. If they are inconsistent, please use `DataFrame.withColumnRenamed` to rename the DataFrame column name first.
+
   Write DataFrame `INSERT` into NebulaGraph as Vertices:
   ```
     val config = NebulaConnectionConfig

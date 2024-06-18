@@ -95,6 +95,8 @@ object NebulaSparkWriterExample {
     */
   def writeVertex(spark: SparkSession): Unit = {
     val df = spark.read.json("vertex")
+    // if the column of df is name1, age, born, then we need to rename it to name first. Because the name of Nebula Property is name.
+    // df.withColumnRenamed("name1", "name")
     df.show()
 
     val config = getNebulaConnectionConfig()

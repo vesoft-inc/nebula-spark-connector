@@ -12,14 +12,16 @@ import org.apache.spark.sql.types.StructType
 
 class NebulaPartitionReaderFactory(private val nebulaOptions: NebulaOptions,
                                    private val schema: StructType)
-    extends PartitionReaderFactory {
+  extends PartitionReaderFactory {
   override def createReader(inputPartition: InputPartition): PartitionReader[InternalRow] = {
     val partition = inputPartition.asInstanceOf[NebulaPartition].partition
     if (DataTypeEnum.VERTEX.toString.equals(nebulaOptions.dataType)) {
 
       new NebulaVertexPartitionReader(partition, nebulaOptions, schema)
-    } else {
+    } else if (DataTypeEnum.EDGE.toString.equals(nebulaOptions.dataType)) {
       new NebulaEdgePartitionReader(partition, nebulaOptions, schema)
+    } else {
+      new NebulaNgqlEdgePartitionReader(nebulaOptions, schema)
     }
   }
 }

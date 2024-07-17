@@ -184,7 +184,7 @@ trait NebulaReader {
                                                                   0,
                                                                   Long.MaxValue,
                                                                   false,
-                                                                  true)
+                                                                  false)
               } else {
                 vertexResponseIterator =
                   storageClient.scanVertex(nebulaOptions.spaceName,
@@ -195,7 +195,7 @@ trait NebulaReader {
                                            0,
                                            Long.MaxValue,
                                            false,
-                                           true)
+                                           false)
               }
             } catch {
               case e: Exception =>

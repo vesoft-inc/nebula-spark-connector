@@ -183,7 +183,7 @@ trait NebulaReader {
                                                                   nebulaOptions.limit,
                                                                   0,
                                                                   Long.MaxValue,
-                                                                  true,
+                                                                  false,
                                                                   true)
               } else {
                 vertexResponseIterator =
@@ -194,7 +194,7 @@ trait NebulaReader {
                                            nebulaOptions.limit,
                                            0,
                                            Long.MaxValue,
-                                           true,
+                                           false,
                                            true)
               }
             } catch {
@@ -240,8 +240,8 @@ trait NebulaReader {
                                                               nebulaOptions.limit,
                                                               0L,
                                                               Long.MaxValue,
-                                                              true,
-                                                              true)
+                                                              false,
+                                                              false)
               } else {
                 edgeResponseIterator = storageClient.scanEdge(nebulaOptions.spaceName,
                                                               scanPartIterator.next(),
@@ -250,8 +250,8 @@ trait NebulaReader {
                                                               nebulaOptions.limit,
                                                               0,
                                                               Long.MaxValue,
-                                                              true,
-                                                              true)
+                                                              false,
+                                                              false)
               }
             } catch {
               case e: Exception =>

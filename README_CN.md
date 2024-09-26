@@ -208,6 +208,7 @@ Nebula Spark Connector 支持 Spark 2.2， 2.4 和 3.x.
 df = spark.read.format(
     "com.vesoft.nebula.connector.NebulaDataSource").option(
     "type", "vertex").option(
+    "operateType", "write").option(
     "spaceName", "basketballplayer").option(
     "label", "player").option(
     "returnCols", "name,age").option(
@@ -243,6 +244,7 @@ rows
 ```python
 df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
     "type", "vertex").option(
+    "operateType", "write").option(
     "spaceName", "basketballplayer").option(
     "label", "player").option(
     "vidPolicy", "").option(
@@ -261,6 +263,7 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
 ```python
 df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
     "type", "vertex").option(
+    "operateType", "write").option(
     "spaceName", "basketballplayer").option(
     "label", "player").option(
     "vidPolicy", "").option(
@@ -278,6 +281,7 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
 ```python
 df.write.format("com.vesoft.nebula.connector.NebulaDataSource")
     .mode("overwrite")
+    .option("operateType", "write")
     .option("srcPolicy", "")
     .option("dstPolicy", "")
     .option("metaAddress", "metad0:9559")
@@ -299,6 +303,7 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource")
 ```python
 df.write.format("com.vesoft.nebula.connector.NebulaDataSource")
     .mode("overwrite")
+    .option("operateType", "write")
     .option("srcPolicy", "")
     .option("dstPolicy", "")
     .option("metaAddress", "metad0:9559")
@@ -323,6 +328,7 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource")
 
 ```scala
 /** write config */
+val OPERATE_TYPE: String = "operateType"
 val RATE_LIMIT: String = "rateLimit"
 val VID_POLICY: String = "vidPolicy"
 val SRC_POLICY: String = "srcPolicy"
@@ -364,6 +370,7 @@ spark = SparkSession.builder.config(
 df = spark.read.format(
   "com.vesoft.nebula.connector.NebulaDataSource").option(
     "type", "vertex").option(
+    "operateType", "write").option(
     "spaceName", "basketballplayer").option(
     "label", "player").option(
     "returnCols", "name,age").option(

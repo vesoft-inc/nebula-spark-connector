@@ -217,6 +217,7 @@ Let's try a write example, by default, the `writeMode` is `insert`
 ```python
 df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
     "type", "vertex").option(
+    "operateType", "write").option(
     "spaceName", "basketballplayer").option(
     "label", "player").option(
     "vidPolicy", "").option(
@@ -232,6 +233,7 @@ For delete or update write mode, we could(for instance)specify with `writeMode` 
 ```python
 df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
     "type", "vertex").option(
+    "operateType", "write").option(
     "spaceName", "basketballplayer").option(
     "label", "player").option(
     "vidPolicy", "").option(
@@ -247,6 +249,7 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource").option(
 ```python
 df.write.format("com.vesoft.nebula.connector.NebulaDataSource")\
     .mode("overwrite")\
+    .option("operateType", "write")\
     .option("srcPolicy", "")\
     .option("dstPolicy", "")\
     .option("metaAddress", "metad0:9559")\
@@ -266,6 +269,7 @@ df.write.format("com.vesoft.nebula.connector.NebulaDataSource")\
 ```python
 df.write.format("com.vesoft.nebula.connector.NebulaDataSource")\
     .mode("overwrite")\
+    .option("operateType", "write")\
     .option("srcPolicy", "")\
     .option("dstPolicy", "")\
     .option("metaAddress", "metad0:9559")\
@@ -289,6 +293,7 @@ For more options, i.e. delete edge with vertex being deleted, refer to [nebula/c
 
 ```scala
   /** write config */
+ val OPERATE_TYPE: String = "operateType"
   val RATE_LIMIT: String   = "rateLimit"
   val VID_POLICY: String   = "vidPolicy"
   val SRC_POLICY: String   = "srcPolicy"
@@ -330,6 +335,7 @@ spark = SparkSession.builder.config(
 df = spark.read.format(
   "com.vesoft.nebula.connector.NebulaDataSource").option(
     "type", "vertex").option(
+    "operateType", "write").option(
     "spaceName", "basketballplayer").option(
     "label", "player").option(
     "returnCols", "name,age").option(

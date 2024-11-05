@@ -38,20 +38,20 @@ trait NebulaReader {
   private val LOG: Logger = LoggerFactory.getLogger(this.getClass)
 
   private var metaProvider: MetaProvider = _
-  private var schema: StructType         = _
+  private var schema      : StructType   = _
 
-  protected var dataIterator: Iterator[BaseTableRow]           = _
-  protected var scanPartIterator: Iterator[Int]                = _
-  protected var resultValues: mutable.ListBuffer[List[Object]] = mutable.ListBuffer[List[Object]]()
-  protected var storageClient: StorageClient                   = _
-  protected var nebulaOptions: NebulaOptions                   = _
+  protected var dataIterator    : Iterator[BaseTableRow]           = _
+  protected var scanPartIterator: Iterator[Int]                    = _
+  protected var resultValues    : mutable.ListBuffer[List[Object]] = mutable.ListBuffer[List[Object]]()
+  protected var storageClient   : StorageClient                    = _
+  protected var nebulaOptions   : NebulaOptions                    = _
 
   private var vertexResponseIterator: ScanVertexResultIterator = _
-  private var edgeResponseIterator: ScanEdgeResultIterator     = _
+  private var edgeResponseIterator  : ScanEdgeResultIterator   = _
 
   /**
-    * init the reader: init metaProvider, storageClient
-    */
+   * init the reader: init metaProvider, storageClient
+   */
   def init(index: Int, nebulaOptions: NebulaOptions, schema: StructType): Int = {
     this.schema = schema
     this.nebulaOptions = nebulaOptions
@@ -65,7 +65,7 @@ trait NebulaReader {
       nebulaOptions.sslSignType,
       nebulaOptions.caSignParam,
       nebulaOptions.selfSignParam
-    )
+      )
     val address: ListBuffer[HostAddress] = new ListBuffer[HostAddress]
 
     for (addr <- nebulaOptions.getMetaAddress) {
@@ -100,6 +100,9 @@ trait NebulaReader {
     }
     storageClient.setUser(nebulaOptions.user)
     storageClient.setPassword(nebulaOptions.passwd)
+    if (nebulaOptions.storageAddressMapping != null) {
+      storageClient.setStorageAddressMapping(nebulaOptions.storageAddressMapping.asJava)
+    }
 
     if (!storageClient.connect()) {
       throw new GraphConnectException("storage connect failed.")
@@ -110,13 +113,13 @@ trait NebulaReader {
   }
 
   /**
-    * resolve the vertex/edge data to InternalRow
-    */
+   * resolve the vertex/edge data to InternalRow
+   */
   protected def getRow(): InternalRow = {
-    val resultSet: Array[ValueWrapper] =
+    val resultSet: Array[ValueWrapper]      =
       dataIterator.next().getValues.toArray.map(v => v.asInstanceOf[ValueWrapper])
-    val getters: Array[NebulaValueGetter] = NebulaUtils.makeGetters(schema)
-    val mutableRow                        = new SpecificInternalRow(schema.fields.map(x => x.dataType))
+    val getters  : Array[NebulaValueGetter] = NebulaUtils.makeGetters(schema)
+    val mutableRow                          = new SpecificInternalRow(schema.fields.map(x => x.dataType))
 
     for (i <- getters.indices) {
       val value: ValueWrapper = resultSet(i)
@@ -161,12 +164,12 @@ trait NebulaReader {
   }
 
   /**
-    * if the scan response has next vertex
-    */
+   * if the scan response has next vertex
+   */
   protected def hasNextVertexRow: Boolean = {
     (dataIterator != null || vertexResponseIterator != null || scanPartIterator.hasNext) && {
       var continue: Boolean = false
-      var break: Boolean    = false
+      var break   : Boolean = false
       while ((dataIterator == null || !dataIterator.hasNext) && !break) {
         resultValues.clear()
         continue = false
@@ -180,8 +183,8 @@ trait NebulaReader {
                                                                   nebulaOptions.limit,
                                                                   0,
                                                                   Long.MaxValue,
-                                                                  true,
-                                                                  true)
+                                                                  false,
+                                                                  false)
               } else {
                 vertexResponseIterator =
                   storageClient.scanVertex(nebulaOptions.spaceName,
@@ -191,8 +194,8 @@ trait NebulaReader {
                                            nebulaOptions.limit,
                                            0,
                                            Long.MaxValue,
-                                           true,
-                                           true)
+                                           false,
+                                           false)
               }
             } catch {
               case e: Exception =>
@@ -218,12 +221,12 @@ trait NebulaReader {
   }
 
   /**
-    * if the scan response has next edge
-    */
+   * if the scan response has next edge
+   */
   protected def hasNextEdgeRow: Boolean =
     (dataIterator != null || edgeResponseIterator != null || scanPartIterator.hasNext) && {
       var continue: Boolean = false
-      var break: Boolean    = false
+      var break   : Boolean = false
       while ((dataIterator == null || !dataIterator.hasNext) && !break) {
         resultValues.clear()
         continue = false
@@ -237,8 +240,8 @@ trait NebulaReader {
                                                               nebulaOptions.limit,
                                                               0L,
                                                               Long.MaxValue,
-                                                              true,
-                                                              true)
+                                                              false,
+                                                              false)
               } else {
                 edgeResponseIterator = storageClient.scanEdge(nebulaOptions.spaceName,
                                                               scanPartIterator.next(),
@@ -247,8 +250,8 @@ trait NebulaReader {
                                                               nebulaOptions.limit,
                                                               0,
                                                               Long.MaxValue,
-                                                              true,
-                                                              true)
+                                                              false,
+                                                              false)
               }
             } catch {
               case e: Exception =>
@@ -273,8 +276,8 @@ trait NebulaReader {
     }
 
   /**
-    * close the reader
-    */
+   * close the reader
+   */
   protected def closeReader(): Unit = {
     metaProvider.close()
     storageClient.close()

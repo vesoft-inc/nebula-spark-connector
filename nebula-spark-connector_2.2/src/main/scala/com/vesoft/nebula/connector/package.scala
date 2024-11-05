@@ -129,6 +129,9 @@ package object connector {
           .option(NebulaOptions.USER_NAME, readConfig.getUser)
           .option(NebulaOptions.PASSWD, readConfig.getPasswd)
       }
+      if (readConfig.getStorageAddrMapping != null) {
+        dfReader.option(NebulaOptions.STORAGE_ADDR_MAPPING, readConfig.getStorageAddrMapping)
+      }
 
       if (connectionConfig.getEnableStorageSSL || connectionConfig.getEnableMetaSSL) {
         dfReader.option(NebulaOptions.SSL_SIGN_TYPE, connectionConfig.getSignType)
@@ -172,6 +175,9 @@ package object connector {
         dfReader
           .option(NebulaOptions.USER_NAME, readConfig.getUser)
           .option(NebulaOptions.PASSWD, readConfig.getPasswd)
+      }
+      if (readConfig.getStorageAddrMapping != null) {
+        dfReader.option(NebulaOptions.STORAGE_ADDR_MAPPING, readConfig.getStorageAddrMapping)
       }
 
       if (connectionConfig.getEnableStorageSSL || connectionConfig.getEnableMetaSSL) {

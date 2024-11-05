@@ -5,12 +5,16 @@
 
 package com.vesoft.nebula.connector
 
+import com.alibaba.fastjson.JSON
+
 import java.util.Properties
 import com.vesoft.nebula.connector.ssl.{CASSLSignParams, SSLSignType, SelfSSLSignParams}
 import com.vesoft.nebula.connector.utils.AddressCheckUtil
 import org.apache.commons.lang.StringUtils
 import org.apache.spark.sql.catalyst.util.CaseInsensitiveMap
 
+import scala.collection.JavaConverters.asScalaSetConverter
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) extends Serializable {
@@ -29,43 +33,57 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
       CaseInsensitiveMap(
         parameters ++ Map(
           NebulaOptions.META_ADDRESS -> hostAndPorts,
-          NebulaOptions.SPACE_NAME   -> spaceName,
-          NebulaOptions.TYPE         -> dataType,
-          NebulaOptions.LABEL        -> label
-        ))
-    )
+          NebulaOptions.SPACE_NAME -> spaceName,
+          NebulaOptions.TYPE -> dataType,
+          NebulaOptions.LABEL -> label
+          ))
+      )
   }
+
   val operaType = OperaType.withName(parameters(OPERATE_TYPE))
 
   /**
-    * Return property with all options
-    */
+   * Return property with all options
+   */
   val asProperties: Properties = {
     val properties = new Properties()
     parameters.originalMap.foreach { case (k, v) => properties.setProperty(k, v) }
     properties
   }
 
-  val timeout: Int = parameters.getOrElse(TIMEOUT, DEFAULT_CONNECTION_TIMEOUT).toString.toInt
-  val connectionRetry: Int =
+  val timeout              : Int                 = parameters.getOrElse(TIMEOUT, DEFAULT_CONNECTION_TIMEOUT).toString.toInt
+  val connectionRetry      : Int                 =
     parameters.getOrElse(CONNECTION_RETRY, DEFAULT_CONNECTION_RETRY).toString.toInt
-  val executionRetry: Int =
+  val executionRetry       : Int                 =
     parameters.getOrElse(EXECUTION_RETRY, DEFAULT_EXECUTION_RETRY).toString.toInt
-  val user: String      = parameters.getOrElse(USER_NAME, DEFAULT_USER_NAME)
-  val passwd: String    = parameters.getOrElse(PASSWD, DEFAULT_PASSWD)
-  val rateLimit: Long   = parameters.getOrElse(RATE_LIMIT, DEFAULT_RATE_LIMIT).toString.toLong
+  val user                 : String              = parameters.getOrElse(USER_NAME, DEFAULT_USER_NAME)
+  val passwd               : String              = parameters.getOrElse(PASSWD, DEFAULT_PASSWD)
+  val storageAddressMapping: Map[String, String] =
+    if (!parameters.isDefinedAt(STORAGE_ADDR_MAPPING)) {
+      null
+    }
+    else {
+      val mappingString = parameters.get(STORAGE_ADDR_MAPPING).get
+      val jObject       = JSON.parse(mappingString).asInstanceOf[java.util.Map[String, String]]
+      val tmpMap        = new mutable.HashMap[String, String]
+      jObject.keySet().asScala.foreach(key =>
+                                         tmpMap.put(key, jObject.get(key)))
+      tmpMap.toMap
+    }
+
+  val rateLimit  : Long = parameters.getOrElse(RATE_LIMIT, DEFAULT_RATE_LIMIT).toString.toLong
   val rateTimeOut: Long = parameters.getOrElse(RATE_TIME_OUT, DEFAULT_RATE_TIME_OUT).toString.toLong
 
   /** nebula ssl parameters */
-  val enableGraphSSL: Boolean =
+  val enableGraphSSL  : Boolean           =
     parameters.getOrElse(ENABLE_GRAPH_SSL, DEFAULT_ENABLE_GRAPH_SSL).toString.toBoolean
-  val enableMetaSSL: Boolean =
+  val enableMetaSSL   : Boolean           =
     parameters.getOrElse(ENABLE_META_SSL, DEFAULT_ENABLE_META_SSL).toString.toBoolean
-  val enableStorageSSL: Boolean =
+  val enableStorageSSL: Boolean           =
     parameters.getOrElse(ENABLE_STORAGE_SSL, DEFAULT_ENABLE_STORAGE_SSL).toString.toBoolean
-  var sslSignType: String              = _
-  var caSignParam: CASSLSignParams     = _
-  var selfSignParam: SelfSSLSignParams = _
+  var sslSignType     : String            = _
+  var caSignParam     : CASSLSignParams   = _
+  var selfSignParam   : SelfSSLSignParams = _
   if (enableGraphSSL || enableMetaSSL) {
     sslSignType = parameters.get(SSL_SIGN_TYPE).get
     SSLSignType.withName(sslSignType) match {
@@ -99,12 +117,12 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
   val label: String = parameters(LABEL)
 
   /** read parameters */
-  var returnCols: String              = _
-  var partitionNums: String           = _
-  var noColumn: Boolean               = _
-  var limit: Int                      = _
+  var returnCols            : String  = _
+  var partitionNums         : String  = _
+  var noColumn              : Boolean = _
+  var limit                 : Int     = _
   var pushDownFiltersEnabled: Boolean = _
-  var ngql: String                    = _
+  var ngql                  : String  = _
   if (operaType == OperaType.READ) {
     returnCols = parameters(RETURN_COLS)
     noColumn = parameters.getOrElse(NO_COLUMN, false).toString.toBoolean
@@ -122,23 +140,23 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
   }
 
   /** write parameters */
-  var graphAddress: String       = _
-  var vidPolicy: String          = _
-  var srcPolicy: String          = _
-  var dstPolicy: String          = _
-  var vertexField: String        = _
-  var srcVertexField: String     = _
-  var dstVertexField: String     = _
-  var rankField: String          = _
-  var batch: Int                 = _
-  var vidAsProp: Boolean         = _
-  var srcAsProp: Boolean         = _
-  var dstAsProp: Boolean         = _
-  var rankAsProp: Boolean        = _
-  var writeMode: WriteMode.Value = _
-  var deleteEdge: Boolean        = _
-  var overwrite: Boolean         = _
-  var disableWriteLog: Boolean   = _
+  var graphAddress   : String          = _
+  var vidPolicy      : String          = _
+  var srcPolicy      : String          = _
+  var dstPolicy      : String          = _
+  var vertexField    : String          = _
+  var srcVertexField : String          = _
+  var dstVertexField : String          = _
+  var rankField      : String          = _
+  var batch          : Int             = _
+  var vidAsProp      : Boolean         = _
+  var srcAsProp      : Boolean         = _
+  var dstAsProp      : Boolean         = _
+  var rankAsProp     : Boolean         = _
+  var writeMode      : WriteMode.Value = _
+  var deleteEdge     : Boolean         = _
+  var overwrite      : Boolean         = _
+  var disableWriteLog: Boolean         = _
 
   if (operaType == OperaType.WRITE) {
     require(parameters.isDefinedAt(GRAPH_ADDRESS),
@@ -214,74 +232,75 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
 object NebulaOptions {
 
   /** nebula common config */
-  val SPACE_NAME: String    = "spaceName"
-  val META_ADDRESS: String  = "metaAddress"
+  val SPACE_NAME   : String = "spaceName"
+  val META_ADDRESS : String = "metaAddress"
   val GRAPH_ADDRESS: String = "graphAddress"
-  val TYPE: String          = "type"
-  val LABEL: String         = "label"
+  val TYPE         : String = "type"
+  val LABEL        : String = "label"
 
   /** connection config */
-  val TIMEOUT: String            = "timeout"
-  val CONNECTION_RETRY: String   = "connectionRetry"
-  val EXECUTION_RETRY: String    = "executionRetry"
-  val RATE_TIME_OUT: String      = "rateTimeOut"
-  val USER_NAME: String          = "user"
-  val PASSWD: String             = "passwd"
-  val ENABLE_GRAPH_SSL: String   = "enableGraphSSL"
-  val ENABLE_META_SSL: String    = "enableMetaSSL"
-  val ENABLE_STORAGE_SSL: String = "enableStorageSSL"
-  val SSL_SIGN_TYPE: String      = "sslSignType"
-  val CA_SIGN_PARAM: String      = "caSignParam"
-  val SELF_SIGN_PARAM: String    = "selfSignParam"
+  val TIMEOUT             : String = "timeout"
+  val CONNECTION_RETRY    : String = "connectionRetry"
+  val EXECUTION_RETRY     : String = "executionRetry"
+  val RATE_TIME_OUT       : String = "rateTimeOut"
+  val USER_NAME           : String = "user"
+  val PASSWD              : String = "passwd"
+  val STORAGE_ADDR_MAPPING: String = "storage_addr_mapping"
+  val ENABLE_GRAPH_SSL    : String = "enableGraphSSL"
+  val ENABLE_META_SSL     : String = "enableMetaSSL"
+  val ENABLE_STORAGE_SSL  : String = "enableStorageSSL"
+  val SSL_SIGN_TYPE       : String = "sslSignType"
+  val CA_SIGN_PARAM       : String = "caSignParam"
+  val SELF_SIGN_PARAM     : String = "selfSignParam"
 
   val OPERATE_TYPE: String = "operateType"
 
   /** read config */
-  val RETURN_COLS: String             = "returnCols"
-  val NO_COLUMN: String               = "noColumn"
-  val PARTITION_NUMBER: String        = "partitionNumber"
-  val LIMIT: String                   = "limit"
+  val RETURN_COLS            : String = "returnCols"
+  val NO_COLUMN              : String = "noColumn"
+  val PARTITION_NUMBER       : String = "partitionNumber"
+  val LIMIT                  : String = "limit"
   val PUSHDOWN_FILTERS_ENABLE: String = "pushDownFiltersEnable"
 
-  /** read by ngql **/
+  /** read by ngql * */
   val NGQL: String = "ngql"
 
   /** write config */
-  val RATE_LIMIT: String   = "rateLimit"
-  val VID_POLICY: String   = "vidPolicy"
-  val SRC_POLICY: String   = "srcPolicy"
-  val DST_POLICY: String   = "dstPolicy"
+  val RATE_LIMIT  : String = "rateLimit"
+  val VID_POLICY  : String = "vidPolicy"
+  val SRC_POLICY  : String = "srcPolicy"
+  val DST_POLICY  : String = "dstPolicy"
   val VERTEX_FIELD         = "vertexField"
   val SRC_VERTEX_FIELD     = "srcVertexField"
   val DST_VERTEX_FIELD     = "dstVertexField"
   val RANK_FIELD           = "rankField"
-  val BATCH: String        = "batch"
-  val VID_AS_PROP: String  = "vidAsProp"
-  val SRC_AS_PROP: String  = "srcAsProp"
-  val DST_AS_PROP: String  = "dstAsProp"
+  val BATCH       : String = "batch"
+  val VID_AS_PROP : String = "vidAsProp"
+  val SRC_AS_PROP : String = "srcAsProp"
+  val DST_AS_PROP : String = "dstAsProp"
   val RANK_AS_PROP: String = "rankAsProp"
-  val WRITE_MODE: String   = "writeMode"
-  val DELETE_EDGE: String  = "deleteEdge"
-  val OVERWRITE: String    = "overwrite"
+  val WRITE_MODE  : String = "writeMode"
+  val DELETE_EDGE : String = "deleteEdge"
+  val OVERWRITE   : String = "overwrite"
   val DISABLE_WRITE_LOG    = "disableWriteLog"
 
-  val DEFAULT_TIMEOUT: Int            = 3000
-  val DEFAULT_CONNECTION_TIMEOUT: Int = 3000
-  val DEFAULT_CONNECTION_RETRY: Int   = 3
-  val DEFAULT_EXECUTION_RETRY: Int    = 3
-  val DEFAULT_USER_NAME: String       = "root"
-  val DEFAULT_PASSWD: String          = "nebula"
+  val DEFAULT_TIMEOUT           : Int    = 3000
+  val DEFAULT_CONNECTION_TIMEOUT: Int    = 3000
+  val DEFAULT_CONNECTION_RETRY  : Int    = 3
+  val DEFAULT_EXECUTION_RETRY   : Int    = 3
+  val DEFAULT_USER_NAME         : String = "root"
+  val DEFAULT_PASSWD            : String = "nebula"
 
-  val DEFAULT_ENABLE_GRAPH_SSL: Boolean   = false
-  val DEFAULT_ENABLE_META_SSL: Boolean    = false
+  val DEFAULT_ENABLE_GRAPH_SSL  : Boolean = false
+  val DEFAULT_ENABLE_META_SSL   : Boolean = false
   val DEFAULT_ENABLE_STORAGE_SSL: Boolean = false
 
   val DEFAULT_LIMIT: Int = 1000
 
-  val DEFAULT_RATE_LIMIT: Long    = 1024L
-  val DEFAULT_RATE_TIME_OUT: Long = 100
-  val DEFAULT_POLICY: String      = null
-  val DEFAULT_BATCH: Int          = 1000
+  val DEFAULT_RATE_LIMIT   : Long   = 1024L
+  val DEFAULT_RATE_TIME_OUT: Long   = 100
+  val DEFAULT_POLICY       : String = null
+  val DEFAULT_BATCH        : Int    = 1000
 
   val DEFAULT_WRITE_MODE = WriteMode.INSERT
 

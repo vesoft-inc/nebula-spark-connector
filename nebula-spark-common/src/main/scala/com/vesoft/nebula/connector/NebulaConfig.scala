@@ -5,9 +5,12 @@
 
 package com.vesoft.nebula.connector
 
+import com.alibaba.fastjson.JSON
+import com.alibaba.fastjson.serializer.SerializeFilter
 import com.vesoft.nebula.connector.ssl.{CASSLSignParams, SSLSignType, SelfSSLSignParams}
 import org.slf4j.{Logger, LoggerFactory}
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 class NebulaConnectionConfig(metaAddress: String,
@@ -54,18 +57,18 @@ object NebulaConnectionConfig {
   class ConfigBuilder {
     private val LOG = LoggerFactory.getLogger(this.getClass)
 
-    protected var metaAddress: String = _
-    protected var graphAddress: String = _
-    protected var timeout: Int = 6000
-    protected var connectionRetry: Int = 1
-    protected var executeRetry: Int = 1
+    protected var metaAddress    : String = _
+    protected var graphAddress   : String = _
+    protected var timeout        : Int    = 6000
+    protected var connectionRetry: Int    = 1
+    protected var executeRetry   : Int    = 1
 
-    protected var enableMetaSSL: Boolean = false
-    protected var enableGraphSSL: Boolean = false
-    protected var enableStorageSSL: Boolean = false
-    protected var sslSignType: SSLSignType.Value = _
-    protected var caSignParam: CASSLSignParams = null
-    protected var selfSignParam: SelfSSLSignParams = null
+    protected var enableMetaSSL   : Boolean           = false
+    protected var enableGraphSSL  : Boolean           = false
+    protected var enableStorageSSL: Boolean           = false
+    protected var sslSignType     : SSLSignType.Value = _
+    protected var caSignParam     : CASSLSignParams   = null
+    protected var selfSignParam   : SelfSSLSignParams = null
 
     /**
      * set nebula meta server address, multi addresses is split by English comma
@@ -181,20 +184,20 @@ object NebulaConnectionConfig {
           !enableStorageSSL || enableStorageSSL && enableMetaSSL,
           "ssl priority order: storage > meta = graph " +
             "please make sure meta ssl is enabled when storage ssl is enabled."
-        )
+          )
         sslSignType match {
           case SSLSignType.CA =>
             assert(
               caSignParam != null && caSignParam.caCrtFilePath != null
                 && caSignParam.crtFilePath != null && caSignParam.keyFilePath != null,
               "ssl sign type is CA, param can not be null"
-            )
+              )
           case SSLSignType.SELF =>
             assert(
               selfSignParam != null && selfSignParam.crtFilePath != null
                 && selfSignParam.keyFilePath != null && selfSignParam.password != null,
               "ssl sign type is SELF, param can not be null"
-            )
+              )
           case _ => assert(false, "SSLSignType config is null")
         }
       }
@@ -217,7 +220,7 @@ object NebulaConnectionConfig {
         sslSignType,
         caSignParam,
         selfSignParam
-      )
+        )
     }
   }
 
@@ -295,13 +298,13 @@ object WriteNebulaVertexConfig {
 
   class WriteVertexConfigBuilder {
 
-    var space: String = _
-    var tagName: String = _
+    var space    : String = _
+    var tagName  : String = _
     var vidPolicy: String = _
-    var vidField: String = _
-    var batch: Int = 512
-    var user: String = "root"
-    var passwd: String = "nebula"
+    var vidField : String = _
+    var batch    : Int    = 512
+    var user     : String = "root"
+    var passwd   : String = "nebula"
     var writeMode: String = "insert"
 
     /** whether set vid as property */
@@ -418,17 +421,17 @@ object WriteNebulaVertexConfig {
     def build(): WriteNebulaVertexConfig = {
       check()
       new WriteNebulaVertexConfig(space,
-        tagName,
-        vidField,
-        vidPolicy,
-        batch,
-        vidAsProp,
-        user,
-        passwd,
-        writeMode,
-        deleteEdge,
-        overwrite,
-        disableWriteLog)
+                                  tagName,
+                                  vidField,
+                                  vidPolicy,
+                                  batch,
+                                  vidAsProp,
+                                  user,
+                                  passwd,
+                                  writeMode,
+                                  deleteEdge,
+                                  overwrite,
+                                  disableWriteLog)
     }
 
     private def check(): Unit = {
@@ -441,7 +444,7 @@ object WriteNebulaVertexConfig {
           || vidPolicy.equalsIgnoreCase(KeyPolicy.HASH.toString)
           || vidPolicy.equalsIgnoreCase(KeyPolicy.UUID.toString),
         "config vidPolicy is illegal, please don't set vidPolicy or set vidPolicy \"HASH\" or \"UUID\""
-      )
+        )
       assert(user != null && !user.isEmpty, "user is empty")
       assert(passwd != null && !passwd.isEmpty, "passwd is empty")
       try {
@@ -530,17 +533,17 @@ object WriteNebulaEdgeConfig {
    */
   class WriteEdgeConfigBuilder {
 
-    var space: String = _
+    var space   : String = _
     var edgeName: String = _
 
     var srcIdField: String = _
-    var srcPolicy: String = _
+    var srcPolicy : String = _
     var dstIdField: String = _
-    var dstPolicy: String = _
-    var rankField: String = _
-    var batch: Int = 512
-    var user: String = "root"
-    var passwd: String = "nebula"
+    var dstPolicy : String = _
+    var rankField : String = _
+    var batch     : Int    = 512
+    var user      : String = "root"
+    var passwd    : String = "nebula"
 
     /** whether srcId as property */
     var srcAsProp: Boolean = false
@@ -695,21 +698,21 @@ object WriteNebulaEdgeConfig {
     def build(): WriteNebulaEdgeConfig = {
       check()
       new WriteNebulaEdgeConfig(space,
-        edgeName,
-        srcIdField,
-        srcPolicy,
-        dstIdField,
-        dstPolicy,
-        rankField,
-        batch,
-        srcAsProp,
-        dstAsProp,
-        rankAsProp,
-        user,
-        passwd,
-        writeMode,
-        overwrite,
-        disableWriteLog)
+                                edgeName,
+                                srcIdField,
+                                srcPolicy,
+                                dstIdField,
+                                dstPolicy,
+                                rankField,
+                                batch,
+                                srcAsProp,
+                                dstAsProp,
+                                rankAsProp,
+                                user,
+                                passwd,
+                                writeMode,
+                                overwrite,
+                                disableWriteLog)
     }
 
     private def check(): Unit = {
@@ -722,13 +725,13 @@ object WriteNebulaEdgeConfig {
           || srcPolicy.equalsIgnoreCase(KeyPolicy.HASH.toString)
           || srcPolicy.equalsIgnoreCase(KeyPolicy.UUID.toString),
         "config srcPolicy is illegal, please don't set srcPolicy or set srcPolicy \"HASH\" or \"UUID\""
-      )
+        )
       assert(
         dstPolicy == null
           || dstPolicy.equalsIgnoreCase(KeyPolicy.HASH.toString)
           || dstPolicy.equalsIgnoreCase(KeyPolicy.UUID.toString),
         "config dstPolicy is illegal, please don't set dstPolicy or set dstPolicy \"HASH\" or \"UUID\""
-      )
+        )
       assert(batch > 0, s"config batch must be positive, your batch is $batch.")
       assert(user != null && !user.isEmpty, "user is empty")
       assert(passwd != null && !passwd.isEmpty, "passwd is empty")
@@ -762,18 +765,20 @@ object WriteNebulaEdgeConfig {
  * you can set partitionNum to define spark partition nums to read nebula graph.
  */
 class ReadNebulaConfig extends Serializable {
-  var getSpace: String = _
-  var getLabel: String = _
-  var getReturnCols: List[String] = _
-  var getNoColumn: Boolean = _
-  var getPartitionNum: Int = _
-  var getLimit: Int = _
-  var getNgql: String = _
-  var getUser: String = _
-  var getPasswd: String = _
+  var getStorageAddrMapping: String       = _
+  var getSpace             : String       = _
+  var getLabel             : String       = _
+  var getReturnCols        : List[String] = _
+  var getNoColumn          : Boolean      = _
+  var getPartitionNum      : Int          = _
+  var getLimit             : Int          = _
+  var getNgql              : String       = _
+  var getUser              : String       = _
+  var getPasswd            : String       = _
 
   // todo add filter
-  def this(space: String,
+  def this(storageAddressMapping: String,
+           space: String,
            label: String,
            returnCols: List[String],
            noColumn: Boolean,
@@ -782,6 +787,7 @@ class ReadNebulaConfig extends Serializable {
            user: String,
            passwd: String) = {
     this()
+    this.getStorageAddrMapping = storageAddressMapping
     this.getSpace = space
     this.getLabel = label
     this.getReturnCols = returnCols
@@ -792,7 +798,8 @@ class ReadNebulaConfig extends Serializable {
     this.getPasswd = passwd
   }
 
-  def this(space: String,
+  def this(storageAddressMapping: String,
+           space: String,
            label: String,
            returnCols: List[String],
            noColumn: Boolean,
@@ -801,6 +808,7 @@ class ReadNebulaConfig extends Serializable {
            user: String,
            passwd: String) = {
     this()
+    this.getStorageAddrMapping = storageAddressMapping
     this.getNgql = ngql
     this.getSpace = space
     this.getLabel = label
@@ -820,15 +828,30 @@ object ReadNebulaConfig {
   private val LOG: Logger = LoggerFactory.getLogger(this.getClass)
 
   class ReadConfigBuilder {
-    var space: String = _
-    var label: String = _
-    var returnCols: ListBuffer[String] = new ListBuffer[String]
-    var noColumn: Boolean = false
-    var partitionNum: Int = 100
-    var limit: Int = 1000
-    var ngql: String = _
-    var user: String = _
-    var passwd: String = _
+    var storageAddrMapping: String             = _
+    var space             : String             = _
+    var label             : String             = _
+    var returnCols        : ListBuffer[String] = new ListBuffer[String]
+    var noColumn          : Boolean            = false
+    var partitionNum      : Int                = 100
+    var limit             : Int                = 1000
+    var ngql              : String             = _
+    var user              : String             = _
+    var passwd            : String             = _
+
+
+    def withStorageAddrMapping(storageAddrMapping: Map[String, String]): ReadConfigBuilder = {
+      val storageAddressMap: java.util.HashMap[String, Object] = new java.util.HashMap[String, Object]()
+      if (storageAddrMapping != null && storageAddrMapping.nonEmpty) {
+        for (map <- storageAddrMapping) {
+          storageAddressMap.put (map._1, map._2)
+        }
+        this.storageAddrMapping = JSON.toJSONString(storageAddressMap, new Array[SerializeFilter](0))
+      } else{
+        this.storageAddrMapping = null
+      }
+      this
+    }
 
     def withSpace(space: String): ReadConfigBuilder = {
       this.space = space
@@ -889,9 +912,9 @@ object ReadNebulaConfig {
     def build(): ReadNebulaConfig = {
       check()
       if (ngql != null && ngql.nonEmpty) {
-        new ReadNebulaConfig(space, label, returnCols.toList, noColumn, ngql, limit, user, passwd)
+        new ReadNebulaConfig(storageAddrMapping, space, label, returnCols.toList, noColumn, ngql, limit, user, passwd)
       } else {
-        new ReadNebulaConfig(space, label, returnCols.toList, noColumn, partitionNum, limit, user, passwd)
+        new ReadNebulaConfig(storageAddrMapping, space, label, returnCols.toList, noColumn, partitionNum, limit, user, passwd)
       }
     }
 
@@ -900,7 +923,7 @@ object ReadNebulaConfig {
       assert(label != null && !label.isEmpty, s"config label is empty.")
       assert(limit > 0, s"config limit must be positive, your limit is $limit")
       assert(partitionNum > 0,
-        s"config partitionNum must be positive, your partitionNum is $partitionNum")
+             s"config partitionNum must be positive, your partitionNum is $partitionNum")
       if (noColumn && returnCols.nonEmpty) {
         LOG.warn(
           s"noColumn is true, returnCols will be invalidate "

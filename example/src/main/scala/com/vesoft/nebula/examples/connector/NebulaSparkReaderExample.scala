@@ -33,7 +33,6 @@ object NebulaSparkReaderExample {
     readEdges(spark)
     readVertexGraph(spark)
     readEdgeGraph(spark)
-    //readEdgeWithNgql(spark)
 
     spark.close()
     sys.exit()
@@ -56,6 +55,8 @@ object NebulaSparkReaderExample {
       .withReturnCols(List())
       .withLimit(10)
       .withPartitionNum(10)
+      // when your client cannot access the storaged address return by metad, you can set the config with 'withStorageAddrMapping'
+      //.withStorageAddrMapping(Map("127.0.0.1:9779"->"available_ip:9779"))
       .build()
     val vertex = spark.read.nebula(config, nebulaReadVertexConfig).loadVerticesToDF()
     vertex.printSchema()

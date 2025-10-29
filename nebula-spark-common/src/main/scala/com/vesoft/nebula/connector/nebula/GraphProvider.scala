@@ -83,8 +83,8 @@ class GraphProvider(addresses: List[Address],
     * @return if execute succeed
     */
   def switchSpace(space: String): Boolean = {
-    val switchStatment = s"use `$space``"
-    LOG.info(s"switch space `$space``")
+    val switchStatment = s"use `$space`"
+    LOG.info(s"switch space `$space`")
     val result = submit(switchStatment)
     if (!result.isSucceeded) {
       LOG.error(s"switch space $space failed, ${result.getErrorMessage}")

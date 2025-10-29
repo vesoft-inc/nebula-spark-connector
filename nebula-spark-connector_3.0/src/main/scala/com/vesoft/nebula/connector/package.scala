@@ -31,7 +31,7 @@ package object connector {
 
     def nebula(connectionConfig: NebulaConnectionConfig,
                readConfig: ReadNebulaConfig): NebulaDataFrameReader = {
-      SparkValidate.validate("3.0.*", "3.1.*", "3.2.*", "3.3.*")
+      SparkValidate.validate("3.*.*")
       this.connectionConfig = connectionConfig
       this.readConfig = readConfig
       this

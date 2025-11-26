@@ -6,25 +6,35 @@
 
     <groupId>com.vesoft</groupId>
     <artifactId>nebula-spark</artifactId>
+    <version>5.3-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <version>3.0-SNAPSHOT</version>
+    <modules>
+        <module>spark2.4</module>
+        <module>common</module>
+        <module>example</module>
+        <module>spark3</module>
+        <module>assembly</module>
+    </modules>
 
     <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spark.version>2.4.4</spark.version>
-        <scala.binary.version>2.12</scala.binary.version>
-        <scala.version>2.12.10</scala.version>
+        <scala.binary.version>2.11</scala.binary.version>
+        <scala.version>2.11.12</scala.version>
         <scalatest.version>3.2.3</scalatest.version>
+        <artId>nebula-connector_spark2.4</artId>
     </properties>
 
     <!-- More Project Information -->
-    <name>nebula-spark</name>
+    <name>nebula-spark-connector</name>
     <description>Nebula Spark Connector</description>
-    <url>https://github.com/vesoft-inc/nebula-spark-connector</url>
+    <url>https://github.com/vesoft-inc/nebula-ng-tools/spark-connector</url>
     <scm>
-        <connection>scm:git:https://github.com/vesoft-inc/nebula</connection>
-        <url>https://github.com/vesoft-inc/nebula</url>
-        <developerConnection>scm:git:https://github.com/vesoft-inc/nebula</developerConnection>
+        <connection>scm:git:https://github.com/vesoft-inc/nebula-ng</connection>
+        <url>https://github.com/vesoft-inc/nebula-ng</url>
+        <developerConnection>scm:git:https://github.com/vesoft-inc/nebula-ng</developerConnection>
     </scm>
     <licenses>
         <license>
@@ -47,27 +57,6 @@
             </roles>
         </developer>
     </developers>
-
-    <modules>
-        <module>nebula-spark-connector</module>
-        <module>nebula-spark-connector_2.2</module>
-        <module>nebula-spark-connector_3.0</module>
-        <module>example</module>
-        <module>nebula-spark-common</module>
-    </modules>
-
-    <distributionManagement>
-        <repository>
-            <id>ossrh</id>
-            <name>Nexus Release Repository</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-        </repository>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <name>Nexus Snapshot Repository</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <profiles>
         <!-- Deployment profile (required so these plugins are only used when deploying) -->
@@ -129,55 +118,91 @@
                 </plugins>
             </build>
         </profile>
-
         <profile>
             <id>scala-2.11</id>
             <properties>
-                <scala.version>2.11.12</scala.version>
                 <scala.binary.version>2.11</scala.binary.version>
+                <scala.version>2.11.12</scala.version>
             </properties>
         </profile>
         <profile>
             <id>scala-2.12</id>
             <properties>
-                <scala.version>2.12.10</scala.version>
                 <scala.binary.version>2.12</scala.binary.version>
+                <scala.version>2.12.10</scala.version>
             </properties>
         </profile>
         <profile>
-            <id>spark-2.2</id>
-            <properties>
-                <spark.version>2.2.0</spark.version>
-            </properties>
-        </profile>
-        <profile>
-            <id>spark-2.4</id>
+            <id>spark2.4</id>
             <properties>
                 <spark.version>2.4.4</spark.version>
+                <artId>nebula-connector_spark2.4</artId>
             </properties>
         </profile>
         <profile>
-            <id>spark-3.0</id>
+            <id>spark3</id>
             <properties>
                 <spark.version>3.0.0</spark.version>
+                <artId>nebula-connector_spark3</artId>
             </properties>
         </profile>
     </profiles>
 
     <build>
         <plugins>
-            <!-- Nexus Staging Plugin -->
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.8</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.8.0</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <publishingServerId>sonatype</publishingServerId>
+                    <!-- Release versions will be synced to Maven Central automatically. -->
+                    <autoPublish>true</autoPublish>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>default-deploy</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>publish</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.cyclonedx</groupId>
+                <artifactId>cyclonedx-maven-plugin</artifactId>
+                <version>2.9.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>makeAggregateBom</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <name>Central Portal Snapshots</name>
+            <id>central-portal-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

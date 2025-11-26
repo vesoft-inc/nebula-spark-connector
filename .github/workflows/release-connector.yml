@@ -1,0 +1,103 @@
+# Copyright (c) 2024 vesoft inc. All rights reserved.
+
+name: release-connector
+
+on:
+  release:
+    types:
+      - published
+
+defaults:
+  run:
+    shell: bash
+
+
+jobs:
+  deploy-spark-connector:
+    runs-on: [self-hosted, linux]
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "8"
+
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.8.2
+
+#      - name: Deploy nebula-connector_spark2.4  to sonatype
+#        uses: samuelmeuli/action-maven-publish@v1
+#        with:
+#            gpg_private_key: ${{ secrets.JAVA_GPG_PRIVATE_KEY }}
+#            gpg_passphrase: ""
+#            nexus_username: ${{ secrets.OSSRH_USERNAME }}
+#            nexus_password: ${{ secrets.OSSRH_TOKEN }}
+#            maven_goals_phases: "clean deploy -Dmaven.test.skip=true -pl spark2.4 -am -Pscala-2.11"
+
+
+#      - name: Deploy nebula-connector_spark3 to sonatype
+#        uses: samuelmeuli/action-maven-publish@v1
+#        with:
+#            gpg_private_key: ${{ secrets.JAVA_GPG_PRIVATE_KEY }}
+#            gpg_passphrase: ""
+#            nexus_username: ${{ secrets.OSSRH_USERNAME }}
+#            nexus_password: ${{ secrets.OSSRH_TOKEN }}
+#            maven_goals_phases: "clean deploy -Dmaven.test.skip=true -pl spark3 -am -Pscala-2.12"
+
+      - name: setup minio
+        uses: vesoft-inc/.github/actions/setup-minio@master
+        with:
+          minio_url: ${{ secrets.MINIO_ENDPOINT }}
+          access_key: ${{ secrets.MINIO_KEY }}
+          secret_key: ${{ secrets.MINIO_SECRET }}
+
+      - name: Get the version
+        id: get_version
+        run: |
+          tag=$(echo ${{ github.ref }} | rev | cut -d/ -f1 | rev)
+          tagnum=$(echo $tag | sed 's/^v//')
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+          echo "tagnum=$tagnum" >> $GITHUB_OUTPUT
+        shell: bash
+
+
+      - name: package assembly for spark3
+        run: |
+          mvn clean install -Dmaven.javadoc.skip=true -Dmaven.test.skip=true -pl assembly -am -Pscala-2.12 -Pspark3
+
+      - name: Copy nebula-connector for spark3 to release on MinIO
+        run: |
+          mv target/ nebula-graph-sparkconnector/
+          tar czf ./nebula-graph-sparkconnector_spark3-${{ steps.get_version.outputs.tagnum }}.tgz nebula-graph-sparkconnector/nebula-connector_spark3-assembly-${{ steps.get_version.outputs.tagnum }}.jar
+          sha256sum nebula-graph-sparkconnector_spark3-${{ steps.get_version.outputs.tagnum }}.tgz > nebula-graph-sparkconnector_spark3-${{ steps.get_version.outputs.tagnum }}.tgz.sha256sum.txt
+          mc cp nebula-graph-sparkconnector_spark3-${{ steps.get_version.outputs.tagnum }}.tgz minio/release-build/nebula-ng-spark-connector/${{ steps.get_version.outputs.tagnum }}/
+          mc cp nebula-graph-sparkconnector_spark3-${{ steps.get_version.outputs.tagnum }}.tgz.sha256sum.txt minio/release-build/nebula-ng-spark-connector/${{ steps.get_version.outputs.tagnum }}/
+        working-directory: assembly
+
+
+      - name: package assembly for spark2.4
+        run: |
+          mvn clean install -Dmaven.javadoc.skip=true -Dmaven.test.skip=true -pl assembly -am -Pscala-2.11 -Pspark2.4
+
+      - name: Copy nebula-connector for spark2.4 to release on MinIO
+        run: |
+          mv nebula-graph-sparkconnector nebula-graph-sparkconnector3
+          mv target/ nebula-graph-sparkconnector/
+          tar czf ./nebula-graph-sparkconnector_spark2.4-${{ steps.get_version.outputs.tagnum }}.tgz nebula-graph-sparkconnector/nebula-connector_spark2.4-assembly-${{ steps.get_version.outputs.tagnum }}.jar
+          sha256sum nebula-graph-sparkconnector_spark2.4-${{ steps.get_version.outputs.tagnum }}.tgz > nebula-graph-sparkconnector_spark2.4-${{ steps.get_version.outputs.tagnum }}.tgz.sha256sum.txt
+          mc cp nebula-graph-sparkconnector_spark2.4-${{ steps.get_version.outputs.tagnum }}.tgz minio/release-build/nebula-ng-spark-connector/${{ steps.get_version.outputs.tagnum }}/
+          mc cp nebula-graph-sparkconnector_spark2.4-${{ steps.get_version.outputs.tagnum }}.tgz.sha256sum.txt minio/release-build/nebula-ng-spark-connector/${{ steps.get_version.outputs.tagnum }}/
+        working-directory: assembly
+
+      - name: Trigger yueshu-release
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.GH_PAT }}
+          repository: vesoft-inc/yueshu-release
+          event-type: trigger-nebula-ng-spark-connector
+          client-payload: '{"origin_tag": "${{ steps.get_version.outputs.tag }}"}'

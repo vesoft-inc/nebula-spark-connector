@@ -1,69 +1,81 @@
-# This workflow will build a Java project with Maven
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+# Copyright (c) 2024 vesoft inc. All rights reserved.
 
 name: snapshot
 
 on:
   push:
-    branches: [ dev ]
-  schedule:
-    - cron: '0 6 * * *'
+    branches: [dev]
+
+defaults:
+  run:
+    shell: bash
+
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
+  deploy-spark-connector-snapshot:
+    runs-on: [self-hosted, linux]
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v4
-      with:
-        distribution: "temurin"
-        java-version: "8"
+      - name: Check out Git repository
+        uses: actions/checkout@v4
 
-    - name: Cache the Maven packages to speed up build
-      uses: actions/cache@v4
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-maven-
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "8"
 
-    - name: Install nebula-graph
-      run: |
-        mkdir tmp
-        pushd tmp
-        git clone https://github.com/vesoft-inc/nebula-docker-compose.git
-        pushd nebula-docker-compose/
-        cp ../../nebula-spark-connector/src/test/resources/docker-compose.yaml .
-        docker compose up -d
-        sleep 30
-        popd
-        popd
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.8.2
 
-    - name: Deploy SNAPSHOT for spark2.4 to Sonatype
-      uses: samuelmeuli/action-maven-publish@v1
-      with:
-        gpg_private_key: ${{ secrets.JAVA_GPG_PRIVATE_KEY }}
-        gpg_passphrase: ${{ secrets.JAVA_GPG_PASSPHRASE }}
-        nexus_username: ${{ secrets.OSSRH_USERNAME }}
-        nexus_password: ${{ secrets.OSSRH_TOKEN }}
-        maven_args: -pl nebula-spark-connector -am -Pscala-2.11 -Pspark-2.4
+#      - name: Deploy nebula-connector_spark2.4  to SNAPSHOT
+#        uses: samuelmeuli/action-maven-publish@v1
+#        with:
+#          gpg_private_key: ${{ secrets.JAVA_GPG_PRIVATE_KEY }}
+#          gpg_passphrase: ""
+#          nexus_username: ${{ secrets.OSSRH_USERNAME }}
+#          nexus_password: ${{ secrets.OSSRH_TOKEN }}
+#          maven_goals_phases: "clean deploy -Dmaven.javadoc.skip=true -pl spark2.4 -am -Pscala-2.11"
+#
+#
+#      - name: Deploy nebula-connector_spark3 to SNAPSHOT
+#        uses: samuelmeuli/action-maven-publish@v1
+#        with:
+#          gpg_private_key: ${{ secrets.JAVA_GPG_PRIVATE_KEY }}
+#          gpg_passphrase: ""
+#          nexus_username: ${{ secrets.OSSRH_USERNAME }}
+#          nexus_password: ${{ secrets.OSSRH_TOKEN }}
+#          maven_goals_phases: "clean deploy -Dmaven.javadoc.skip=true -pl spark3 -am -Pscala-2.12 "
 
-    - name: Deploy SNAPSHOT for spark2.2 to Sonatype
-      uses: samuelmeuli/action-maven-publish@v1
-      with:
-        gpg_private_key: ${{ secrets.JAVA_GPG_PRIVATE_KEY }}
-        gpg_passphrase: ""
-        nexus_username: ${{ secrets.OSSRH_USERNAME }}
-        nexus_password: ${{ secrets.OSSRH_TOKEN }}
-        maven_args: -pl nebula-spark-connector_2.2 -am -Pscala-2.11 -Pspark-2.2
+      - name: setup minio
+        uses: vesoft-inc/.github/actions/setup-minio@master
+        with:
+          minio_url: ${{ secrets.MINIO_ENDPOINT }}
+          access_key: ${{ secrets.MINIO_KEY }}
+          secret_key: ${{ secrets.MINIO_SECRET }}
 
-    - name: Deploy SNAPSHOT for spark3.0 to Sonatype
-      uses: samuelmeuli/action-maven-publish@v1
-      with:
-        gpg_private_key: ${{ secrets.JAVA_GPG_PRIVATE_KEY }}
-        gpg_passphrase: ${{ secrets.JAVA_GPG_PASSPHRASE }}
-        nexus_username: ${{ secrets.OSSRH_USERNAME }}
-        nexus_password: ${{ secrets.OSSRH_TOKEN }}
-        maven_args: -pl nebula-spark-connector_3.0 -am -Pscala-2.12 -Pspark-3.0
+
+      - name: package assembly for spark3
+        run: |
+          mvn clean install -Dmaven.javadoc.skip=true -Dmaven.test.skip=true -pl assembly -am -Pscala-2.12 -Pspark3
+
+      - name: Copy nebula-connector for spark3 to snapshot on MinIO
+        run: |
+          mv target/ nebula-graph-sparkconnector/
+          tar czf ./nebula-graph-sparkconnector_spark3-5.1-SNAPSHOT.tgz nebula-graph-sparkconnector/nebula-connector_spark3-assembly-5.1-SNAPSHOT.jar
+          mc cp nebula-graph-sparkconnector_spark3-5.1-SNAPSHOT.tgz minio/nightly-build/nebula-ng-spark-connector/5.1-SNAPSHOT/
+        working-directory: assembly
+
+
+      - name: package assembly for spark2.4
+        run: |
+          mvn clean install -Dmaven.javadoc.skip=true -Dmaven.test.skip=true -pl assembly -am -Pscala-2.11 -Pspark2.4
+
+      - name: Copy nebula-connector for spark2.4 to snapshot on MinIO
+        run: |
+          mv nebula-graph-sparkconnector nebula-graph-sparkconnector3
+          mv target/ nebula-graph-sparkconnector/
+          tar czf ./nebula-graph-sparkconnector_spark2.4-5.1-SNAPSHOT.tgz nebula-graph-sparkconnector/nebula-connector_spark2.4-assembly-5.1-SNAPSHOT.jar
+          mc cp nebula-graph-sparkconnector_spark2.4-5.1-SNAPSHOT.tgz minio/nightly-build/nebula-ng-spark-connector/5.1-SNAPSHOT/
+        working-directory: assembly

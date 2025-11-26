@@ -2,15 +2,14 @@
 
 ## Introduction
 
-This repository is the NebulaGraph Connector for Apache Spark.
+This repository is the NebulaGraph Connector for Apache Spark for NebulaGraph 5.
 
 ## Building for Spark2.4 (Optional)
 
 1. Package NebulaGraph Spark Connector.
 
     ```bash
-    $ git clone https://github.com/vesoft-inc/nebula-ng-tools.git
-    $ cd spark-connector
+    $ git clone -b dev https://github.com/vesoft-inc/nebula-spark-connector.git
     ```
 
    package spark-connector for spark2.4
@@ -34,10 +33,10 @@ This repository is the NebulaGraph Connector for Apache Spark.
 
    These commands will generate the corresponding targets:
    ```agsl
-     spark-connector/spark2.4/target/nebula-connector_spark2.4-5.2-SNAPSHOT.jar
+     spark-connector/spark2.4/target/nebula-connector_spark2.4-5.3-SNAPSHOT.jar
    ```
    ```agsl
-     spark-connector/spark3/target/nebula-connector_spark3-5.2-SNAPSHOT.jar
+     spark-connector/spark3/target/nebula-connector_spark3-5.3-SNAPSHOT.jar
    ```
    
 ## Integration with Apache Spark Applications
@@ -48,7 +47,7 @@ This repository is the NebulaGraph Connector for Apache Spark.
   <dependency>
      <groupId>com.vesoft</groupId>
      <artifactId>nebula-connector_spark2.4</artifactId>
-     <version>5.2-SNAPSHOT</version>
+     <version>5.2.0</version>
   </dependency>
   ```
 * Write DataFrame into NebulaGraph as Nodes:
@@ -73,7 +72,7 @@ This repository is the NebulaGraph Connector for Apache Spark.
   ```
   * Write DataFrame into NebulaGraph as Edges:
   ```agsl
-    val df = spark.read.json("spark-connector/example/src/main/resources/edge")
+    val df = spark.read.json("example/src/main/resources/edge")
     df.show()
 
     val nebulaWriteEdgeConfig: WriteNebulaEdgeConfig = WriteNebulaEdgeConfig
@@ -132,6 +131,6 @@ This repository is the NebulaGraph Connector for Apache Spark.
   
 
 
-for complete example, see https://github.com/vesoft-inc/nebula-ng-tools/tree/master/spark-connector/example/src/main/scala/com/vesoft/nebula/example
+for complete example, see https://github.com/vesoft-inc/nebula-spark-connector/tree/dev/example/src/main/scala/com/vesoft/nebula/example
 
-for more configs, see https://github.com/vesoft-inc/nebula-ng-tools/blob/master/spark-connector/common/src/main/scala/com/vesoft/nebula/spark/common/NebulaConfig.scala
+for more configs, see https://github.com/vesoft-inc/nebula-spark-connector/blob/dev/common/src/main/scala/com/vesoft/nebula/spark/common/NebulaConfig.scala

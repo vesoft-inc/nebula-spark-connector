@@ -30,11 +30,11 @@
     <!-- More Project Information -->
     <name>nebula-spark-connector</name>
     <description>Nebula Spark Connector</description>
-    <url>https://github.com/vesoft-inc/nebula-ng-tools/spark-connector</url>
+    <url>https://github.com/vesoft-inc/nebula-spark-connector</url>
     <scm>
-        <connection>scm:git:https://github.com/vesoft-inc/nebula-ng</connection>
-        <url>https://github.com/vesoft-inc/nebula-ng</url>
-        <developerConnection>scm:git:https://github.com/vesoft-inc/nebula-ng</developerConnection>
+        <connection>scm:git:https://github.com/vesoft-inc/nebula-spark-connector</connection>
+        <url>https://github.com/vesoft-inc/nebula-spark-connector</url>
+        <developerConnection>scm:git:https://github.com/vesoft-inc/nebula-spark-connector</developerConnection>
     </scm>
     <licenses>
         <license>

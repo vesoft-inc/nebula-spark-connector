@@ -5,7 +5,7 @@ name: snapshot
 
 on:
   push:
-    branches: [ master ]
+    branches: [ dev ]
   schedule:
     - cron: '0 6 * * *'
 

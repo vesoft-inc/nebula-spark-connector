@@ -5,11 +5,11 @@ name: pull_request
 
 on:
   push:
-    branches: [ master ]
+    branches: [ dev ]
   pull_request:
     branches:
-      - master
-      - 'v[0-9]+.*'
+      - dev
+      - 'release-**'
 
 jobs:
   build:

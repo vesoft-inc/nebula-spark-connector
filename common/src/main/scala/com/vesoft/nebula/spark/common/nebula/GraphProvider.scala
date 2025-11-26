@@ -24,7 +24,7 @@ class GraphProvider(nebulaOptions: NebulaOptions) extends AutoCloseable with Ser
   @transient private[this] lazy val LOG = LoggerFactory.getLogger(this.getClass)
 
   private val addr: Seq[String] = nebulaOptions.graphAddress.split(",").toList
-  private val randomAddr        = scala.util.Random.shuffle(addr)
+  private val randomAddr = scala.util.Random.shuffle(addr)
 
   @transient private val poolBuilder: NebulaPool.Builder = NebulaPool
     .builder(randomAddr.mkString(","), nebulaOptions.user)
@@ -36,7 +36,7 @@ class GraphProvider(nebulaOptions: NebulaOptions) extends AutoCloseable with Ser
     .withTlsCa(nebulaOptions.tlsCa)
     .withTlsCert(nebulaOptions.tlsCert, nebulaOptions.tlsKey)
     .withBlockWhenExhausted(true)
-    .withMaxWaitMills(10 * 60 * 1000)
+    .withMaxWaitMills(Long.MaxValue)
 
   if (nebulaOptions.schema != null && nebulaOptions.schema.nonEmpty) {
     poolBuilder.withSchema(nebulaOptions.schema)
@@ -94,7 +94,7 @@ class GraphProvider(nebulaOptions: NebulaOptions) extends AutoCloseable with Ser
    * @param batchSize batchSize for each scan request
    * @return {@link ScanNodeResultIterator}
    */
-  def scanNode(schema: String, graphName: String, nodeType: String, part: Int, batchSize: Int): ScanNodeResultIterator = {
+  def scanNode(schema:String, graphName: String, nodeType: String, part: Int, batchSize: Int): ScanNodeResultIterator = {
     val client                      = pool.getClient
     var res: ScanNodeResultIterator = null
     try {
@@ -106,7 +106,7 @@ class GraphProvider(nebulaOptions: NebulaOptions) extends AutoCloseable with Ser
   }
 
 
-  def scanNode(schema: String, graphName: String, nodeType: String, returnCols: util.List[String], part: Int, batchSize: Int): ScanNodeResultIterator = {
+  def scanNode(schema:String, graphName: String, nodeType: String, returnCols: util.List[String], part: Int, batchSize: Int): ScanNodeResultIterator = {
     val client                      = pool.getClient
     var res: ScanNodeResultIterator = null
     try {
@@ -126,7 +126,7 @@ class GraphProvider(nebulaOptions: NebulaOptions) extends AutoCloseable with Ser
    * @param batchSize batchSize for each scan request
    * @return {@link ScanEdgeResultIterator}
    */
-  def scanEdge(schema: String, graphName: String, edgeType: String, part: Int, batchSize: Int): ScanEdgeResultIterator = {
+  def scanEdge(schema:String, graphName: String, edgeType: String, part: Int, batchSize: Int): ScanEdgeResultIterator = {
     val client                      = pool.getClient
     var res: ScanEdgeResultIterator = null
     try {
@@ -138,7 +138,7 @@ class GraphProvider(nebulaOptions: NebulaOptions) extends AutoCloseable with Ser
   }
 
 
-  def scanEdge(schema: String, graphName: String, edgeType: String, returnCols: util.List[String], part: Int, batchSize: Int): ScanEdgeResultIterator = {
+  def scanEdge(schema:String, graphName: String, edgeType: String, returnCols: util.List[String], part: Int, batchSize: Int): ScanEdgeResultIterator = {
     val client                      = pool.getClient
     var res: ScanEdgeResultIterator = null
     try {

@@ -108,6 +108,12 @@ trait NebulaGqlReader {
       if (value.isGeography) {
         getters(i).apply(value.asGeography().toString, mutableRow, i)
       }
+      if (value.isSet) {
+        getters(i).apply(value.asSet().toString, mutableRow, i)
+      }
+      if (value.isMap) {
+        getters(i).apply(value.asMap().toString, mutableRow, i)
+      }
     }
     LOG.info(s"mutable row info:$mutableRow")
     mutableRow

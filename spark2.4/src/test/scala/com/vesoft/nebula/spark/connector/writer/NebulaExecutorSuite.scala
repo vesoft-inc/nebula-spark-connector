@@ -180,7 +180,7 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
       Map("col_string" -> "STRING", "col_fixed_string" -> "STRING", "col_bool" -> "BOOL", "col_int" -> "INT32", "col_int64" -> "INT64", "col_double" -> "DOUBLE", "col_date" -> "DATE")
 
     val nebulaEdges: NebulaEdges = NebulaEdges(edgeType, "person", List("id"), Map("id"->"STRING"), List("id1"), "person", List("id"), Map("id"->"STRING"), List("id2"), edges.toList, fieldTypeMap)
-    val edgeStatement = NebulaExecutor.toInsertSentence(graphName, nebulaEdges, "")
+    val edgeStatement = NebulaExecutor.toInsertSentence(graphName, nebulaEdges, "", true)
 
     val exptStatement =
       s"""
@@ -238,7 +238,7 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
                                                edges.toList,
                                                fieldTypeMap)
 
-    val edgeStatement            = NebulaExecutor.toInsertSentence(graphName, nebulaEdges, "")
+    val edgeStatement            = NebulaExecutor.toInsertSentence(graphName, nebulaEdges, "", true)
 
     val exptStatement =
       s"""
@@ -372,7 +372,7 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
 
     val nebulaEdges: NebulaEdges = NebulaEdges(edgeType, "person", List("id"), Map("id"->"STRING"), List("col_string"), "person", List("id"), Map("id"->"STRING"), List("col_fixed_string"), edges.toList, fieldTypeMap)
 
-    val edgeStatement = NebulaExecutor.toDeleteSentence(graphName, edgeType, nebulaEdges)
+    val edgeStatement = NebulaExecutor.toDeleteSentence(graphName, edgeType, nebulaEdges, true)
 
     val expectStatement =
       s"""

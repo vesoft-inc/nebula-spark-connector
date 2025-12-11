@@ -249,18 +249,21 @@ class GraphProvider(nebulaOptions: NebulaOptions) extends AutoCloseable with Ser
 
     var srcNodeType: String       = null
     var dstNodeType: String       = null
+    var isDirected : Boolean      = true
     // regularly match two types of edge:()-[]->() or ()~[]~() to get the srcNodeType and dstNodeType.
     val edgeDirectionPattern      = """\((.*?)\)-\[.*?\]->\((.*?)\)"""
     val edgeUnDirectionPattern    = """\((.*?)\)~\[.*?\]~\((.*?)\)"""
     val regexWithEdgeDirection    = edgeDirectionPattern.r
     val regexWithoutEdgeDirection = edgeUnDirectionPattern.r
     if (edgeTypePattern.matches(edgeDirectionPattern)) {
+      isDirected = true
       edgeTypePattern match {
         case regexWithEdgeDirection(start, end) =>
           srcNodeType = start
           dstNodeType = end
       }
     } else if (edgeTypePattern.matches(edgeUnDirectionPattern)) {
+      isDirected = false
       edgeTypePattern match {
         case regexWithoutEdgeDirection(start, end) =>
           srcNodeType = start
@@ -276,6 +279,7 @@ class GraphProvider(nebulaOptions: NebulaOptions) extends AutoCloseable with Ser
     val dstNodeIdDataType = dstNodeDesc.properties.filterKeys(dstNodeDesc.nodePkNames.contains)
 
     EdgeDesc(edgeType,
+             isDirected,
              srcNodeType,
              srcNodeDesc.nodePkNames,
              srcNodePkDataType,

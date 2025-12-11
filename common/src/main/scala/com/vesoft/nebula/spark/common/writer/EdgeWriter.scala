@@ -27,7 +27,7 @@ class EdgeWriter(nebulaOptions: NebulaOptions,
   var edges: ListBuffer[NebulaEdge] = new ListBuffer()
 
 
-  def writeRow(row:InternalRow): Unit = {
+  def writeRow(row: InternalRow): Unit = {
     val srcIds: mutable.HashMap[String, String] = new mutable.HashMap[String, String]()
     for (i <- dfSrcPkFieldsIndex.indices) {
       val srcIdValue = NebulaExecutor.extraPropValue(row, schema, dfSrcPkFieldsIndex(i), edgeDesc.srcNodePkDataTypeMap(edgeDesc.srcNodePkNames(i)))
@@ -147,17 +147,17 @@ class EdgeWriter(nebulaOptions: NebulaOptions,
       fieldTypeMap)
     val exec        = nebulaOptions.writeMode match {
       case WriteMode.INSERT =>
-        NebulaExecutor.toInsertSentence(nebulaOptions.graphName, nebulaEdges, "")
+        NebulaExecutor.toInsertSentence(nebulaOptions.graphName, nebulaEdges, "", edgeDesc.isDirected)
       case WriteMode.INSERTREPLACE =>
-        NebulaExecutor.toInsertSentence(nebulaOptions.graphName, nebulaEdges, "OR REPLACE")
+        NebulaExecutor.toInsertSentence(nebulaOptions.graphName, nebulaEdges, "OR REPLACE", edgeDesc.isDirected)
       case WriteMode.INSERTIGNORE =>
-        NebulaExecutor.toInsertSentence(nebulaOptions.graphName, nebulaEdges, "OR IGNORE")
+        NebulaExecutor.toInsertSentence(nebulaOptions.graphName, nebulaEdges, "OR IGNORE", edgeDesc.isDirected)
       case WriteMode.INSERTUPDATE =>
-        NebulaExecutor.toInsertSentence(nebulaOptions.graphName, nebulaEdges, "OR UPDATE")
+        NebulaExecutor.toInsertSentence(nebulaOptions.graphName, nebulaEdges, "OR UPDATE", edgeDesc.isDirected)
       case WriteMode.UPDATE =>
-        NebulaExecutor.toUpdateSentence(nebulaOptions.graphName, nebulaOptions.label, nebulaEdges)
+        NebulaExecutor.toUpdateSentence(nebulaOptions.graphName, nebulaOptions.label, nebulaEdges, edgeDesc.isDirected)
       case WriteMode.DELETE | WriteMode.DETACHDELETE =>
-        NebulaExecutor.toDeleteSentence(nebulaOptions.graphName, nebulaOptions.label, nebulaEdges)
+        NebulaExecutor.toDeleteSentence(nebulaOptions.graphName, nebulaOptions.label, nebulaEdges, edgeDesc.isDirected)
       case _ =>
         throw new IllegalArgumentException(s"write mode ${nebulaOptions.writeMode} not supported.")
     }

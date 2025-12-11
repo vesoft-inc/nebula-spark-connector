@@ -11,15 +11,16 @@ import scala.collection.mutable.ArrayBuffer
 
 case class NodeDesc(nodeTypeName: String,
                     nodePkNames: List[String],
-                    propNames:ArrayBuffer[String],
+                    propNames: ArrayBuffer[String],
                     properties: Map[String, String])
 
 case class EdgeDesc(edgeTypeName: String,
+                    isDirected: Boolean,
                     srcNodeTypeName: String,
                     srcNodePkNames: List[String],
                     srcNodePkDataTypeMap: Map[String, String],
                     dstNodeTypeName: String,
                     dstNodePkNames: List[String],
                     dstNodePkDataTypeMap: Map[String, String],
-                    propNames:ArrayBuffer[String],
+                    propNames: ArrayBuffer[String],
                     properties: Map[String, String])

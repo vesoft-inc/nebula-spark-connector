@@ -20,6 +20,9 @@ object NebulaExecutor {
   private val VECTOR     = "VECTOR<"
   private val LIST       = "LIST<"
   private val STRINGLIST = "LIST<STRING"
+  private val SET        = "SET<"
+  private val STRINGSET  = "SET<STRING"
+  private val MAP        = "MAP<"
   private val GEOGRAPHY  = "GEOGRAPHY"
 
 
@@ -145,6 +148,39 @@ object NebulaExecutor {
           } else {
             return s"""LIST$propValue"""
           }
+        }
+        // convert value to set, only support the source value format: {xxx, xxx, xxx}
+        if (dataType.startsWith(SET)) {
+          if (dataType.startsWith(STRINGSET)) {
+            val sb = new StringBuilder()
+            sb.append("SET{")
+            val trimmedInput                       = propValue.toString.stripPrefix("\"")
+              .stripSuffix("\"")
+              .stripPrefix("{")
+              .stripSuffix("}")
+            val pattern: scala.util.matching.Regex = """\s*(?:['"]([^'"]*)['"]|([^,]+))\s*""".r
+            val matches                            = pattern.findAllMatchIn(trimmedInput)
+            while (matches.hasNext) {
+              val regexMatch = matches.next()
+              val content    = if (regexMatch.group(1) != null) {
+                NebulaUtils.escapeUtil(regexMatch.group(1))
+              } else {
+                NebulaUtils.escapeUtil(regexMatch.group(0))
+              }
+              sb.append("'").append(content).append("',")
+            }
+            if (sb.length > 5) {
+              sb.deleteCharAt(sb.length - 1)
+            }
+            sb.append("}")
+            return sb.toString()
+          } else {
+            return s"""SET$propValue"""
+          }
+        }
+        // convert value to map
+        if (dataType.startsWith(MAP)) {
+          return s"""MAP$propValue"""
         }
         // convert value to vector
         if (dataType.startsWith(VECTOR)) {

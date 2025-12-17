@@ -78,6 +78,9 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
     assert(NebulaExecutor.extraPropValue(rowTest, schema, 1, "LOCAL TIME") == null)
     assert(NebulaExecutor.extraPropValue(rowTest, schema, 2, "ZONED TIME") == null)
     assert(NebulaExecutor.extraPropValue(rowTest, schema, 0, "ZONED DATETIME") == null)
+    assert(NebulaExecutor.extraPropValue(rowTest, schema, 1, "SET<STRING>") == null)
+    assert(NebulaExecutor.extraPropValue(rowTest, schema, 1, "LIST<STRING>") == null)
+    assert(NebulaExecutor.extraPropValue(rowTest, schema, 1, "MAP<STRING, BOOL>") == null)
   }
 
   test("test date type value") {
@@ -144,6 +147,28 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
     assert(NebulaExecutor.extraPropValue(rowTest, schema, 0, "LIST<INT32>").equals("LIST[1,2,3]"))
     assert(NebulaExecutor.extraPropValue(rowTest, schema, 1, "LIST<STRING>").equals("LIST[\"a\",\"b\",\"c\"]"))
     assert(NebulaExecutor.extraPropValue(rowTest, schema, 2, "LIST<STRING>").equals("LIST[\"a\\n\",\"b\\\"\",\"\\nc\\'\"]"))
+  }
+
+  test("test set type value") {
+    val values = new ListBuffer[Any]
+    values.append("{1,2,3}")
+    values.append("{a,b,c}")
+    values.append("{a\n,b\",\nc'}")
+    val rowTest: InternalRow = new GenericInternalRow(values.toArray)
+    assert(NebulaExecutor.extraPropValue(rowTest, schema, 0, "SET<INT32>").equals("SET{1,2,3}"))
+    assert(NebulaExecutor.extraPropValue(rowTest, schema, 1, "SET<STRING>").equals("SET{'a','b','c'}"))
+    assert(NebulaExecutor.extraPropValue(rowTest, schema, 2, "SET<STRING>").equals("SET{'a\\n','b\\\"','\\nc\\''}"))
+  }
+
+  test("test map type value") {
+    val values = new ListBuffer[Any]
+    values.append("{'a':1}")
+    values.append("{'a':true}")
+    values.append("{'a':'aaa'}")
+    val rowTest: InternalRow = new GenericInternalRow(values.toArray)
+    assert(NebulaExecutor.extraPropValue(rowTest, schema, 0, "MAP<STRING, INT32>").equals("MAP{'a':1}"))
+    assert(NebulaExecutor.extraPropValue(rowTest, schema, 1, "MAP<STRING, BOOL>").equals("MAP{'a':true}"))
+    assert(NebulaExecutor.extraPropValue(rowTest, schema, 2, "MAP<STRING, STRING>").equals("MAP{'a':'aaa'}"))
   }
 
   test("test vector type value") {

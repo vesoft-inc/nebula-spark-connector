@@ -227,7 +227,8 @@ class WriteNebulaConfig(graphName: String,
                         localTimeFormat: String,
                         batchSize: Int,
                         writeMode: String,
-                        disableWriteLog: Boolean)
+                        disableWriteLog: Boolean,
+                        errorWhenFailed: Boolean)
   extends Serializable {
   def getGraphName: String = graphName
 
@@ -248,6 +249,8 @@ class WriteNebulaConfig(graphName: String,
   def getWriteMode: String = writeMode
 
   def isDisableWriteLog: Boolean = disableWriteLog
+
+  def throwErrorWhenFailed: Boolean = errorWhenFailed
 }
 
 /**
@@ -269,7 +272,8 @@ class WriteNebulaNodeConfig(graphName: String,
                             nodeType: String,
                             batchSize: Int,
                             writeMode: String,
-                            disableWriteLog: Boolean)
+                            disableWriteLog: Boolean,
+                            errorWhenFailed: Boolean)
   extends WriteNebulaConfig(graphName,
                             schema,
                             dateFormat,
@@ -279,7 +283,8 @@ class WriteNebulaNodeConfig(graphName: String,
                             localTimeFormat,
                             batchSize,
                             writeMode,
-                            disableWriteLog) {
+                            disableWriteLog,
+                            errorWhenFailed) {
   def getNodeType = nodeType
 
 }
@@ -302,6 +307,7 @@ object WriteNebulaNodeConfig {
     private var nodeType           : String  = _
     private var writeMode          : String  = "insert"
     private var disableWriteLog    : Boolean = false
+    private var errorWhenFailed    : Boolean = false
     private var batchSize          : Int     = 512
 
     /**
@@ -392,6 +398,15 @@ object WriteNebulaNodeConfig {
       this
     }
 
+
+    /**
+     * set errorWhenFailed, default is false
+     */
+    def withErrorWhenFailed(errorWhenFailed: Boolean): WriteNodeConfigBuilder = {
+      this.errorWhenFailed = errorWhenFailed
+      this
+    }
+
     /**
      * check and get WriteNebulaNodeConfig
      */
@@ -407,7 +422,8 @@ object WriteNebulaNodeConfig {
                                 nodeType,
                                 batchSize,
                                 writeMode,
-                                disableWriteLog)
+                                disableWriteLog,
+                                errorWhenFailed)
     }
 
     /**
@@ -463,7 +479,8 @@ class WriteNebulaEdgeConfig(graphName: String,
                             srcPkAsProp: Boolean,
                             dstPkAsProp: Boolean,
                             writeMode: String,
-                            disableWriteLog: Boolean)
+                            disableWriteLog: Boolean,
+                            errorWhenFailed: Boolean)
   extends WriteNebulaConfig(graphName,
                             schema,
                             dateFormat,
@@ -473,7 +490,8 @@ class WriteNebulaEdgeConfig(graphName: String,
                             localTimeFormat,
                             batchSize,
                             writeMode,
-                            disableWriteLog) {
+                            disableWriteLog,
+                            errorWhenFailed) {
   def getEdgeType: String = edgeType
 
   def getSrcPkFields: String = srcPkFields.mkString("&&")
@@ -505,6 +523,7 @@ object WriteNebulaEdgeConfig {
     private var localTimeFormat    : String  = _
     private var writeMode          : String  = WriteMode.INSERT.toString
     private var disableWriteLog    : Boolean = false
+    private var errorWhenFailed    : Boolean = false
 
     private var edgeType    : String             = _
     private var srcPkFields : ListBuffer[String] = new ListBuffer[String]
@@ -656,6 +675,15 @@ object WriteNebulaEdgeConfig {
       this
     }
 
+
+    /**
+     * set errorWhenFailed, default is false
+     */
+    def withErrorWhenFailed(errorWhenFailed: Boolean): WriteEdgeConfigBuilder = {
+      this.errorWhenFailed = errorWhenFailed
+      this
+    }
+
     /**
      * check configs and get WriteNebulaEdgeConfig
      */
@@ -675,7 +703,8 @@ object WriteNebulaEdgeConfig {
                                 srcPksAsProp,
                                 dstPksAsProp,
                                 writeMode,
-                                disableWriteLog)
+                                disableWriteLog,
+                                errorWhenFailed)
     }
 
     private def check(): Unit = {

@@ -89,9 +89,13 @@ class EdgeWriter(nebulaOptions: NebulaOptions,
         && result.getErrorCode != ErrorCode.LEADER_CHANGED
         && !result.getErrorCode.isRpcError
         && !result.getErrorCode.isRaftError) {
-        failedExecs.append(exec)
-        LOG.error(s"write edge ${nebulaOptions.label} failed: ${result.getErrorMessage}.")
-        return
+        if (nebulaOptions.errorWhenFailed) {
+          throw new RuntimeException(s"write edge ${nebulaOptions.label} failed: ${result.getErrorMessage}")
+        } else {
+          failedExecs.append(exec)
+          LOG.error(s"write edge ${nebulaOptions.label} failed: ${result.getErrorMessage}.")
+          return
+        }
       }
       // re-execute the vertices one by one
       LOG.warn(
@@ -128,8 +132,13 @@ class EdgeWriter(nebulaOptions: NebulaOptions,
         return
       }
     }
-    LOG.error(s"write edge ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}.")
-    failedExecs.append(exec)
+    if (nebulaOptions.errorWhenFailed) {
+      throw new RuntimeException(s"write edge ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}")
+    } else {
+      LOG.error(s"write edge ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}.")
+      failedExecs.append(exec)
+    }
+
   }
 
   private def getGql(edges: List[NebulaEdge]): String = {

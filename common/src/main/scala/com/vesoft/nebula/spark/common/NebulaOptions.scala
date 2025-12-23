@@ -99,6 +99,7 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
   var dstPksAsProp       : Boolean         = _
   var writeMode          : WriteMode.Value = _
   var disableWriteLog    : Boolean         = _
+  var errorWhenFailed    : Boolean         = _
   var dateFormat         : String          = _
   var zonedDatetimeFormat: String          = _
   var localDatetimeFormat: String          = _
@@ -113,6 +114,7 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
     writeMode =
       WriteMode.withName(parameters.getOrElse(WRITE_MODE, DEFAULT_WRITE_MODE).toString.toLowerCase)
     disableWriteLog = parameters.getOrElse(DISABLE_WRITE_LOG, false).toString.toBoolean
+    errorWhenFailed = parameters.getOrElse(ERROR_WHEN_FAILED, false).toString.toBoolean
     dateFormat = parameters.getOrElse[String](DATE_FORMAT, null)
     zonedDatetimeFormat = parameters.getOrElse[String](ZONED_DATETIME_FORMAT, null)
     localDatetimeFormat = parameters.getOrElse[String](LOCAL_DATETIME_FORMAT, null)
@@ -179,6 +181,7 @@ object NebulaOptions {
   val DST_PK_AS_PROP   : String = "dst_pk_as_prop"
   val WRITE_MODE       : String = "write_mode"
   val DISABLE_WRITE_LOG: String = "disable_write_log"
+  val ERROR_WHEN_FAILED: String = "error_when_failed"
 
   /** read config */
   val PARTITION_NUMBER: String = "partition_number"

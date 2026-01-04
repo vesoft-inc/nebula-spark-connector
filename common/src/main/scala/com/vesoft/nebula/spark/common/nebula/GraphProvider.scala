@@ -37,6 +37,7 @@ class GraphProvider(nebulaOptions: NebulaOptions) extends AutoCloseable with Ser
     .withTlsCert(nebulaOptions.tlsCert, nebulaOptions.tlsKey)
     .withBlockWhenExhausted(true)
     .withMaxWaitMills(10 * 60 * 1000)
+    .withServerPingTimeoutMills(nebulaOptions.pingTimeout * 1000)
 
   if (nebulaOptions.schema != null && nebulaOptions.schema.nonEmpty) {
     poolBuilder.withSchema(nebulaOptions.schema)

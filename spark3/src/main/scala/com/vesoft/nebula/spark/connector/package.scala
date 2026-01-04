@@ -52,6 +52,7 @@ package object connector {
         .option(NebulaOptions.AUTHOPTIONS, connectionConfig.getAuthOptions)
         .option(NebulaOptions.GRAPH_ADDRESS, connectionConfig.getGraphAddress)
         .option(NebulaOptions.TIMEOUT, connectionConfig.getTimeout)
+        .option(NebulaOptions.PING_SERVER_TIMEOUT, connectionConfig.getPingTimeout)
         .option(NebulaOptions.EXECUTION_RETRY, connectionConfig.getExecRetry)
         .option(NebulaOptions.EXECUTION_RETRY_INTERVAL, connectionConfig.getExecRetryIntervalMs)
         .option(NebulaOptions.GRAPH_NAME, writeConfig.getGraphName)

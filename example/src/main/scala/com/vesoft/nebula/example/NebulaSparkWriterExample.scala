@@ -71,6 +71,7 @@ object NebulaSparkWriterExample {
       .withUser("root")
       .withPasswd("Nebula123")
       .withAuthOptions(authOptions)
+      .withPingTimeoutSec(5)
       .build()
   }
 

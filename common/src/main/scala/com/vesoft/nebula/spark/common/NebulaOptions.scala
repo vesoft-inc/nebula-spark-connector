@@ -47,6 +47,8 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
 
   val timeout               : Int                               =
     parameters.getOrElse(TIMEOUT, DEFAULT_CONNECTION_TIMEOUT_SECONDS).toString.toInt
+  val pingTimeout           : Int                               =
+    parameters.getOrElse(PING_SERVER_TIMEOUT, DEFAULT_PING_TIMEOUT_SECONDS).toString.toInt
   val executionRetry        : Int                               =
     parameters.getOrElse(EXECUTION_RETRY, DEFAULT_EXECUTION_RETRY).toString.toInt
   val executionRetryInterval: Int                               =
@@ -167,6 +169,7 @@ object NebulaOptions {
   val TLS_CA                    : String = "tlsCa"
   val TLS_CERT                  : String = "tlsCert"
   val TLS_KEY                   : String = "tlsKey"
+  val PING_SERVER_TIMEOUT       : String = "server_ping_timeout"
 
   val OPERATE_TYPE: String = "operate_type"
 
@@ -189,6 +192,7 @@ object NebulaOptions {
 
   val DEFAULT_TIMEOUT_SECONDS           : Int    = 10
   val DEFAULT_CONNECTION_TIMEOUT_SECONDS: Int    = 3
+  val DEFAULT_PING_TIMEOUT_SECONDS      : Int    = 3
   val DEFAULT_CONNECTION_RETRY          : Int    = 3
   val DEFAULT_EXECUTION_RETRY           : Int    = 3
   val DEFAULT_EXECUTION_RETRY_INTERVAL  : Int    = 0

@@ -18,6 +18,7 @@ class NebulaConnectionConfig(graphAddress: String,
                              passwd: String,
                              authOptions: Map[String, Any],
                              timeout: Int,
+                             pingTimeout: Int,
                              executeRetry: Int,
                              executeRetryIntervalMs: Int,
                              enableTls: Boolean,
@@ -44,6 +45,8 @@ class NebulaConnectionConfig(graphAddress: String,
 
   def getTimeout = timeout
 
+  def getPingTimeout = pingTimeout
+
   def getExecRetry = executeRetry
 
   def getExecRetryIntervalMs = executeRetryIntervalMs
@@ -69,6 +72,7 @@ object NebulaConnectionConfig {
     protected var passwd                 : String  = _
     protected var authOptions                      = new mutable.HashMap[String, Any]
     protected var timeout                : Int     = 5
+    protected var pingTimeout            : Int     = 3
     protected var executeRetry           : Int     = 3
     protected var executeRetryIntervalMs : Int     = 0
     protected var enableTls              : Boolean = false
@@ -116,6 +120,14 @@ object NebulaConnectionConfig {
      */
     def withTimeoutSec(timeout: Int): ConfigBuilder = {
       this.timeout = timeout
+      this
+    }
+
+    /**
+     * set ping server timeout, timeout is optional， unit: second
+     */
+    def withPingTimeoutSec(pingTimeout: Int): ConfigBuilder = {
+      this.pingTimeout = pingTimeout
       this
     }
 
@@ -199,6 +211,7 @@ object NebulaConnectionConfig {
                                  passwd,
                                  authOptions.toMap,
                                  timeout,
+                                 pingTimeout,
                                  executeRetry,
                                  executeRetryIntervalMs,
                                  enableTls,

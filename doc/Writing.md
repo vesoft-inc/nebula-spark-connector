@@ -32,7 +32,7 @@ The connector provides two sink data options to write data into a NebulaGraph da
       .withWriteMode(WriteMode.INSERTIGNORE)
       .withBatchSize(10)
       .build()
-    df.write.nebula(getNebulaConnectionConfig, nebulaWriteNodeConfig).writeNodes()
+    df.write.nebula(connectionConfig, nebulaWriteNodeConfig).writeNodes()
 ```
 
 * write DataFrame to NebulaGraph Edge type
@@ -61,7 +61,7 @@ The connector provides two sink data options to write data into a NebulaGraph da
       .withWriteMode(WriteMode.INSERTIGNORE)
       .withBatchSize(10)
       .build()
-    df.write.nebula(getNebulaConnectionConfig, nebulaWriteEdgeConfig).writeEdges()
+    df.write.nebula(connectionConfig, nebulaWriteEdgeConfig).writeEdges()
 ```
 
 ## Examples with Options
@@ -133,6 +133,7 @@ The connector provides two sink data options to write data into a NebulaGraph da
 |         batch_size         |                          Number of records to read for one request between connector and nebula. Used for node/edge.                          |      1000       |  false   |
 |     disable_write_log      | Whether disable the log for each request succeed response, which includes batchSize for one write request, latency of this request and so on. |      false      |  false   |
 |          timeout           |                                      timeout for read request between connector and nebula. unit: second                                      |        3        |  false   |
+|    server_ping_timeout     |                                               timeout for ping NebulaGraph server. unit: second                                               |        3        |  false   |
 |      execution_retry       |                                                 retry times when request NebulaGraph failed.                                                  |        3        |  false   |
 |  execution_retry_interval  |                                                interval need to wait between retries. unit: ms                                                |        0        |  false   |
 |         enable_tls         |                                                              whether enable tls.                                                              |      false      |  false   |

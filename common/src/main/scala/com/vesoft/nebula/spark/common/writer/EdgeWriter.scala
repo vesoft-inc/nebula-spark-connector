@@ -90,7 +90,7 @@ class EdgeWriter(nebulaOptions: NebulaOptions,
         && !result.getErrorCode.isRpcError
         && !result.getErrorCode.isRaftError) {
         if (nebulaOptions.errorWhenFailed) {
-          throw new RuntimeException(s"write edge ${nebulaOptions.label} failed: ${result.getErrorMessage}")
+          throw new RuntimeException(s"write edge ${nebulaOptions.label} failed: ${result.getErrorMessage}. ngql:\n${exec}")
         } else {
           failedExecs.append(exec)
           LOG.error(s"write edge ${nebulaOptions.label} failed: ${result.getErrorMessage}.")
@@ -133,7 +133,7 @@ class EdgeWriter(nebulaOptions: NebulaOptions,
       }
     }
     if (nebulaOptions.errorWhenFailed) {
-      throw new RuntimeException(s"write edge ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}")
+      throw new RuntimeException(s"write edge ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}. ngql:\n${exec}")
     } else {
       LOG.error(s"write edge ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}.")
       failedExecs.append(exec)

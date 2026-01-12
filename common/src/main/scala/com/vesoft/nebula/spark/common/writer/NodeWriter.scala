@@ -71,7 +71,7 @@ class NodeWriter(nebulaOptions: NebulaOptions, schema: StructType) extends Nebul
         && !result.getErrorCode.isRpcError
         && !result.getErrorCode.isRaftError) {
         if (nebulaOptions.errorWhenFailed) {
-          throw new RuntimeException(s"write node ${nebulaOptions.label} failed: ${result.getErrorMessage}")
+          throw new RuntimeException(s"write node ${nebulaOptions.label} failed: ${result.getErrorMessage}. ngql:\n${exec}")
         } else {
           failedExecs.append(exec)
           LOG.error(s"write node ${nebulaOptions.label} failed: ${result.getErrorMessage}.")
@@ -119,7 +119,7 @@ class NodeWriter(nebulaOptions: NebulaOptions, schema: StructType) extends Nebul
       }
     }
     if (nebulaOptions.errorWhenFailed) {
-      throw new RuntimeException(s"write node ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}")
+      throw new RuntimeException(s"write node ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}. ngql:\n${exec}")
     } else {
       LOG.error(s"write node ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}.")
       failedExecs.append(exec)

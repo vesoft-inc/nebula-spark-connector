@@ -212,19 +212,34 @@ object NebulaExecutor {
    * MATCH (dst:@Person) WHERE dst.`id`=CAST(id2 AS INT64)
    * INSERT (src)-[e@friend{degree:degree}]->(dst)
    */
-  def toInsertSentence(graphName: String, edges: NebulaEdges, mode: String): String = {
-    s"""
-       |TABLE t {${edges.tableHeaders}} =
-       |${edges.getEdgesStr}
-       |USE `$graphName`
-       |FOR r IN t
-       |RETURN ${edges.getNewTableHeaders}
-       |NEXT
-       |USE `$graphName`
-       |OPTIONAL MATCH (src_node@`${edges.srcType}`) WHERE ${edges.getSrcPkStr("src_node")}
-       |OPTIONAL MATCH (dst_node@`${edges.dstType}`) WHERE ${edges.getDstPkStr("dst_node")}
-       |INSERT $mode (src_node)-[e@`${edges.edgeType}`{${edges.propNamesWithTableStr}}]->(dst_node)
-       |""".stripMargin
+  def toInsertSentence(graphName: String, edges: NebulaEdges, mode: String, isDirected: Boolean): String = {
+    if (isDirected) {
+      s"""
+         |TABLE t {${edges.tableHeaders}} =
+         |${edges.getEdgesStr}
+         |USE `$graphName`
+         |FOR r IN t
+         |RETURN ${edges.getNewTableHeaders}
+         |NEXT
+         |USE `$graphName`
+         |OPTIONAL MATCH (src_node@`${edges.srcType}`) WHERE ${edges.getSrcPkStr("src_node")}
+         |OPTIONAL MATCH (dst_node@`${edges.dstType}`) WHERE ${edges.getDstPkStr("dst_node")}
+         |INSERT $mode (src_node)-[e@`${edges.edgeType}`{${edges.propNamesWithTableStr}}]->(dst_node)
+         |""".stripMargin
+    } else {
+      s"""
+         |TABLE t {${edges.tableHeaders}} =
+         |${edges.getEdgesStr}
+         |USE `$graphName`
+         |FOR r IN t
+         |RETURN ${edges.getNewTableHeaders}
+         |NEXT
+         |USE `$graphName`
+         |OPTIONAL MATCH (src_node@`${edges.srcType}`) WHERE ${edges.getSrcPkStr("src_node")}
+         |OPTIONAL MATCH (dst_node@`${edges.dstType}`) WHERE ${edges.getDstPkStr("dst_node")}
+         |INSERT $mode (src_node)~[e@`${edges.edgeType}`{${edges.propNamesWithTableStr}}]~(dst_node)
+         |""".stripMargin
+    }
   }
 
   /**
@@ -245,20 +260,36 @@ object NebulaExecutor {
   /**
    * construct update statement for edge
    */
-  def toUpdateSentence(graphName: String, edgeType: String, edges: NebulaEdges): String = {
-    s"""
-       |TABLE t {${edges.tableHeaders}} =
-       |${edges.getEdgesStr}
-       |USE `$graphName`
-       |FOR r IN t
-       |RETURN ${edges.getNewTableHeaders}
-       |NEXT
-       |USE `$graphName`
-       |MATCH (nebula_src_node_pk@`${edges.srcType}`) WHERE ${edges.getSrcPkStr("nebula_src_node_pk")}
-       |MATCH (nebula_dst_node_pk@`${edges.dstType}`) WHERE ${edges.getDstPkStr("nebula_dst_node_pk")}
-       |MATCH (nebula_src_node_pk)-[e@`${edges.edgeType}`]->(nebula_dst_node_pk)
-       |SET ${edges.getUpdatePropNamesWithTableStr}
-       |""".stripMargin
+  def toUpdateSentence(graphName: String, edgeType: String, edges: NebulaEdges, isDirected: Boolean): String = {
+    if (isDirected) {
+      s"""
+         |TABLE t {${edges.tableHeaders}} =
+         |${edges.getEdgesStr}
+         |USE `$graphName`
+         |FOR r IN t
+         |RETURN ${edges.getNewTableHeaders}
+         |NEXT
+         |USE `$graphName`
+         |MATCH (nebula_src_node_pk@`${edges.srcType}`) WHERE ${edges.getSrcPkStr("nebula_src_node_pk")}
+         |MATCH (nebula_dst_node_pk@`${edges.dstType}`) WHERE ${edges.getDstPkStr("nebula_dst_node_pk")}
+         |MATCH (nebula_src_node_pk)-[e@`${edges.edgeType}`]->(nebula_dst_node_pk)
+         |SET ${edges.getUpdatePropNamesWithTableStr}
+         |""".stripMargin
+    } else {
+      s"""
+         |TABLE t {${edges.tableHeaders}} =
+         |${edges.getEdgesStr}
+         |USE `$graphName`
+         |FOR r IN t
+         |RETURN ${edges.getNewTableHeaders}
+         |NEXT
+         |USE `$graphName`
+         |MATCH (nebula_src_node_pk@`${edges.srcType}`) WHERE ${edges.getSrcPkStr("nebula_src_node_pk")}
+         |MATCH (nebula_dst_node_pk@`${edges.dstType}`) WHERE ${edges.getDstPkStr("nebula_dst_node_pk")}
+         |MATCH (nebula_src_node_pk)~[e@`${edges.edgeType}`]~(nebula_dst_node_pk)
+         |SET ${edges.getUpdatePropNamesWithTableStr}
+         |""".stripMargin
+    }
   }
 
 
@@ -287,21 +318,36 @@ object NebulaExecutor {
   /**
    * construct delete statement for edge
    */
-  def toDeleteSentence(graphName: String, edgeType: String, edges: NebulaEdges): String = {
-    s"""
-       |TABLE t {${edges.tableHeaders}} =
-       |${edges.getEdgesStr}
-       |USE `$graphName`
-       |FOR r IN t
-       |RETURN ${edges.getNewTableHeaders}
-       |NEXT
-       |USE `$graphName`
-       |MATCH (nebula_src_node@`${edges.srcType}`) WHERE ${edges.getSrcPkStr("nebula_src_node")}
-       |MATCH (nebula_dst_node@`${edges.dstType}`) WHERE ${edges.getDstPkStr("nebula_dst_node")}
-       |MATCH (nebula_src_node)-[e@`${edges.edgeType}`]->(nebula_dst_node)
-       |DELETE e
-       |""".stripMargin
-
+  def toDeleteSentence(graphName: String, edgeType: String, edges: NebulaEdges, isDirected: Boolean): String = {
+    if (isDirected) {
+      s"""
+         |TABLE t {${edges.tableHeaders}} =
+         |${edges.getEdgesStr}
+         |USE `$graphName`
+         |FOR r IN t
+         |RETURN ${edges.getNewTableHeaders}
+         |NEXT
+         |USE `$graphName`
+         |MATCH (nebula_src_node@`${edges.srcType}`) WHERE ${edges.getSrcPkStr("nebula_src_node")}
+         |MATCH (nebula_dst_node@`${edges.dstType}`) WHERE ${edges.getDstPkStr("nebula_dst_node")}
+         |MATCH (nebula_src_node)-[e@`${edges.edgeType}`]->(nebula_dst_node)
+         |DELETE e
+         |""".stripMargin
+    } else {
+      s"""
+         |TABLE t {${edges.tableHeaders}} =
+         |${edges.getEdgesStr}
+         |USE `$graphName`
+         |FOR r IN t
+         |RETURN ${edges.getNewTableHeaders}
+         |NEXT
+         |USE `$graphName`
+         |MATCH (nebula_src_node@`${edges.srcType}`) WHERE ${edges.getSrcPkStr("nebula_src_node")}
+         |MATCH (nebula_dst_node@`${edges.dstType}`) WHERE ${edges.getDstPkStr("nebula_dst_node")}
+         |MATCH (nebula_src_node)~[e@`${edges.edgeType}`]~(nebula_dst_node)
+         |DELETE e
+         |""".stripMargin
+    }
   }
 
   /**

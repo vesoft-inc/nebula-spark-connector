@@ -47,6 +47,8 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
 
   val timeout               : Int                               =
     parameters.getOrElse(TIMEOUT, DEFAULT_CONNECTION_TIMEOUT_SECONDS).toString.toInt
+  val pingTimeout           : Int                               =
+    parameters.getOrElse(PING_SERVER_TIMEOUT, DEFAULT_PING_TIMEOUT_SECONDS).toString.toInt
   val executionRetry        : Int                               =
     parameters.getOrElse(EXECUTION_RETRY, DEFAULT_EXECUTION_RETRY).toString.toInt
   val executionRetryInterval: Int                               =
@@ -99,6 +101,7 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
   var dstPksAsProp       : Boolean         = _
   var writeMode          : WriteMode.Value = _
   var disableWriteLog    : Boolean         = _
+  var errorWhenFailed    : Boolean         = _
   var dateFormat         : String          = _
   var zonedDatetimeFormat: String          = _
   var localDatetimeFormat: String          = _
@@ -113,6 +116,7 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
     writeMode =
       WriteMode.withName(parameters.getOrElse(WRITE_MODE, DEFAULT_WRITE_MODE).toString.toLowerCase)
     disableWriteLog = parameters.getOrElse(DISABLE_WRITE_LOG, false).toString.toBoolean
+    errorWhenFailed = parameters.getOrElse(ERROR_WHEN_FAILED, false).toString.toBoolean
     dateFormat = parameters.getOrElse[String](DATE_FORMAT, null)
     zonedDatetimeFormat = parameters.getOrElse[String](ZONED_DATETIME_FORMAT, null)
     localDatetimeFormat = parameters.getOrElse[String](LOCAL_DATETIME_FORMAT, null)
@@ -165,6 +169,7 @@ object NebulaOptions {
   val TLS_CA                    : String = "tlsCa"
   val TLS_CERT                  : String = "tlsCert"
   val TLS_KEY                   : String = "tlsKey"
+  val PING_SERVER_TIMEOUT       : String = "server_ping_timeout"
 
   val OPERATE_TYPE: String = "operate_type"
 
@@ -179,6 +184,7 @@ object NebulaOptions {
   val DST_PK_AS_PROP   : String = "dst_pk_as_prop"
   val WRITE_MODE       : String = "write_mode"
   val DISABLE_WRITE_LOG: String = "disable_write_log"
+  val ERROR_WHEN_FAILED: String = "error_when_failed"
 
   /** read config */
   val PARTITION_NUMBER: String = "partition_number"
@@ -186,6 +192,7 @@ object NebulaOptions {
 
   val DEFAULT_TIMEOUT_SECONDS           : Int    = 10
   val DEFAULT_CONNECTION_TIMEOUT_SECONDS: Int    = 3
+  val DEFAULT_PING_TIMEOUT_SECONDS      : Int    = 3
   val DEFAULT_CONNECTION_RETRY          : Int    = 3
   val DEFAULT_EXECUTION_RETRY           : Int    = 3
   val DEFAULT_EXECUTION_RETRY_INTERVAL  : Int    = 0

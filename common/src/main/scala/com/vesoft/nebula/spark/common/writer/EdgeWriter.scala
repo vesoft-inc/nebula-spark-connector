@@ -27,7 +27,7 @@ class EdgeWriter(nebulaOptions: NebulaOptions,
   var edges: ListBuffer[NebulaEdge] = new ListBuffer()
 
 
-  def writeRow(row:InternalRow): Unit = {
+  def writeRow(row: InternalRow): Unit = {
     val srcIds: mutable.HashMap[String, String] = new mutable.HashMap[String, String]()
     for (i <- dfSrcPkFieldsIndex.indices) {
       val srcIdValue = NebulaExecutor.extraPropValue(row, schema, dfSrcPkFieldsIndex(i), edgeDesc.srcNodePkDataTypeMap(edgeDesc.srcNodePkNames(i)))
@@ -89,9 +89,13 @@ class EdgeWriter(nebulaOptions: NebulaOptions,
         && result.getErrorCode != ErrorCode.LEADER_CHANGED
         && !result.getErrorCode.isRpcError
         && !result.getErrorCode.isRaftError) {
-        failedExecs.append(exec)
-        LOG.error(s"write edge ${nebulaOptions.label} failed: ${result.getErrorMessage}.")
-        return
+        if (nebulaOptions.errorWhenFailed) {
+          throw new RuntimeException(s"write edge ${nebulaOptions.label} failed: ${result.getErrorMessage}. ngql:\n${exec}")
+        } else {
+          failedExecs.append(exec)
+          LOG.error(s"write edge ${nebulaOptions.label} failed: ${result.getErrorMessage}.")
+          return
+        }
       }
       // re-execute the vertices one by one
       LOG.warn(
@@ -128,8 +132,13 @@ class EdgeWriter(nebulaOptions: NebulaOptions,
         return
       }
     }
-    LOG.error(s"write edge ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}.")
-    failedExecs.append(exec)
+    if (nebulaOptions.errorWhenFailed) {
+      throw new RuntimeException(s"write edge ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}. ngql:\n${exec}")
+    } else {
+      LOG.error(s"write edge ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}.")
+      failedExecs.append(exec)
+    }
+
   }
 
   private def getGql(edges: List[NebulaEdge]): String = {
@@ -147,17 +156,17 @@ class EdgeWriter(nebulaOptions: NebulaOptions,
       fieldTypeMap)
     val exec        = nebulaOptions.writeMode match {
       case WriteMode.INSERT =>
-        NebulaExecutor.toInsertSentence(nebulaOptions.graphName, nebulaEdges, "")
+        NebulaExecutor.toInsertSentence(nebulaOptions.graphName, nebulaEdges, "", edgeDesc.isDirected)
       case WriteMode.INSERTREPLACE =>
-        NebulaExecutor.toInsertSentence(nebulaOptions.graphName, nebulaEdges, "OR REPLACE")
+        NebulaExecutor.toInsertSentence(nebulaOptions.graphName, nebulaEdges, "OR REPLACE", edgeDesc.isDirected)
       case WriteMode.INSERTIGNORE =>
-        NebulaExecutor.toInsertSentence(nebulaOptions.graphName, nebulaEdges, "OR IGNORE")
+        NebulaExecutor.toInsertSentence(nebulaOptions.graphName, nebulaEdges, "OR IGNORE", edgeDesc.isDirected)
       case WriteMode.INSERTUPDATE =>
-        NebulaExecutor.toInsertSentence(nebulaOptions.graphName, nebulaEdges, "OR UPDATE")
+        NebulaExecutor.toInsertSentence(nebulaOptions.graphName, nebulaEdges, "OR UPDATE", edgeDesc.isDirected)
       case WriteMode.UPDATE =>
-        NebulaExecutor.toUpdateSentence(nebulaOptions.graphName, nebulaOptions.label, nebulaEdges)
+        NebulaExecutor.toUpdateSentence(nebulaOptions.graphName, nebulaOptions.label, nebulaEdges, edgeDesc.isDirected)
       case WriteMode.DELETE | WriteMode.DETACHDELETE =>
-        NebulaExecutor.toDeleteSentence(nebulaOptions.graphName, nebulaOptions.label, nebulaEdges)
+        NebulaExecutor.toDeleteSentence(nebulaOptions.graphName, nebulaOptions.label, nebulaEdges, edgeDesc.isDirected)
       case _ =>
         throw new IllegalArgumentException(s"write mode ${nebulaOptions.writeMode} not supported.")
     }

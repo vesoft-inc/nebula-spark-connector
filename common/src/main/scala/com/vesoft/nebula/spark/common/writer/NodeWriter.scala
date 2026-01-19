@@ -70,9 +70,13 @@ class NodeWriter(nebulaOptions: NebulaOptions, schema: StructType) extends Nebul
         && result.getErrorCode != ErrorCode.LEADER_CHANGED
         && !result.getErrorCode.isRpcError
         && !result.getErrorCode.isRaftError) {
-        failedExecs.append(exec)
-        LOG.error(s"write edge ${nebulaOptions.label} failed: ${result.getErrorMessage}.")
-        return
+        if (nebulaOptions.errorWhenFailed) {
+          throw new RuntimeException(s"write node ${nebulaOptions.label} failed: ${result.getErrorMessage}. ngql:\n${exec}")
+        } else {
+          failedExecs.append(exec)
+          LOG.error(s"write node ${nebulaOptions.label} failed: ${result.getErrorMessage}.")
+          return
+        }
       }
       // re-execute the vertices one by one
       LOG.warn(
@@ -114,8 +118,12 @@ class NodeWriter(nebulaOptions: NebulaOptions, schema: StructType) extends Nebul
         return
       }
     }
-    LOG.error(s"write node ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}.")
-    failedExecs.append(exec)
+    if (nebulaOptions.errorWhenFailed) {
+      throw new RuntimeException(s"write node ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}. ngql:\n${exec}")
+    } else {
+      LOG.error(s"write node ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}.")
+      failedExecs.append(exec)
+    }
   }
 
   private def getGql(nebulaVertices: List[NebulaNode]): String = {

@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.vesoft</groupId>
         <artifactId>nebula-spark</artifactId>
-        <version>5.2.0</version>
+        <version>5.2.1</version>
     </parent>
 
     <artifactId>nebula-spark-common_${scala.binary.version}</artifactId>
@@ -20,7 +20,7 @@
         <scalatest.version>3.2.3</scalatest.version>
         <junit.version>4.13.1</junit.version>
         <codec.version>1.13</codec.version>
-        <nebula.version>5.2.0</nebula.version>
+        <nebula.version>5.2.1</nebula.version>
 <!--        <scala.binary.version>2.11</scala.binary.version>-->
 <!--        <scala.version>2.11.12</scala.version>-->
 <!--        <spark.version>2.4.4</spark.version>-->

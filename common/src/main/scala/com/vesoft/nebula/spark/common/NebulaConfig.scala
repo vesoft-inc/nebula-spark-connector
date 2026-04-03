@@ -734,10 +734,10 @@ object WriteNebulaEdgeConfig {
           assert(false, s"optional write mode: insert or update, your write mode is $writeMode")
       }
       // the batch size must be 1 for DELETE edge
-      if (writeMode.equalsIgnoreCase(WriteMode.DELETE.toString)) {
-        LOG.info("the write mode is DELETE for edge, batch size is automatically adjusted to 1")
-        batchSize = 1
-      }
+      // if (writeMode.equalsIgnoreCase(WriteMode.DELETE.toString)) {
+      // LOG.info("the write mode is DELETE for edge, batch size is automatically adjusted to 1")
+      // batchSize = 1
+      // }
       LOG.info(
         s"NebulaWriteEdgeConfig={graphName=$graphName,edgeType=$edgeType,srcPkFields=$srcPkFields," +
           s"dstPkFields=$dstPkFields,batchSize=$batchSize,srcPkAsProp=$srcPksAsProp," +

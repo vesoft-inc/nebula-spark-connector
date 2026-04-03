@@ -63,7 +63,7 @@ class NodeWriter(nebulaOptions: NebulaOptions, schema: StructType) extends Nebul
     if (result.isSucceeded) {
       if (!nebulaOptions.disableWriteLog) {
         LOG.info(
-          s"batch write for ${nebulaOptions.label} succeed. batch size(${vertices.size}), latency(${result.getLatency})")
+          s"batch write(${nebulaOptions.writeMode}) for ${nebulaOptions.label} succeed. batch size(${vertices.size}), affected(${result.getExtraInfo.getAffectedNodes}), latency(${result.getLatency}us)")
       }
     } else {
       if (vertices.size == 1
@@ -71,16 +71,16 @@ class NodeWriter(nebulaOptions: NebulaOptions, schema: StructType) extends Nebul
         && !result.getErrorCode.isRpcError
         && !result.getErrorCode.isRaftError) {
         if (nebulaOptions.errorWhenFailed) {
-          throw new RuntimeException(s"write node ${nebulaOptions.label} failed: ${result.getErrorMessage}. ngql:\n${exec}")
+          throw new RuntimeException(s"write(${nebulaOptions.writeMode}) node ${nebulaOptions.label} failed: ${result.getErrorMessage}. ngql:\n${exec}")
         } else {
           failedExecs.append(exec)
-          LOG.error(s"write node ${nebulaOptions.label} failed: ${result.getErrorMessage}.")
+          LOG.error(s"write(${nebulaOptions.writeMode}) node ${nebulaOptions.label} failed: ${result.getErrorMessage}.")
           return
         }
       }
       // re-execute the vertices one by one
       LOG.warn(
-        s"write node ${nebulaOptions.label} failed: ${result.getErrorMessage}, " +
+        s"write(${nebulaOptions.writeMode}) node ${nebulaOptions.label} failed: ${result.getErrorMessage}, " +
           s"now retry writing one by one.")
       vertices.par.foreach { node => writeNode(node) }
     }
@@ -91,7 +91,7 @@ class NodeWriter(nebulaOptions: NebulaOptions, schema: StructType) extends Nebul
     val result = submit(exec)
     if (result.isSucceeded) {
       if (!nebulaOptions.disableWriteLog) {
-        LOG.info(s"write ${nebulaOptions.label}, batch size(1), latency(${result.getLatency}ms)")
+        LOG.info(s"write(${nebulaOptions.writeMode}) ${nebulaOptions.label}, batch size(1), affected(${result.getExtraInfo.getAffectedNodes}), latency(${result.getLatency}us)")
       }
       return
     }
@@ -113,15 +113,15 @@ class NodeWriter(nebulaOptions: NebulaOptions, schema: StructType) extends Nebul
       if (executeResult.isSucceeded) {
         if (!nebulaOptions.disableWriteLog) {
           LOG.info(
-            s"write node ${nebulaOptions.label}, batch size(1), latency(${executeResult.getLatency}ms)")
+            s"write(${nebulaOptions.writeMode}) node ${nebulaOptions.label}, batch size(1), affected(${result.getExtraInfo.getAffectedNodes}), latency(${executeResult.getLatency}us)")
         }
         return
       }
     }
     if (nebulaOptions.errorWhenFailed) {
-      throw new RuntimeException(s"write node ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}. ngql:\n${exec}")
+      throw new RuntimeException(s"write(${nebulaOptions.writeMode}) node ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}. ngql:\n${exec}")
     } else {
-      LOG.error(s"write node ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}.")
+      LOG.error(s"write(${nebulaOptions.writeMode}) node ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}.")
       failedExecs.append(exec)
     }
   }

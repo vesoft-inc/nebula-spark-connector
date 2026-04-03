@@ -6,7 +6,6 @@
 
 package com.vesoft.nebula.example
 
-import breeze.numerics.log
 import com.sun.org.slf4j.internal.LoggerFactory
 import com.vesoft.nebula.spark.connector.NebulaDataFrameWriter
 import com.vesoft.nebula.driver.graph.net.NebulaClient
@@ -26,8 +25,9 @@ object NebulaSparkWriterExample {
 
     writeNode(spark)
     writeEdge(spark)
-    //deleteNode(spark)
-    //deleteEdge(spark)
+//    deleteNode(spark)
+//    deleteEdge(spark)
+    updateEdge(spark)
 
     spark.close()
   }
@@ -79,7 +79,7 @@ object NebulaSparkWriterExample {
    * for this example, your nebula tag schema should have property names: id, name, age, born
    */
   private def writeNode(spark: SparkSession): Unit = {
-    val df = spark.read.json("spark-connector/example/src/main/resources/vertex")
+    val df = spark.read.json("example/src/main/resources/vertex")
     df.show()
 
     val nebulaWriteNodeConfig: WriteNebulaNodeConfig = WriteNebulaNodeConfig
@@ -103,7 +103,7 @@ object NebulaSparkWriterExample {
    * if your withDstAsProperty is true, then edge schema also should have property name: dst
    */
   private def writeEdge(spark: SparkSession): Unit = {
-    val df = spark.read.json("spark-connector/example/src/main/resources/edge")
+    val df = spark.read.json("example/src/main/resources/edge")
     df.show()
     df.persist(StorageLevel.MEMORY_AND_DISK_SER)
 
@@ -128,7 +128,7 @@ object NebulaSparkWriterExample {
 
 
   private def deleteNode(spark: SparkSession): Unit = {
-    val df = spark.read.json("spark-connector/example/src/main/resources/vertex")
+    val df = spark.read.json("example/src/main/resources/vertex")
     df.show()
 
     val nebulaWriteNodeConfig: WriteNebulaNodeConfig = WriteNebulaNodeConfig
@@ -143,7 +143,7 @@ object NebulaSparkWriterExample {
 
 
   private def deleteEdge(spark: SparkSession): Unit = {
-    val df = spark.read.json("spark-connector/example/src/main/resources/edge")
+    val df = spark.read.json("example/src/main/resources/edge")
     df.show()
     df.persist(StorageLevel.MEMORY_AND_DISK_SER)
 
@@ -154,6 +154,23 @@ object NebulaSparkWriterExample {
       .withSrcPkFields(List("src","name1"))
       .withDstPkFields(List("dst", "name2"))
       .withWriteMode(WriteMode.DELETE)
+      .withBatchSize(2)
+      .build()
+    df.write.nebula(getNebulaConnectionConfig, nebulaWriteEdgeConfig).writeEdges()
+  }
+
+  private def updateEdge(spark: SparkSession): Unit = {
+    val df = spark.read.json("example/src/main/resources/edge")
+    df.show()
+    df.persist(StorageLevel.MEMORY_AND_DISK_SER)
+
+    val nebulaWriteEdgeConfig: WriteNebulaEdgeConfig = WriteNebulaEdgeConfig
+      .builder()
+      .withGraphName("nba")
+      .withEdge("edge_type_follow")
+      .withSrcPkFields(List("src","name1"))
+      .withDstPkFields(List("dst", "name2"))
+      .withWriteMode(WriteMode.UPDATE)
       .withBatchSize(2)
       .build()
     df.write.nebula(getNebulaConnectionConfig, nebulaWriteEdgeConfig).writeEdges()

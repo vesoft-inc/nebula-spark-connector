@@ -21,8 +21,8 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
   val graphName = "nba"
 
   BasicConfigurator.configure()
-  var schema: StructType = _
-  var row: InternalRow = _
+  var schema: StructType  = _
+  var row   : InternalRow = _
 
   override def beforeAll(): Unit = {
     val fields = new ListBuffer[StructField]
@@ -42,14 +42,14 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
 
   test("test extraID") {
     // test string primary key
-    var index: Int = 0
+    var index         : Int     = 0
     val isPkStringType: Boolean = true
-    val stringId = NebulaExecutor.extraValue(row, schema, index, Map("col1"-> "STRING"))
+    val stringId                = NebulaExecutor.extraValue(row, schema, index, Map("col1" -> "STRING"))
     assert("\"aaa\"".equals(stringId))
 
     // test int primary key
     index = 2
-    val hashId = NebulaExecutor.extraValue(row, schema, index, Map("col3"-> "INT64"))
+    val hashId = NebulaExecutor.extraValue(row, schema, index, Map("col3" -> "INT64"))
     assert("1".equals(hashId))
   }
 
@@ -58,10 +58,10 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
     values.append(null)
     values.append(true)
     values.append(1L)
-    val rowTest: InternalRow = new GenericInternalRow(values.toArray)
-    val index: Int = 0
-    val isPkStringType: Boolean = true
-    assert(NebulaExecutor.extraValue(rowTest, schema, index, Map("col1"-> "STRING")) == null)
+    val rowTest       : InternalRow = new GenericInternalRow(values.toArray)
+    val index         : Int         = 0
+    val isPkStringType: Boolean     = true
+    assert(NebulaExecutor.extraValue(rowTest, schema, index, Map("col1" -> "STRING")) == null)
   }
 
 
@@ -84,7 +84,7 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
 
   test("test toExecuteSentence for node") {
     val nodes: ListBuffer[NebulaNode] = new ListBuffer[NebulaNode]
-    val nodeType = "person"
+    val nodeType                      = "person"
 
     val props1: Map[String, String] = Map(
       "col_string" -> "\"Tom\"",
@@ -94,7 +94,7 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
       "col_int64" -> "100",
       "col_double" -> "1.0",
       "col_date" -> "date(\"2021-11-12\")"
-    )
+      )
     val props2: Map[String, String] =
       Map(
         "col_string" -> "\"Bob\"",
@@ -104,16 +104,16 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
         "col_int64" -> "200",
         "col_double" -> "2.0",
         "col_date" -> "date(\"2021-05-01\")"
-      )
+        )
     nodes.append(NebulaNode(props1))
     nodes.append(NebulaNode(props2))
     val fieldTypeMap: Map[String, String] =
       Map("col_string" -> "STRING", "col_fixed_string" -> "STRING", "col_bool" -> "BOOL", "col_int" -> "INT32", "col_int64" -> "INT64", "col_double" -> "DOUBLE", "col_date" -> "DATE")
-    val nebulaNodes = NebulaNodes(nodeType, nodes.toList, List("col_string"), fieldTypeMap)
+    val nebulaNodes                       = NebulaNodes(nodeType, nodes.toList, List("col_string"), fieldTypeMap)
     // test insert node
-    var nodeStatement =
+    var nodeStatement                     =
       NebulaExecutor.toInsertSentence(graphName, nebulaNodes, "")
-    var expectStatement =
+    var expectStatement                   =
       s"""
          |TABLE t {`col_string`,`col_fixed_string`,`col_bool`,`col_int`,`col_int64`,`col_double`,`col_date`} =
          |(\"Tom\",\"Tom\",true,10,100,1.0,date(\"2021-11-12\")),(\"Bob\",\"Bob\",false,20,200,2.0,date(\"2021-05-01\"))
@@ -152,9 +152,9 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
   }
 
   test("test toInsertSentence for edge") {
-    val edges: ListBuffer[NebulaEdge] = new ListBuffer[NebulaEdge]
-    val edgeType = "friend"
-    val props1: Map[String, String] = Map(
+    val edges : ListBuffer[NebulaEdge] = new ListBuffer[NebulaEdge]
+    val edgeType                       = "friend"
+    val props1: Map[String, String]    = Map(
       "col_string" -> "\"Tom\"",
       "col_fixed_string" -> "\"Tom\"",
       "col_bool" -> "true",
@@ -162,8 +162,8 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
       "col_int64" -> "100",
       "col_double" -> "1.0",
       "col_date" -> "date(\"2021-11-12\")"
-    )
-    val props2: Map[String, String] =
+      )
+    val props2: Map[String, String]    =
       Map(
         "col_string" -> "\"Bob\"",
         "col_fixed_string" -> "\"Bob\"",
@@ -172,15 +172,15 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
         "col_int64" -> "200",
         "col_double" -> "2.0",
         "col_date" -> "date(\"2021-05-01\")"
-      )
-    edges.append(NebulaEdge(Map("id"->"\"vid1\""), Map("id"->"\"vid2\""), props1))
-    edges.append(NebulaEdge(Map("id"->"\"vid2\""), Map("id"->"\"vid1\""), props2))
+        )
+    edges.append(NebulaEdge(Map("id" -> "\"vid1\""), Map("id" -> "\"vid2\""), props1))
+    edges.append(NebulaEdge(Map("id" -> "\"vid2\""), Map("id" -> "\"vid1\""), props2))
 
     val fieldTypeMap: Map[String, String] =
       Map("col_string" -> "STRING", "col_fixed_string" -> "STRING", "col_bool" -> "BOOL", "col_int" -> "INT32", "col_int64" -> "INT64", "col_double" -> "DOUBLE", "col_date" -> "DATE")
 
-    val nebulaEdges: NebulaEdges = NebulaEdges(edgeType, "person", List("id"), Map("id"->"STRING"), List("id1"), "person", List("id"), Map("id"->"STRING"), List("id2"), edges.toList, fieldTypeMap)
-    val edgeStatement = NebulaExecutor.toInsertSentence(graphName, nebulaEdges, "", true)
+    val nebulaEdges: NebulaEdges = NebulaEdges(edgeType, "person", List("id"), Map("id" -> "STRING"), List("id1"), "person", List("id"), Map("id" -> "STRING"), List("id2"), List(), edges.toList, fieldTypeMap)
+    val edgeStatement            = NebulaExecutor.toInsertSentence(graphName, nebulaEdges, "", true)
 
     val exptStatement =
       s"""
@@ -222,23 +222,24 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
         "col_double" -> "2.0",
         "col_date" -> "date(\"2021-05-01\")"
         )
-    edges.append(NebulaEdge(Map("id1" -> "\"id_1\"", "id2"->"\"id_2\""), Map("id1" -> "\"id_3\"", "id2" -> "\"id_4\""), props1))
-    edges.append(NebulaEdge(Map("id1" -> "\"id_3\"", "id2"->"\"id_4\""), Map("id1" -> "\"id_1\"", "id2"->"\"id_2\""), props2))
+    edges.append(NebulaEdge(Map("id1" -> "\"id_1\"", "id2" -> "\"id_2\""), Map("id1" -> "\"id_3\"", "id2" -> "\"id_4\""), props1))
+    edges.append(NebulaEdge(Map("id1" -> "\"id_3\"", "id2" -> "\"id_4\""), Map("id1" -> "\"id_1\"", "id2" -> "\"id_2\""), props2))
 
     val fieldTypeMap: Map[String, String] =
       Map("col_string" -> "STRING", "col_fixed_string" -> "STRING", "col_bool" -> "BOOL", "col_int" -> "INT32", "col_int64" -> "INT64", "col_double" -> "DOUBLE", "col_date" -> "DATE")
 
     val nebulaEdges: NebulaEdges = NebulaEdges(edgeType, "person",
-                                               List("id1","id2"),
-                                               Map("id1" -> "STRING", "id2"->"STRING"),
-                                               List("dfId1","dfId2"), "person",
+                                               List("id1", "id2"),
+                                               Map("id1" -> "STRING", "id2" -> "STRING"),
+                                               List("dfId1", "dfId2"), "person",
                                                List("id1", "id2"),
                                                Map("id1" -> "STRING", "id2" -> "STRING"),
                                                List("dfId3", "dfId4"),
+                                               List(),
                                                edges.toList,
                                                fieldTypeMap)
 
-    val edgeStatement            = NebulaExecutor.toInsertSentence(graphName, nebulaEdges, "", true)
+    val edgeStatement = NebulaExecutor.toInsertSentence(graphName, nebulaEdges, "", true)
 
     val exptStatement =
       s"""
@@ -259,7 +260,7 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
 
   test("test toDeleteSentence for node") {
     val nodes: ListBuffer[NebulaNode] = new ListBuffer[NebulaNode]
-    val nodeType = "person"
+    val nodeType                      = "person"
 
     val props1: Map[String, String] = Map(
       "col_string" -> "\"Tom\"",
@@ -269,7 +270,7 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
       "col_int64" -> "100",
       "col_double" -> "1.0",
       "col_date" -> "date(\"2021-11-12\")"
-    )
+      )
     val props2: Map[String, String] =
       Map(
         "col_string" -> "\"Bob\"",
@@ -279,14 +280,14 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
         "col_int64" -> "200",
         "col_double" -> "2.0",
         "col_date" -> "date(\"2021-05-01\")"
-      )
+        )
     nodes.append(NebulaNode(props1))
     nodes.append(NebulaNode(props2))
 
     val fieldTypeMap: Map[String, String] =
       Map("col_string" -> "STRING", "col_fixed_string" -> "STRING", "col_bool" -> "BOOL", "col_int" -> "INT32", "col_int64" -> "INT64", "col_double" -> "DOUBLE", "col_date" -> "DATE")
-    val nebulaNodes = NebulaNodes(nodeType, nodes.toList, List("col_string"), fieldTypeMap)
-    val nodeStatement =
+    val nebulaNodes                       = NebulaNodes(nodeType, nodes.toList, List("col_string"), fieldTypeMap)
+    val nodeStatement                     =
       NebulaExecutor.toDeleteSentence(graphName, nodeType, nebulaNodes, "DETACH DELETE")
 
     val expectStatement =
@@ -343,9 +344,9 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
   }
 
   test("test toDeleteSentence for edge") {
-    val edges: ListBuffer[NebulaEdge] = new ListBuffer[NebulaEdge]
-    val edgeType = "friend"
-    val props1: Map[String, String] = Map(
+    val edges : ListBuffer[NebulaEdge] = new ListBuffer[NebulaEdge]
+    val edgeType                       = "friend"
+    val props1: Map[String, String]    = Map(
       "col_string" -> "\"Tom\"",
       "col_fixed_string" -> "\"Bob\"",
       "col_bool" -> "true",
@@ -353,8 +354,8 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
       "col_int64" -> "100",
       "col_double" -> "1.0",
       "col_date" -> "date(\"2021-11-12\")"
-    )
-    val props2: Map[String, String] =
+      )
+    val props2: Map[String, String]    =
       Map(
         "col_string" -> "\"Bob\"",
         "col_fixed_string" -> "\"Tom\"",
@@ -364,13 +365,13 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
         "col_double" -> "2.0",
         "col_date" -> "date(\"2021-05-01\")"
         )
-    edges.append(NebulaEdge(Map("id"->"\"Tom\""), Map("id"->"\"Bob\""), props1))
-    edges.append(NebulaEdge(Map("id"->"\"Bob\""), Map("id"->"\"Tom\""), props2))
+    edges.append(NebulaEdge(Map("id" -> "\"Tom\""), Map("id" -> "\"Bob\""), props1))
+    edges.append(NebulaEdge(Map("id" -> "\"Bob\""), Map("id" -> "\"Tom\""), props2))
 
     val fieldTypeMap: Map[String, String] =
       Map("col_string" -> "STRING", "col_fixed_string" -> "STRING", "col_bool" -> "BOOL", "col_int" -> "INT32", "col_int64" -> "INT64", "col_double" -> "DOUBLE", "col_date" -> "DATE")
 
-    val nebulaEdges: NebulaEdges = NebulaEdges(edgeType, "person", List("id"), Map("id"->"STRING"), List("col_string"), "person", List("id"), Map("id"->"STRING"), List("col_fixed_string"), edges.toList, fieldTypeMap)
+    val nebulaEdges: NebulaEdges = NebulaEdges(edgeType, "person", List("id"), Map("id" -> "STRING"), List("col_string"), "person", List("id"), Map("id" -> "STRING"), List("col_fixed_string"), List(), edges.toList, fieldTypeMap)
 
     val edgeStatement = NebulaExecutor.toDeleteSentence(graphName, edgeType, nebulaEdges, true)
 

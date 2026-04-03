@@ -13,7 +13,8 @@ import com.vesoft.nebula.spark.common.{NebulaOptions, NebulaUtils}
 import org.slf4j.LoggerFactory
 
 import java.util
-import java.util.{List}
+import java.util.List
+import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
@@ -228,14 +229,23 @@ class GraphProvider(nebulaOptions: NebulaOptions) extends AutoCloseable with Ser
 
     val escapedEdgeType     = NebulaUtils.escapeUtil(edgeType)
     val descEdgeTypePattern =
-      s"call describe_graph_type('$graphType') filter type_name='$escapedEdgeType' return type_pattern"
+      s"call describe_graph_type('$graphType') filter type_name='$escapedEdgeType' return type_pattern,`primary_key/multiedge_key`"
 
     var result = submit(descEdgeTypePattern)
     if (!result.isSucceeded || result.isEmpty) {
       LOG.error(s"get edge type pattern of $edgeType failed for ${result.getErrorMessage}")
       throw new IllegalArgumentException(s"edge type $edgeType does not exist in $graphName.")
     }
-    val edgeTypePattern: String = result.next().get("type_pattern").asString()
+    val record                  = result.next();
+    val edgeTypePattern: String = record.get("type_pattern").asString()
+    val edgeMultiKeysValue      = record.get("primary_key/multiedge_key")
+    val multiEdgeKeyNames       = if (edgeMultiKeysValue.isList) {
+      val names = new ListBuffer[String]
+      edgeMultiKeysValue.asList().asScala.foreach(col => names.append(col.asString()))
+      names.toList
+    } else {
+      scala.collection.immutable.List.empty[String]
+    }
 
     result = submit(s"call describe_edge_type('$graphType', '$escapedEdgeType') return *")
     if (!result.isSucceeded) {
@@ -287,6 +297,7 @@ class GraphProvider(nebulaOptions: NebulaOptions) extends AutoCloseable with Ser
              dstNodeType,
              dstNodeDesc.nodePkNames,
              dstNodeIdDataType,
+             multiEdgeKeyNames,
              propNames,
              schema.toMap)
   }

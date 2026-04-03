@@ -205,6 +205,9 @@ object NebulaUtils {
       assert(edgeDesc.properties.keySet.contains(field),
              s"the dataframe field $field does not match the properties of ${nebulaOptions.label}.")
     }
+    for (edgeKeyField <- edgeDesc.multipleEdgeKeys) {
+      assert(dataFrameFields.contains(edgeKeyField), s"the dataframe doesn't contain edge's multiEdgeKey $edgeKeyField.")
+    }
   }
 
 

@@ -307,7 +307,7 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
     val fieldTypeMap: Map[String, String] =
       Map("col_string" -> "STRING", "col_fixed_string" -> "STRING", "col_bool" -> "BOOL", "col_int" -> "INT32", "col_int64" -> "INT64", "col_double" -> "DOUBLE", "col_date" -> "DATE")
 
-    val nebulaEdges: NebulaEdges = NebulaEdges(edgeType, "person", List("id"), Map("id" -> "STRING"), List("id1"), "person", List("id"), Map("id" -> "STRING"), List("id2"), edges.toList, fieldTypeMap)
+    val nebulaEdges: NebulaEdges = NebulaEdges(edgeType, "person", List("id"), Map("id" -> "STRING"), List("id1"), "person", List("id"), Map("id" -> "STRING"), List("id2"), List(), edges.toList, fieldTypeMap)
     val edgeStatement            = NebulaExecutor.toInsertSentence(graphName, nebulaEdges, "", true)
 
     val exptStatement =
@@ -363,6 +363,7 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
                                                List("id1", "id2"),
                                                Map("id1" -> "STRING", "id2" -> "STRING"),
                                                List("dfId3", "dfId4"),
+                                               List(),
                                                edges.toList,
                                                fieldTypeMap)
 
@@ -498,7 +499,7 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
     val fieldTypeMap: Map[String, String] =
       Map("col_string" -> "STRING", "col_fixed_string" -> "STRING", "col_bool" -> "BOOL", "col_int" -> "INT32", "col_int64" -> "INT64", "col_double" -> "DOUBLE", "col_date" -> "DATE")
 
-    val nebulaEdges: NebulaEdges = NebulaEdges(edgeType, "person", List("id"), Map("id" -> "STRING"), List("col_string"), "person", List("id"), Map("id" -> "STRING"), List("col_fixed_string"), edges.toList, fieldTypeMap)
+    val nebulaEdges: NebulaEdges = NebulaEdges(edgeType, "person", List("id"), Map("id" -> "STRING"), List("col_string"), "person", List("id"), Map("id" -> "STRING"), List("col_fixed_string"), List(), edges.toList, fieldTypeMap)
 
     val edgeStatement = NebulaExecutor.toDeleteSentence(graphName, edgeType, nebulaEdges, true)
 
@@ -515,6 +516,155 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
          |MATCH (nebula_dst_node@`person`) WHERE nebula_dst_node.`id`=CAST(_col_fixed_string AS STRING)
          |MATCH (nebula_src_node)-[e@`friend`]->(nebula_dst_node)
          |DELETE e
+         |""".stripMargin
+    assert(expectStatement.toCharArray.sorted.mkString("").trim.equals(edgeStatement.toCharArray.sorted.mkString("").trim))
+  }
+
+
+  test("test toDeleteSentence for edge with multiEdgeKeys") {
+    val edges : ListBuffer[NebulaEdge] = new ListBuffer[NebulaEdge]
+    val edgeType                       = "friend"
+    val props1: Map[String, String]    = Map(
+      "col_string" -> "\"Tom\"",
+      "col_fixed_string" -> "\"Bob\"",
+      "col_bool" -> "true",
+      "col_int" -> "10",
+      "col_int64" -> "100",
+      "col_double" -> "1.0",
+      "col_date" -> "date(\"2021-11-12\")"
+      )
+    val props2: Map[String, String]    =
+      Map(
+        "col_string" -> "\"Bob\"",
+        "col_fixed_string" -> "\"Tom\"",
+        "col_bool" -> "false",
+        "col_int" -> "20",
+        "col_int64" -> "200",
+        "col_double" -> "2.0",
+        "col_date" -> "date(\"2021-05-01\")"
+        )
+    edges.append(NebulaEdge(Map("id" -> "\"Tom\""), Map("id" -> "\"Bob\""), props1))
+    edges.append(NebulaEdge(Map("id" -> "\"Bob\""), Map("id" -> "\"Tom\""), props2))
+
+    val fieldTypeMap: Map[String, String] =
+      Map("col_string" -> "STRING", "col_fixed_string" -> "STRING", "col_bool" -> "BOOL", "col_int" -> "INT32", "col_int64" -> "INT64", "col_double" -> "DOUBLE", "col_date" -> "DATE")
+
+    val nebulaEdges: NebulaEdges = NebulaEdges(edgeType, "person", List("id"), Map("id" -> "STRING"), List("col_string"), "person", List("id"), Map("id" -> "STRING"), List("col_fixed_string"), List("col_int"), edges.toList, fieldTypeMap)
+
+    val edgeStatement = NebulaExecutor.toDeleteSentence(graphName, edgeType, nebulaEdges, true)
+
+    val expectStatement =
+      s"""
+         |TABLE t {`col_string`,`col_fixed_string`,`col_bool`,`col_int`,`col_int64`,`col_double`,`col_date`} =
+         |(\"Tom\",\"Bob\",true,10,100,1.0,date(\"2021-11-12\")),(\"Bob\",\"Tom\",false,20,200,2.0,date(\"2021-05-01\"))
+         |USE `$graphName`
+         |FOR r IN t
+         |RETURN r.`col_string` as _col_string,r.`col_fixed_string` as _col_fixed_string,r.`col_bool` as _col_bool,r.`col_int` as _col_int,r.`col_int64` as _col_int64,r.`col_double` as _col_double, r.`col_date` as _col_date
+         |NEXT
+         |USE `$graphName`
+         |MATCH (nebula_src_node@`person`) WHERE nebula_src_node.`id`=CAST(_col_string AS STRING)
+         |MATCH (nebula_dst_node@`person`) WHERE nebula_dst_node.`id`=CAST(_col_fixed_string AS STRING)
+         |MATCH (nebula_src_node)-[e@`friend`{`col_int`:CAST(_col_int AS INT32)}]->(nebula_dst_node)
+         |DELETE e
+         |""".stripMargin
+    assert(expectStatement.toCharArray.sorted.mkString("").trim.equals(edgeStatement.toCharArray.sorted.mkString("").trim))
+  }
+
+
+  test("test toUpdateSentence for edge") {
+    val edges : ListBuffer[NebulaEdge] = new ListBuffer[NebulaEdge]
+    val edgeType                       = "friend"
+    val props1: Map[String, String]    = Map(
+      "col_string" -> "\"Tom\"",
+      "col_fixed_string" -> "\"Bob\"",
+      "col_bool" -> "true",
+      "col_int" -> "10",
+      "col_int64" -> "100",
+      "col_double" -> "1.0",
+      "col_date" -> "date(\"2021-11-12\")"
+      )
+    val props2: Map[String, String]    =
+      Map(
+        "col_string" -> "\"Bob\"",
+        "col_fixed_string" -> "\"Tom\"",
+        "col_bool" -> "false",
+        "col_int" -> "20",
+        "col_int64" -> "200",
+        "col_double" -> "2.0",
+        "col_date" -> "date(\"2021-05-01\")"
+        )
+    edges.append(NebulaEdge(Map("id" -> "\"Tom\""), Map("id" -> "\"Bob\""), props1))
+    edges.append(NebulaEdge(Map("id" -> "\"Bob\""), Map("id" -> "\"Tom\""), props2))
+
+    val fieldTypeMap: Map[String, String] =
+      Map("col_string" -> "STRING", "col_fixed_string" -> "STRING", "col_bool" -> "BOOL", "col_int" -> "INT32", "col_int64" -> "INT64", "col_double" -> "DOUBLE", "col_date" -> "DATE")
+
+    val nebulaEdges: NebulaEdges = NebulaEdges(edgeType, "person", List("id"), Map("id" -> "STRING"), List("col_string"), "person", List("id"), Map("id" -> "STRING"), List("col_fixed_string"), List(), edges.toList, fieldTypeMap)
+
+    val edgeStatement = NebulaExecutor.toUpdateSentence(graphName, edgeType, nebulaEdges, true)
+
+    val expectStatement =
+      s"""
+         |TABLE t {`col_string`,`col_fixed_string`,`col_bool`,`col_int`,`col_int64`,`col_double`,`col_date`} =
+         |(\"Tom\",\"Bob\",true,10,100,1.0,date(\"2021-11-12\")),(\"Bob\",\"Tom\",false,20,200,2.0,date(\"2021-05-01\"))
+         |USE `$graphName`
+         |FOR r IN t
+         |RETURN r.`col_string` as _col_string,r.`col_fixed_string` as _col_fixed_string,r.`col_bool` as _col_bool,r.`col_int` as _col_int,r.`col_int64` as _col_int64,r.`col_double` as _col_double, r.`col_date` as _col_date
+         |NEXT
+         |USE `$graphName`
+         |MATCH (nebula_src_node_pk@`person`) WHERE nebula_src_node_pk.`id`=CAST(_col_string AS STRING)
+         |MATCH (nebula_dst_node_pk@`person`) WHERE nebula_dst_node_pk.`id`=CAST(_col_fixed_string AS STRING)
+         |MATCH (nebula_src_node_pk)-[e@`friend`]->(nebula_dst_node_pk)
+         |SET e.`col_string`=CAST(_col_string AS STRING),e.`col_fixed_string`=CAST(_col_fixed_string AS STRING),e.`col_bool`=CAST(_col_bool AS BOOL),e.`col_date`=CAST(_col_date AS DATE),e.`col_int64`=CAST(_col_int64 AS INT64),e.`col_int`=CAST(_col_int AS INT32),e.`col_double`=CAST(_col_double AS DOUBLE)
+         |""".stripMargin
+    assert(expectStatement.toCharArray.sorted.mkString("").trim.equals(edgeStatement.toCharArray.sorted.mkString("").trim))
+  }
+
+  test("test toUpdateSentence for edge with multiEdgeKeys") {
+    val edges : ListBuffer[NebulaEdge] = new ListBuffer[NebulaEdge]
+    val edgeType                       = "friend"
+    val props1: Map[String, String]    = Map(
+      "col_string" -> "\"Tom\"",
+      "col_fixed_string" -> "\"Bob\"",
+      "col_bool" -> "true",
+      "col_int" -> "10",
+      "col_int64" -> "100",
+      "col_double" -> "1.0",
+      "col_date" -> "date(\"2021-11-12\")"
+      )
+    val props2: Map[String, String]    =
+      Map(
+        "col_string" -> "\"Bob\"",
+        "col_fixed_string" -> "\"Tom\"",
+        "col_bool" -> "false",
+        "col_int" -> "20",
+        "col_int64" -> "200",
+        "col_double" -> "2.0",
+        "col_date" -> "date(\"2021-05-01\")"
+        )
+    edges.append(NebulaEdge(Map("id" -> "\"Tom\""), Map("id" -> "\"Bob\""), props1))
+    edges.append(NebulaEdge(Map("id" -> "\"Bob\""), Map("id" -> "\"Tom\""), props2))
+
+    val fieldTypeMap: Map[String, String] =
+      Map("col_string" -> "STRING", "col_fixed_string" -> "STRING", "col_bool" -> "BOOL", "col_int" -> "INT32", "col_int64" -> "INT64", "col_double" -> "DOUBLE", "col_date" -> "DATE")
+
+    val nebulaEdges: NebulaEdges = NebulaEdges(edgeType, "person", List("id"), Map("id" -> "STRING"), List("col_string"), "person", List("id"), Map("id" -> "STRING"), List("col_fixed_string"), List("col_int","col_int64"), edges.toList, fieldTypeMap)
+
+    val edgeStatement = NebulaExecutor.toUpdateSentence(graphName, edgeType, nebulaEdges, true)
+
+    val expectStatement =
+      s"""
+         |TABLE t {`col_string`,`col_fixed_string`,`col_bool`,`col_int`,`col_int64`,`col_double`,`col_date`} =
+         |(\"Tom\",\"Bob\",true,10,100,1.0,date(\"2021-11-12\")),(\"Bob\",\"Tom\",false,20,200,2.0,date(\"2021-05-01\"))
+         |USE `$graphName`
+         |FOR r IN t
+         |RETURN r.`col_string` as _col_string,r.`col_fixed_string` as _col_fixed_string,r.`col_bool` as _col_bool,r.`col_int` as _col_int,r.`col_int64` as _col_int64,r.`col_double` as _col_double, r.`col_date` as _col_date
+         |NEXT
+         |USE `$graphName`
+         |MATCH (nebula_src_node_pk@`person`) WHERE nebula_src_node_pk.`id`=CAST(_col_string AS STRING)
+         |MATCH (nebula_dst_node_pk@`person`) WHERE nebula_dst_node_pk.`id`=CAST(_col_fixed_string AS STRING)
+         |MATCH (nebula_src_node_pk)-[e@`friend`{`col_int64`:CAST(_col_int64 AS INT64),`col_int`:CAST(_col_int AS INT32)}]->(nebula_dst_node_pk)
+         |SET e.`col_string`=CAST(_col_string AS STRING),e.`col_fixed_string`=CAST(_col_fixed_string AS STRING),e.`col_bool`=CAST(_col_bool AS BOOL),e.`col_date`=CAST(_col_date AS DATE),e.`col_double`=CAST(_col_double AS DOUBLE)
          |""".stripMargin
     assert(expectStatement.toCharArray.sorted.mkString("").trim.equals(edgeStatement.toCharArray.sorted.mkString("").trim))
   }

@@ -75,6 +75,7 @@ case class NebulaEdges(edgeType: String,
                        dstPkNames: List[String],
                        dstPkDataTypeMap: Map[String, String],
                        dfDstFields: List[String],
+                       multipleEdgeKeys: List[String],
                        values: List[NebulaEdge],
                        fieldTypeMap: Map[String, String]) {
   private val propNames = values.iterator.next().values.keySet.toSeq
@@ -144,6 +145,18 @@ case class NebulaEdges(edgeType: String,
   /**
    * construct the setting property mapping for update
    */
-  def getUpdatePropNamesWithTableStr: String = propNames.map(prop => s"e.`$prop`=CAST(_$prop AS ${fieldTypeMap(prop)})").mkString(",")
+  def getUpdatePropNamesWithTableStr: String = propNames
+    .filterNot(multipleEdgeKeys.contains)
+    .map(prop => s"e.`$prop`=CAST(_$prop AS ${fieldTypeMap(prop)})")
+    .mkString(",")
+
+  /**
+   * construct the edge multiEdgeKeys mapping for delete
+   */
+  def getMultiEdgeKeysWithTableStr: String = if(multipleEdgeKeys.isEmpty) {
+    ""
+  } else {
+    "FILTER " + multipleEdgeKeys.map(prop => s"e.`$prop`=CAST(_$prop AS ${fieldTypeMap(prop)})").mkString(" AND ")
+  }
 
 }

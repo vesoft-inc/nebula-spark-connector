@@ -48,19 +48,13 @@ class EdgeWriter(nebulaOptions: NebulaOptions,
       dstIds.put(edgeDesc.dstNodePkNames(i), dstIdValue)
     }
 
-    val values     =
-      if (nebulaOptions.writeMode == WriteMode.DELETE) {
-        // delete mode does not need property.
-        Map[String, String]()
-      } else {
-        NebulaExecutor.assignEdgeValues(schema,
-                                        row,
-                                        dfSrcPkFieldsIndex,
-                                        dfDstPkFieldsIndex,
-                                        nebulaOptions.srcPksAsProp,
-                                        nebulaOptions.dstPksAsProp,
-                                        fieldTypeMap)
-      }
+    val values     = NebulaExecutor.assignEdgeValues(schema,
+                                                     row,
+                                                     dfSrcPkFieldsIndex,
+                                                     dfDstPkFieldsIndex,
+                                                     nebulaOptions.srcPksAsProp,
+                                                     nebulaOptions.dstPksAsProp,
+                                                     fieldTypeMap)
     val nebulaEdge = NebulaEdge(srcIds.toMap, dstIds.toMap, values)
     edges.append(nebulaEdge)
     if (edges.size >= nebulaOptions.batchSize) {
@@ -82,7 +76,7 @@ class EdgeWriter(nebulaOptions: NebulaOptions,
     if (result.isSucceeded) {
       if (!nebulaOptions.disableWriteLog) {
         LOG.info(
-          s"batch write for ${nebulaOptions.label} succeed. batch size(${edges.size}), latency(${result.getLatency})")
+          s"batch write(${nebulaOptions.writeMode}) for ${nebulaOptions.label} succeed. batch size(${edges.size}), affected(${result.getExtraInfo.getAffectedEdges}), latency(${result.getLatency}us)")
       }
     } else {
       if (edges.size == 1
@@ -90,16 +84,16 @@ class EdgeWriter(nebulaOptions: NebulaOptions,
         && !result.getErrorCode.isRpcError
         && !result.getErrorCode.isRaftError) {
         if (nebulaOptions.errorWhenFailed) {
-          throw new RuntimeException(s"write edge ${nebulaOptions.label} failed: ${result.getErrorMessage}. ngql:\n${exec}")
+          throw new RuntimeException(s"write(${nebulaOptions.writeMode}) edge ${nebulaOptions.label} failed: ${result.getErrorMessage}. ngql:\n${exec}")
         } else {
           failedExecs.append(exec)
-          LOG.error(s"write edge ${nebulaOptions.label} failed: ${result.getErrorMessage}.")
+          LOG.error(s"write(${nebulaOptions.writeMode}) edge ${nebulaOptions.label} failed: ${result.getErrorMessage}.")
           return
         }
       }
       // re-execute the vertices one by one
       LOG.warn(
-        s"write edge ${nebulaOptions.label} failed: ${result.getErrorMessage}, " +
+        s"write(${nebulaOptions.writeMode}) edge ${nebulaOptions.label} failed: ${result.getErrorMessage}, " +
           s"now retry writing one by one.")
       edges.par.foreach { edge => writeEdge(edge) }
     }
@@ -110,7 +104,7 @@ class EdgeWriter(nebulaOptions: NebulaOptions,
     val result = submit(exec)
     if (result.isSucceeded) {
       if (!nebulaOptions.disableWriteLog) {
-        LOG.info(s"write ${nebulaOptions.label}, batch size(1), latency(${result.getLatency}ms)")
+        LOG.info(s"write(${nebulaOptions.writeMode}) ${nebulaOptions.label}, batch size(1), affected(${result.getExtraInfo.getAffectedEdges}), latency(${result.getLatency}us)")
       }
       return
     }
@@ -127,15 +121,15 @@ class EdgeWriter(nebulaOptions: NebulaOptions,
       if (executeResult.isSucceeded) {
         if (!nebulaOptions.disableWriteLog) {
           LOG.info(
-            s"write edge ${nebulaOptions.label}, batch size(1), latency(${executeResult.getLatency}ms)")
+            s"write(${nebulaOptions.writeMode}) edge ${nebulaOptions.label}, batch size(1), affected(${result.getExtraInfo.getAffectedEdges}), latency(${executeResult.getLatency}us)")
         }
         return
       }
     }
     if (nebulaOptions.errorWhenFailed) {
-      throw new RuntimeException(s"write edge ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}. ngql:\n${exec}")
+      throw new RuntimeException(s"write(${nebulaOptions.writeMode}) edge ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}. ngql:\n${exec}")
     } else {
-      LOG.error(s"write edge ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}.")
+      LOG.error(s"write(${nebulaOptions.writeMode}) edge ${nebulaOptions.label} failed: ${executeResult.getErrorMessage}.")
       failedExecs.append(exec)
     }
 
@@ -152,6 +146,7 @@ class EdgeWriter(nebulaOptions: NebulaOptions,
       edgeDesc.dstNodePkNames,
       edgeDesc.dstNodePkDataTypeMap,
       nebulaOptions.dstPkFields,
+      edgeDesc.multipleEdgeKeys,
       edges,
       fieldTypeMap)
     val exec        = nebulaOptions.writeMode match {

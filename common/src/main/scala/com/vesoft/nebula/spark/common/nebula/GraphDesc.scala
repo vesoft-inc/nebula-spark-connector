@@ -22,5 +22,6 @@ case class EdgeDesc(edgeTypeName: String,
                     dstNodeTypeName: String,
                     dstNodePkNames: List[String],
                     dstNodePkDataTypeMap: Map[String, String],
+                    multipleEdgeKeys: List[String],
                     propNames: ArrayBuffer[String],
                     properties: Map[String, String])

@@ -539,7 +539,7 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
          |USE `$graphName`
          |MATCH (nebula_src_node@`person`) WHERE nebula_src_node.`id`=CAST(_col_string AS STRING)
          |MATCH (nebula_dst_node@`person`) WHERE nebula_dst_node.`id`=CAST(_col_fixed_string AS STRING)
-         |MATCH (nebula_src_node)-[e@`friend`{`col_int`:CAST(_col_int AS INT32)}]->(nebula_dst_node)
+         |MATCH (nebula_src_node)-[e@`friend`]->(nebula_dst_node) FILTER e.`col_int`=CAST(_col_int AS INT32)
          |DELETE e
          |""".stripMargin
     assert(expectStatement.toCharArray.sorted.mkString("").trim.equals(edgeStatement.toCharArray.sorted.mkString("").trim))
@@ -638,7 +638,7 @@ class NebulaExecutorSuite extends AnyFunSuite with BeforeAndAfterAll {
          |USE `$graphName`
          |MATCH (nebula_src_node_pk@`person`) WHERE nebula_src_node_pk.`id`=CAST(_col_string AS STRING)
          |MATCH (nebula_dst_node_pk@`person`) WHERE nebula_dst_node_pk.`id`=CAST(_col_fixed_string AS STRING)
-         |MATCH (nebula_src_node_pk)-[e@`friend`{`col_int64`:CAST(_col_int64 AS INT64),`col_int`:CAST(_col_int AS INT32)}]->(nebula_dst_node_pk)
+         |MATCH (nebula_src_node_pk)-[e@`friend`]->(nebula_dst_node_pk) FILTER e.`col_int64`=CAST(_col_int64 AS INT64) AND e.`col_int`=CAST(_col_int AS INT32)
          |SET e.`col_string`=CAST(_col_string AS STRING),e.`col_fixed_string`=CAST(_col_fixed_string AS STRING),e.`col_bool`=CAST(_col_bool AS BOOL),e.`col_date`=CAST(_col_date AS DATE),e.`col_double`=CAST(_col_double AS DOUBLE)
          |""".stripMargin
     assert(expectStatement.toCharArray.sorted.mkString("").trim.equals(edgeStatement.toCharArray.sorted.mkString("").trim))

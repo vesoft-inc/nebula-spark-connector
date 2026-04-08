@@ -156,7 +156,7 @@ case class NebulaEdges(edgeType: String,
   def getMultiEdgeKeysWithTableStr: String = if(multipleEdgeKeys.isEmpty) {
     ""
   } else {
-    "{" + multipleEdgeKeys.map(prop => s"`$prop`:CAST(_$prop AS ${fieldTypeMap(prop)})").mkString(",") + "}"
+    "FILTER " + multipleEdgeKeys.map(prop => s"e.`$prop`=CAST(_$prop AS ${fieldTypeMap(prop)})").mkString(" AND ")
   }
 
 }

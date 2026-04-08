@@ -308,7 +308,7 @@ object NebulaExecutor {
          |USE `$graphName`
          |MATCH (nebula_src_node_pk@`${edges.srcType}`) WHERE ${edges.getSrcPkStr("nebula_src_node_pk")}
          |MATCH (nebula_dst_node_pk@`${edges.dstType}`) WHERE ${edges.getDstPkStr("nebula_dst_node_pk")}
-         |MATCH (nebula_src_node_pk)-[e@`${edges.edgeType}`${edges.getMultiEdgeKeysWithTableStr}]->(nebula_dst_node_pk)
+         |MATCH (nebula_src_node_pk)-[e@`${edges.edgeType}`]->(nebula_dst_node_pk) ${edges.getMultiEdgeKeysWithTableStr}
          |SET ${edges.getUpdatePropNamesWithTableStr}
          |""".stripMargin
     } else {
@@ -322,7 +322,7 @@ object NebulaExecutor {
          |USE `$graphName`
          |MATCH (nebula_src_node_pk@`${edges.srcType}`) WHERE ${edges.getSrcPkStr("nebula_src_node_pk")}
          |MATCH (nebula_dst_node_pk@`${edges.dstType}`) WHERE ${edges.getDstPkStr("nebula_dst_node_pk")}
-         |MATCH (nebula_src_node_pk)~[e@`${edges.edgeType}`${edges.getMultiEdgeKeysWithTableStr}]~(nebula_dst_node_pk)
+         |MATCH (nebula_src_node_pk)~[e@`${edges.edgeType}`]~(nebula_dst_node_pk) ${edges.getMultiEdgeKeysWithTableStr}
          |SET ${edges.getUpdatePropNamesWithTableStr}
          |""".stripMargin
     }
@@ -366,7 +366,7 @@ object NebulaExecutor {
          |USE `$graphName`
          |MATCH (nebula_src_node@`${edges.srcType}`) WHERE ${edges.getSrcPkStr("nebula_src_node")}
          |MATCH (nebula_dst_node@`${edges.dstType}`) WHERE ${edges.getDstPkStr("nebula_dst_node")}
-         |MATCH (nebula_src_node)-[e@`${edges.edgeType}`${edges.getMultiEdgeKeysWithTableStr}]->(nebula_dst_node)
+         |MATCH (nebula_src_node)-[e@`${edges.edgeType}`]->(nebula_dst_node) ${edges.getMultiEdgeKeysWithTableStr}
          |DELETE e
          |""".stripMargin
     } else {
@@ -380,7 +380,7 @@ object NebulaExecutor {
          |USE `$graphName`
          |MATCH (nebula_src_node@`${edges.srcType}`) WHERE ${edges.getSrcPkStr("nebula_src_node")}
          |MATCH (nebula_dst_node@`${edges.dstType}`) WHERE ${edges.getDstPkStr("nebula_dst_node")}
-         |MATCH (nebula_src_node)~[e@`${edges.edgeType}`${edges.getMultiEdgeKeysWithTableStr}]~(nebula_dst_node)
+         |MATCH (nebula_src_node)~[e@`${edges.edgeType}`]~(nebula_dst_node) ${edges.getMultiEdgeKeysWithTableStr}
          |DELETE e
          |""".stripMargin
     }

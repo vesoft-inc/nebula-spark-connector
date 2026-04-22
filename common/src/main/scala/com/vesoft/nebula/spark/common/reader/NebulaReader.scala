@@ -70,59 +70,41 @@ trait NebulaReader {
       val value: ValueWrapper = resultSet(i)
       if (value.isNull) {
         mutableRow.setNullAt(i)
-      }
-      if (value.isString) {
+      } else if (value.isString) {
         getters(i).apply(value.asString(), mutableRow, i)
-      }
-      if (value.isDate) {
+      } else if (value.isDate) {
         getters(i).apply(value.asDate(), mutableRow, i)
-      }
-      if (value.isLocalTime) {
+      } else if (value.isLocalTime) {
         getters(i).apply(value.asLocalTime().format(timeFormatter), mutableRow, i)
-      }
-      if (value.isZonedTime) {
+      } else if (value.isZonedTime) {
         getters(i).apply(value.asZonedTime().format(zonedTimeFormatter), mutableRow, i)
-      }
-      if (value.isLocalDateTime) {
+      } else if (value.isLocalDateTime) {
         getters(i).apply(value.asLocalDateTime().format(datetimeFormatter), mutableRow, i)
-      }
-      if (value.isZonedDateTime) {
+      } else if (value.isZonedDateTime) {
         getters(i).apply(value.asZonedDateTime().format(zonedDatetimeFormatter), mutableRow, i)
-      }
-      if (value.isInt) {
+      } else if (value.isInt) {
         getters(i).apply(value.asInt(), mutableRow, i)
-      }
-      if (value.isLong) {
+      } else if (value.isLong) {
         getters(i).apply(value.asLong(), mutableRow, i)
-      }
-      if (value.isBoolean) {
+      } else if (value.isBoolean) {
         getters(i).apply(value.asBoolean(), mutableRow, i)
-      }
-      if (value.isFloat) {
+      } else if (value.isFloat) {
         getters(i).apply(value.asFloat(), mutableRow, i)
-      }
-      if (value.isDouble) {
+      } else if (value.isDouble) {
         getters(i).apply(value.asDouble(), mutableRow, i)
-      }
-      if (value.isDuration) {
+      } else if (value.isDuration) {
         getters(i).apply(value.asDuration().toString, mutableRow, i)
-      }
-      if (value.isList) {
+      } else if (value.isList) {
         getters(i).apply(value.asList().toString, mutableRow, i)
-      }
-      if (value.isVector) {
+      } else if (value.isVector) {
         getters(i).apply(value.asVector().toString, mutableRow, i)
-      }
-      if (value.isDecimal) {
+      } else if (value.isDecimal) {
         getters(i).apply(value.asDecimal().toString, mutableRow, i)
-      }
-      if (value.isGeography) {
+      } else if (value.isGeography) {
         getters(i).apply(value.asGeography().toString, mutableRow, i)
-      }
-      if (value.isSet) {
+      } else if (value.isSet) {
         getters(i).apply(value.asSet().toString, mutableRow, i)
-      }
-      if (value.isMap) {
+      } else if (value.isMap) {
         getters(i).apply(value.asMap().toString, mutableRow, i)
       }
     }

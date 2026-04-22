@@ -229,7 +229,7 @@ class GraphProvider(nebulaOptions: NebulaOptions) extends AutoCloseable with Ser
 
     val escapedEdgeType     = NebulaUtils.escapeUtil(edgeType)
     val descEdgeTypePattern =
-      s"call describe_graph_type('$graphType') filter type_name='$escapedEdgeType' return type_pattern,`primary_key/multiedge_key`"
+      s"call describe_graph_type('$graphType') yield type_name,type_pattern,`primary_key/multiedge_key` as pkk filter type_name='$escapedEdgeType' return type_pattern, pkk"
 
     var result = submit(descEdgeTypePattern)
     if (!result.isSucceeded || result.isEmpty) {
@@ -238,7 +238,7 @@ class GraphProvider(nebulaOptions: NebulaOptions) extends AutoCloseable with Ser
     }
     val record                  = result.next();
     val edgeTypePattern: String = record.get("type_pattern").asString()
-    val edgeMultiKeysValue      = record.get("primary_key/multiedge_key")
+    val edgeMultiKeysValue      = record.get("pkk")
     val multiEdgeKeyNames       = if (edgeMultiKeysValue.isList) {
       val names = new ListBuffer[String]
       edgeMultiKeysValue.asList().asScala.foreach(col => names.append(col.asString()))

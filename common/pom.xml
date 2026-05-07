@@ -20,7 +20,7 @@
         <scalatest.version>3.2.3</scalatest.version>
         <junit.version>4.13.1</junit.version>
         <codec.version>1.13</codec.version>
-        <nebula.version>5.3-SNAPSHOT</nebula.version>
+        <nebula.version>5.3.0</nebula.version>
 <!--        <scala.binary.version>2.11</scala.binary.version>-->
 <!--        <scala.version>2.11.12</scala.version>-->
 <!--        <spark.version>2.4.4</spark.version>-->

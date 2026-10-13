@@ -6,7 +6,6 @@
 
 package com.vesoft.nebula.spark.common
 
-import com.alibaba.fastjson.JSON
 import org.apache.commons.lang.StringUtils
 import org.apache.spark.sql.catalyst.util.CaseInsensitiveMap
 
@@ -55,9 +54,9 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
     parameters.getOrElse(EXECUTION_RETRY_INTERVAL, DEFAULT_EXECUTION_RETRY_INTERVAL).toString.toInt
   val user                  : String                            = parameters.getOrElse(USER_NAME, DEFAULT_USER_NAME)
   val authOptions           : java.util.HashMap[String, Object] = {
-    val authJsonString = parameters.getOrElse(AUTHOPTIONS, "{}")
-    val authInfo       = JSON.parseObject(authJsonString, classOf[java.util.HashMap[String, Object]])
-    if (parameters.isDefinedAt(PASSWD)) authInfo.put("password", parameters(PASSWD))
+    val authJsonString                                      = parameters.getOrElse(AUTHOPTIONS, "{}")
+    val authInfo: java.util.HashMap[String, Object] = AuthOptionsJson.parseObject(authJsonString)
+    if (parameters.isDefinedAt(PASSWD)) authInfo.put("password", parameters(PASSWD): Object)
     authInfo
   }
   val rateLimit             : Long                              = parameters.getOrElse(RATE_LIMIT, DEFAULT_RATE_LIMIT).toString.toLong
@@ -140,6 +139,243 @@ class NebulaOptions(@transient val parameters: CaseInsensitiveMap[String]) exten
 
   /** gql parameters */
   var gql: String = parameters.getOrElse(GQL, null)
+}
+
+private[common] object AuthOptionsJson {
+  def stringify(values: collection.Map[String, Any]): String = {
+    values.iterator
+      .map { case (key, value) => quote(key) + ":" + toJson(value) }
+      .mkString("{", ",", "}")
+  }
+
+  def parseObject(authJsonString: String): java.util.HashMap[String, Object] = {
+    val result = new java.util.HashMap[String, Object]()
+    val json   = Option(authJsonString).map(_.trim).getOrElse("")
+
+    if (json.isEmpty || json == "{}") {
+      return result
+    }
+
+    require(json.startsWith("{") && json.endsWith("}"),
+            s"Option '${NebulaOptions.AUTHOPTIONS}' must be a JSON object string.")
+
+    val content = json.substring(1, json.length - 1).trim
+    if (content.isEmpty) {
+      return result
+    }
+
+    splitTopLevel(content, ',').foreach { item =>
+      val (rawKey, rawValue) = splitKeyValue(item)
+      result.put(parseJsonString(rawKey.trim), parseJsonValue(rawValue.trim))
+    }
+
+    result
+  }
+
+  private def toJson(value: Any): String = value match {
+    case null => "null"
+    case s: String => quote(s)
+    case c: Char => quote(c.toString)
+    case b: Boolean => b.toString
+    case n: Byte => n.toString
+    case n: Short => n.toString
+    case n: Int => n.toString
+    case n: Long => n.toString
+    case n: Float => n.toString
+    case n: Double => n.toString
+    case m: collection.Map[_, _] =>
+      m.iterator
+        .map { case (k, v) => quote(String.valueOf(k)) + ":" + toJson(v) }
+        .mkString("{", ",", "}")
+    case m: java.util.Map[_, _] =>
+      import scala.collection.JavaConverters.mapAsScalaMapConverter
+
+      m.asScala.iterator
+        .map { case (k, v) => quote(String.valueOf(k)) + ":" + toJson(v) }
+        .mkString("{", ",", "}")
+    case it: Iterable[_] =>
+      it.iterator.map(toJson).mkString("[", ",", "]")
+    case it: java.lang.Iterable[_] =>
+      import scala.collection.JavaConverters.iterableAsScalaIterableConverter
+
+      it.asScala.iterator.map(toJson).mkString("[", ",", "]")
+    case other => quote(String.valueOf(other))
+  }
+
+  private def quote(s: String): String = "\"" + escape(s) + "\""
+
+  private def escape(s: String): String = {
+    val sb = new StringBuilder(s.length + 16)
+    s.foreach {
+      case '"'  => sb.append("\\\"")
+      case '\\' => sb.append("\\\\")
+      case '\b' => sb.append("\\b")
+      case '\f' => sb.append("\\f")
+      case '\n' => sb.append("\\n")
+      case '\r' => sb.append("\\r")
+      case '\t' => sb.append("\\t")
+      case ch if ch < ' ' => sb.append(f"\\u${ch.toInt}%04x")
+      case ch => sb.append(ch)
+    }
+    sb.toString()
+  }
+
+  private def splitKeyValue(entry: String): (String, String) = {
+    val index = findTopLevelChar(entry, ':')
+    require(index >= 0, s"Invalid auth option entry: $entry")
+    (entry.substring(0, index), entry.substring(index + 1))
+  }
+
+  private def splitTopLevel(input: String, separator: Char): List[String] = {
+    val result  = scala.collection.mutable.ListBuffer[String]()
+    val current = new StringBuilder
+
+    var inQuotes   = false
+    var escaped    = false
+    var braceDepth = 0
+    var arrayDepth = 0
+
+    input.foreach { ch =>
+      if (escaped) {
+        current.append(ch)
+        escaped = false
+      } else {
+        ch match {
+          case '\\' =>
+            current.append(ch)
+            escaped = true
+          case '"' =>
+            current.append(ch)
+            inQuotes = !inQuotes
+          case '{' if !inQuotes =>
+            current.append(ch)
+            braceDepth += 1
+          case '}' if !inQuotes =>
+            current.append(ch)
+            braceDepth -= 1
+          case '[' if !inQuotes =>
+            current.append(ch)
+            arrayDepth += 1
+          case ']' if !inQuotes =>
+            current.append(ch)
+            arrayDepth -= 1
+          case c if c == separator && !inQuotes && braceDepth == 0 && arrayDepth == 0 =>
+            result += current.toString().trim
+            current.clear()
+          case _ =>
+            current.append(ch)
+        }
+      }
+    }
+
+    if (current.nonEmpty) {
+      result += current.toString().trim
+    }
+
+    result.toList.filter(_.nonEmpty)
+  }
+
+  private def findTopLevelChar(input: String, target: Char): Int = {
+    var inQuotes   = false
+    var escaped    = false
+    var braceDepth = 0
+    var arrayDepth = 0
+    var index      = 0
+
+    while (index < input.length) {
+      val ch = input.charAt(index)
+      if (escaped) {
+        escaped = false
+      } else {
+        ch match {
+          case '\\' =>
+            escaped = true
+          case '"' =>
+            inQuotes = !inQuotes
+          case '{' if !inQuotes =>
+            braceDepth += 1
+          case '}' if !inQuotes =>
+            braceDepth -= 1
+          case '[' if !inQuotes =>
+            arrayDepth += 1
+          case ']' if !inQuotes =>
+            arrayDepth -= 1
+          case c if c == target && !inQuotes && braceDepth == 0 && arrayDepth == 0 =>
+            return index
+          case _ =>
+        }
+      }
+      index += 1
+    }
+
+    -1
+  }
+
+  private def parseJsonValue(token: String): Object = {
+    if (token == "null") {
+      null
+    } else if (token == "true" || token == "false") {
+      java.lang.Boolean.valueOf(token)
+    } else if (token.startsWith("\"") && token.endsWith("\"")) {
+      parseJsonString(token)
+    } else {
+      parseJsonNumberOrString(token)
+    }
+  }
+
+  private def parseJsonNumberOrString(token: String): Object = {
+    try {
+      if (token.contains(".") || token.contains("e") || token.contains("E")) {
+        java.lang.Double.valueOf(token)
+      } else {
+        val longValue = java.lang.Long.valueOf(token)
+        if (longValue >= Int.MinValue && longValue <= Int.MaxValue) {
+          java.lang.Integer.valueOf(longValue.toInt)
+        } else {
+          longValue
+        }
+      }
+    } catch {
+      case _: NumberFormatException => token
+    }
+  }
+
+  private def parseJsonString(token: String): String = {
+    require(token.length >= 2 && token.head == '"' && token.last == '"',
+            s"Invalid JSON string: $token")
+
+    val sb = new StringBuilder
+    var i  = 1
+
+    while (i < token.length - 1) {
+      val ch = token.charAt(i)
+      if (ch != '\\') {
+        sb.append(ch)
+        i += 1
+      } else {
+        require(i + 1 < token.length - 1, s"Invalid escape in JSON string: $token")
+        token.charAt(i + 1) match {
+          case '"'  => sb.append('"'); i += 2
+          case '\\' => sb.append('\\'); i += 2
+          case '/'  => sb.append('/'); i += 2
+          case 'b'  => sb.append('\b'); i += 2
+          case 'f'  => sb.append('\f'); i += 2
+          case 'n'  => sb.append('\n'); i += 2
+          case 'r'  => sb.append('\r'); i += 2
+          case 't'  => sb.append('\t'); i += 2
+          case 'u' =>
+            require(i + 5 < token.length, s"Invalid unicode escape in JSON string: $token")
+            val hex = token.substring(i + 2, i + 6)
+            sb.append(Integer.parseInt(hex, 16).toChar)
+            i += 6
+          case other =>
+            throw new IllegalArgumentException(s"Unsupported escape sequence: \\$other")
+        }
+      }
+    }
+
+    sb.toString()
+  }
 }
 
 object NebulaOptions {

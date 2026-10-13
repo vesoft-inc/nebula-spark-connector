@@ -6,8 +6,6 @@
 
 package com.vesoft.nebula.spark.common
 
-import com.alibaba.fastjson.JSONObject
-import com.alibaba.fastjson.serializer.JSONObjectCodec
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable
@@ -38,9 +36,7 @@ class NebulaConnectionConfig(graphAddress: String,
       newAuthOptions.put("password", passwd)
     }
     newAuthOptions ++= authOptions
-    val json = new JSONObject
-    newAuthOptions.foreach(x => json.put(x._1, x._2))
-    json.toJSONString
+    AuthOptionsJson.stringify(newAuthOptions.toMap)
   }
 
   def getTimeout = timeout

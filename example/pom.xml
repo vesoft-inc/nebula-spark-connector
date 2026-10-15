@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.vesoft</groupId>
         <artifactId>nebula-spark</artifactId>
-        <version>5.3.0</version>
+        <version>5.3.2</version>
     </parent>
     <artifactId>example</artifactId>
 
@@ -45,7 +45,7 @@
         <dependency>
             <groupId>com.vesoft</groupId>
             <artifactId>driver</artifactId>
-            <version>5.3.0</version>
+            <version>5.3.3</version>
         </dependency>
         <dependency>
             <groupId>com.vesoft</groupId>

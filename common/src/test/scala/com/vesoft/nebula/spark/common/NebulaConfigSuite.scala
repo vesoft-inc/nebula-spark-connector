@@ -6,6 +6,7 @@
 
 package com.vesoft.nebula.spark.common
 
+import org.apache.spark.sql.catalyst.util.CaseInsensitiveMap
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -52,6 +53,49 @@ class NebulaConfigSuite extends AnyFunSuite with BeforeAndAfterAll {
     assert(config.getUser.equals("root"))
     assert(config.getAuthOptions.contains("password"))
     assert(config.getAuthOptions.contains("nebula"))
+  }
+
+  test("test auth options json escaping and round trip") {
+    val config = NebulaConnectionConfig
+      .builder()
+      .withGraphAddress("127.0.0.1:9669")
+      .withUser("root")
+      .withAuthOptions(Map("password" -> "ne\"bu\\la\n", "retry" -> 3, "enabled" -> true))
+      .build()
+
+    val json    = config.getAuthOptions
+    val parsed  = AuthOptionsJson.parseObject(json)
+
+    assert(json.contains("\\\""))
+    assert(json.contains("\\\\"))
+    assert(json.contains("\\n"))
+    assert(parsed.get("password") == "ne\"bu\\la\n")
+    assert(parsed.get("retry") == Int.box(3))
+    assert(parsed.get("enabled") == Boolean.box(true))
+  }
+
+  test("test NebulaOptions auth options parser and passwd override") {
+    val nebulaOptions = new NebulaOptions(
+      CaseInsensitiveMap(
+        Map(
+          NebulaOptions.OPERATE_TYPE -> "read",
+          NebulaOptions.TYPE -> "node",
+          NebulaOptions.GRAPH_ADDRESS -> "127.0.0.1:9669",
+          NebulaOptions.GRAPH_NAME -> "test",
+          NebulaOptions.LABEL -> "person",
+          NebulaOptions.USER_NAME -> "root",
+          NebulaOptions.PASSWD -> "override",
+          NebulaOptions.AUTHOPTIONS -> "{\"password\":\"raw\",\"retry\":3,\"enabled\":true,\"note\":\"a\\nline\"}"
+        )))
+
+    assert(nebulaOptions.authOptions.get("password") == "override")
+    assert(nebulaOptions.authOptions.get("retry") == Int.box(3))
+    assert(nebulaOptions.authOptions.get("enabled") == Boolean.box(true))
+    assert(nebulaOptions.authOptions.get("note") == "a\nline")
+  }
+
+  test("test invalid auth options json") {
+    assertThrows[IllegalArgumentException](AuthOptionsJson.parseObject("not-json"))
   }
 
   test("test wrong connection config") {

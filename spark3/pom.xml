@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.vesoft</groupId>
         <artifactId>nebula-spark</artifactId>
-        <version>5.3.0</version>
+        <version>5.3.2</version>
     </parent>
 
     <artifactId>nebula-connector_spark3</artifactId>
@@ -24,7 +24,7 @@
     <dependencies>
         <dependency>
             <groupId>com.vesoft</groupId>
-            <artifactId>nebula-spark-common_${scala.binary.version}</artifactId>
+            <artifactId>nebula-spark-common_2.12</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
